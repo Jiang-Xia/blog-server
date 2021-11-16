@@ -37,8 +37,8 @@ export class ArticleListVO {
   @ApiProperty({ type: SimpleInfo, isArray: true })
   list: Array<SimpleInfo>;
 
-  @ApiProperty({ type: () => Pagination })
-  pagination: Pagination;
+  // @ApiProperty({ type: () => Pagination })
+  // pagination: Pagination;
 }
 
 export class ArticleListResponse {

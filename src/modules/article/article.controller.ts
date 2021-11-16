@@ -1,3 +1,5 @@
+// src/modules/article/article.controller.ts
+
 import { Controller, Body, Query, Get, Post } from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { ArticleCreateDTO } from './dto/article-create.dto';
@@ -15,31 +17,33 @@ export class ArticleController {
 
   @Get('list')
   @ApiOkResponse({ description: '文章列表', type: ArticleListResponse })
-  getMore(@Query() listDTO: ListDTO) {
-    return this.articleService.getMore(listDTO);
+  async getMore(@Query() listDTO: ListDTO): Promise<ArticleListVO> {
+    return await this.articleService.getMore(listDTO);
   }
 
   @Get('info')
   @ApiOkResponse({ description: '文章详情', type: ArticleInfoResponse })
-  getOne(@Query() idDto: IdDTO) {
-    return this.articleService.getOne(idDto);
+  async getOne(@Query() idDto: IdDTO): Promise<ArticleInfoVO> {
+    return await this.articleService.getOne(idDto);
   }
 
   @Post('create')
   @ApiOkResponse({ description: '创建文章', type: ArticleInfoResponse })
-  create(@Body() articleCreateDTO: ArticleCreateDTO) {
-    return this.articleService.create(articleCreateDTO);
+  async create(
+    @Body() articleCreateDTO: ArticleCreateDTO,
+  ): Promise<ArticleInfoVO> {
+    return await this.articleService.create(articleCreateDTO);
   }
 
   @Post('edit')
-  @ApiOkResponse({ description: '创建文章', type: ArticleInfoResponse })
-  update(@Body() articleEditDTO: ArticleEditDTO) {
-    return this.articleService.update(articleEditDTO);
+  @ApiOkResponse({ description: '编辑文章', type: ArticleInfoResponse })
+  async update(@Body() articleEditDTO: ArticleEditDTO): Promise<ArticleInfoVO> {
+    return await this.articleService.update(articleEditDTO);
   }
 
   @Post('delete')
   @ApiOkResponse({ description: '删除文章', type: ArticleInfoResponse })
-  delete(@Body() idDto: IdDTO) {
-    return this.articleService.delete(idDto);
+  async delete(@Body() idDto: IdDTO): Promise<ArticleInfoVO> {
+    return await this.articleService.delete(idDto);
   }
 }

@@ -1,5 +1,5 @@
 // src/modules/article/dto/list.dto.ts
-import { Matches } from 'class-validator';
+import { IsOptional, Matches } from 'class-validator';
 import { regPositive } from 'src/utils/regex.util';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -9,7 +9,7 @@ export class ListDTO {
     example: 1,
     required: false,
   })
-  // 类属性装饰器
+  @IsOptional()
   @Matches(regPositive, { message: 'page 不可小于 0' })
   readonly page?: number;
 
@@ -18,6 +18,7 @@ export class ListDTO {
     example: 10,
     required: false,
   })
+  @IsOptional()
   @Matches(regPositive, { message: 'pageSize 不可小于 0' })
   readonly pageSize?: number;
 }

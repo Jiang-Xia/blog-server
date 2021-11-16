@@ -19,6 +19,8 @@ async function bootstrap() {
     .setTitle('blog-serve')
     .setDescription('接口文档')
     .setVersion('1.0')
+    // 添加鉴权
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('swagger-doc', app, document);

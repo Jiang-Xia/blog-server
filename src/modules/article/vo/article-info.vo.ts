@@ -1,5 +1,6 @@
 // src/modules/article/vo/article-info.vo.ts
 // vo文件非必须 为了配合自动生成api文档弄的
+// vo 为了swagger生存api文档时有响应的数据结构
 import { ApiProperty } from '@nestjs/swagger';
 
 class Info {

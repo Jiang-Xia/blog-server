@@ -1,5 +1,6 @@
 // src/modules/article/dto/article-create.dto.ts
 import { IsNotEmpty } from 'class-validator';
+// swagger生成文档时有请求参数
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ArticleCreateDTO {

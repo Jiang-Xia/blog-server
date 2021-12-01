@@ -1,3 +1,11 @@
+/*
+ * @Author: 酱
+ * @LastEditors: 酱
+ * @Date: 2021-11-16 11:53:16
+ * @LastEditTime: 2021-12-01 11:35:38
+ * @Description:
+ * @FilePath: \blog-server\src\filters\http-execption.filter.ts
+ */
 // src/filters/http-execption.filters.ts
 
 import {
@@ -20,7 +28,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const exceptionResponse: any = exception.getResponse();
     let validatorMessage = exceptionResponse;
     if (typeof validatorMessage === 'object') {
-      validatorMessage = exceptionResponse.message[0];
+      validatorMessage = exceptionResponse.message;
     }
     response.status(status).json({
       code: status,

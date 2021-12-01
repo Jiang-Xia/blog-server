@@ -1,5 +1,11 @@
-// src/modules/user/user.service.ts
-
+/*
+ * @Author: 酱
+ * @LastEditors: 酱
+ * @Date: 2021-11-16 16:52:15
+ * @LastEditTime: 2021-12-01 15:47:29
+ * @Description:
+ * @FilePath: \blog-server\src\modules\user\user.service.ts
+ */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { encryptPassword, makeSalt } from 'src/utils/cryptogram.util';
@@ -54,7 +60,7 @@ export class UserService {
       .where('user.mobile = :mobile', { mobile })
       .getOne();
 
-    console.log({ user });
+    // console.log('用户信息:', { user });
 
     if (!user) {
       throw new NotFoundException('用户不存在');
@@ -81,11 +87,16 @@ export class UserService {
   }
 
   async login(loginDTO: LoginDTO): Promise<any> {
+    // 用户信息
     const user = await this.checkLoginForm(loginDTO);
+    // 密码和加盐不返回
+    delete user.password;
+    delete user.salt;
     const token = await this.certificate(user);
     return {
       info: {
         token,
+        user,
       },
     };
   }

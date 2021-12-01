@@ -1,3 +1,11 @@
+/*
+ * @Author: 酱
+ * @LastEditors: 酱
+ * @Date: 2021-11-12 17:31:46
+ * @LastEditTime: 2021-12-01 10:41:43
+ * @Description:
+ * @FilePath: \blog-server\src\main.ts
+ */
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 // 全局Http拦截器
@@ -13,7 +21,8 @@ async function bootstrap() {
   app.useGlobalInterceptors(new TransformInterceptor());
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes(new ValidationPipe());
-
+  // 允许跨域
+  app.enableCors();
   // 配置swagger
   const options = new DocumentBuilder()
     .setTitle('blog-serve')

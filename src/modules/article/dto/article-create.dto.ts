@@ -15,8 +15,16 @@ export class ArticleCreateDTO {
     description: '文章描述/简介',
     example: '给你讲述美丽的大海',
   })
-  @IsNotEmpty({ message: '请输入文章描述' })
+  @IsNotEmpty({ message: '请输入文章标题' })
   readonly description: string;
+
+  @ApiProperty()
+  @IsNotEmpty({ message: '请选择文章分类' })
+  readonly category: string;
+
+  @ApiProperty()
+  @IsNotEmpty({ message: '请选择文章标签' })
+  readonly tags: [];
 
   @ApiProperty({
     description: '文章描述/简介',

@@ -2,7 +2,7 @@
  * @Author: 酱
  * @LastEditors: 酱
  * @Date: 2021-11-16 11:53:16
- * @LastEditTime: 2021-12-01 11:35:38
+ * @LastEditTime: 2021-12-16 17:28:52
  * @Description:
  * @FilePath: \blog-server\src\filters\http-execption.filter.ts
  */
@@ -24,11 +24,12 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const status = exception.getStatus();
     const message = exception.message;
-
     const exceptionResponse: any = exception.getResponse();
     let validatorMessage = exceptionResponse;
     if (typeof validatorMessage === 'object') {
-      validatorMessage = exceptionResponse.message;
+      // 多条message
+      console.log('exceptionResponse:', exceptionResponse);
+      validatorMessage = exceptionResponse.message[0];
     }
     response.status(status).json({
       code: status,

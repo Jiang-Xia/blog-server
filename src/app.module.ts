@@ -4,7 +4,9 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ArticleModule } from './modules/article/article.module';
 import { UserModule } from './modules/user/user.module';
-
+import { CategoryModule } from './modules/category/category.module';
+import { TagModule } from './modules/tag/tag.module';
+import { AuthModule } from './modules/auth/auth.module';
 @Module({
   imports: [
     // 使用 TypeORM 配置数据库
@@ -20,6 +22,9 @@ import { UserModule } from './modules/user/user.module';
     }),
     ArticleModule,
     UserModule,
+    CategoryModule,
+    TagModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

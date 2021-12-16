@@ -2,7 +2,7 @@
  * @Author: 酱
  * @LastEditors: 酱
  * @Date: 2021-11-16 16:52:15
- * @LastEditTime: 2021-12-01 15:47:29
+ * @LastEditTime: 2021-12-16 16:09:48
  * @Description:
  * @FilePath: \blog-server\src\modules\user\user.service.ts
  */
@@ -99,5 +99,13 @@ export class UserService {
         user,
       },
     };
+  }
+
+  /**
+   * 获取指定用户
+   * @param id
+   */
+  async findById(id): Promise<User> {
+    return this.userRepository.findOne(id);
   }
 }

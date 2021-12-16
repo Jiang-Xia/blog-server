@@ -1,6 +1,14 @@
 // src/modules/article/article.controller.ts
 
-import { Controller, Body, Query, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Body,
+  Query,
+  Get,
+  Delete,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { ArticleCreateDTO } from './dto/article-create.dto';
 import { ArticleEditDTO } from './dto/article-edit.dto';
@@ -22,6 +30,7 @@ export class ArticleController {
     return await this.articleService.getMore(listDTO);
   }
 
+  // @UseGuards(AuthGuard('jwt'))
   @Get('info')
   @ApiOkResponse({ description: '文章详情', type: ArticleInfoResponse })
   async getOne(@Query() idDto: IdDTO): Promise<ArticleInfoVO> {
@@ -31,7 +40,7 @@ export class ArticleController {
   // 接口鉴权
   @UseGuards(AuthGuard('jwt'))
   @Post('create')
-  // 文档部分添加鉴权
+  // 文档部分添加鉴权(文档调用是不用鉴权)
   @ApiBearerAuth()
   @ApiOkResponse({ description: '创建文章', type: ArticleInfoResponse })
   async create(
@@ -49,7 +58,7 @@ export class ArticleController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Post('delete')
+  @Delete('delete')
   @ApiBearerAuth()
   @ApiOkResponse({ description: '删除文章', type: ArticleInfoResponse })
   async delete(@Body() idDto: IdDTO): Promise<ArticleInfoVO> {

@@ -33,6 +33,14 @@ export class User {
   @VersionColumn()
   version: number;
 
+  // 用户角色
+  @Column('simple-enum', { enum: ['admin', 'visitor'], default: 'visitor' })
+  role: string;
+
+  /// 用户状态
+  @Column('simple-enum', { enum: ['locked', 'active'], default: 'active' })
+  status: string;
+
   // 昵称
   @Column('text')
   nickname: string;

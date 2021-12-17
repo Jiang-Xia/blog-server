@@ -22,7 +22,7 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   /**
-   * 添加标签
+   * 添加分类
    * @param category
    */
   @ApiResponse({ status: 200, description: '添加分类', type: [Category] })
@@ -34,7 +34,7 @@ export class CategoryController {
   }
 
   /**
-   * 获取所有标签
+   * 获取所有分类
    */
   @Get()
   findAll(@Query() queryParams): Promise<Category[]> {
@@ -42,7 +42,7 @@ export class CategoryController {
   }
 
   /**
-   * 获取指定标签
+   * 获取指定分类
    * @param id
    */
   @Get(':id')
@@ -51,7 +51,7 @@ export class CategoryController {
   }
 
   /**
-   * 更新标签
+   * 更新分类
    * @param id
    * @param category
    */
@@ -63,7 +63,7 @@ export class CategoryController {
   }
 
   /**
-   * 删除标签
+   * 删除分类
    * @param id
    */
   @Delete(':id')

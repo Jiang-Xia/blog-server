@@ -9,6 +9,7 @@ import {
   VersionColumn,
   ManyToMany,
   JoinTable,
+  JoinColumn,
   ManyToOne,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
@@ -44,8 +45,10 @@ export class Article {
   title: string;
 
   // 文章分类
-  @Column('text')
-  category: string;
+  // 多对一，多篇文章属于一类
+  @ManyToOne(() => Category, (category) => category.articles)
+  @JoinColumn({ name: 'articles' })
+  category: Category;
 
   @ApiProperty()
   @ManyToMany(() => Tag, (tag) => tag.articles, { cascade: true })

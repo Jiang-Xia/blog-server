@@ -9,8 +9,8 @@ export class ListDTO {
     example: 1,
     required: false,
   })
-  @IsOptional()
-  @Matches(regPositive, { message: 'page 不可小于 0' })
+  // @IsOptional()
+  // @Matches(regPositive, { message: 'page 不可小于 0' })
   readonly page?: number;
 
   @ApiProperty({
@@ -18,7 +18,9 @@ export class ListDTO {
     example: 10,
     required: false,
   })
-  @IsOptional()
-  @Matches(regPositive, { message: 'pageSize 不可小于 0' })
+  // @IsOptional()
+  // @Matches(regPositive, { message: 'pageSize 不可小于 0' })
   readonly pageSize?: number;
+  readonly category?: string;
+  readonly tags?: string[];
 }

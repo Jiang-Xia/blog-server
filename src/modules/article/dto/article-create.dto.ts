@@ -22,11 +22,11 @@ export class ArticleCreateDTO {
 
   @ApiProperty()
   @IsNotEmpty({ message: '请选择文章分类' })
-  readonly category: string;
+  readonly category: Category;
 
   @ApiProperty()
   @IsNotEmpty({ message: '请选择文章标签' })
-  readonly tags: Array<string>;
+  readonly tags: Array<Tag>;
 
   @ApiProperty({
     description: '文章描述/简介',

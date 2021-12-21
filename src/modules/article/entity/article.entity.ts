@@ -48,12 +48,12 @@ export class Article {
   // 多对一，多篇文章属于一类
   @ManyToOne(() => Category, (category) => category.articles)
   @JoinColumn({ name: 'articles' })
-  category: string;
+  category: Category;
 
   @ApiProperty()
   @ManyToMany(() => Tag, (tag) => tag.articles, { cascade: true })
   @JoinTable()
-  tags: Array<string>;
+  tags: Array<Tag>;
 
   @ApiProperty()
   @Column('simple-enum', { enum: ['draft', 'publish'] })

@@ -17,9 +17,9 @@ import { ListDTO } from './dto/list.dto';
 import { ApiTags, ApiOkResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ArticleInfoVO, ArticleInfoResponse } from './vo/article-info.vo';
 import { ArticleListResponse, ArticleListVO } from './vo/article-list.vo';
-import { AuthGuard } from '@nestjs/passport';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard, Roles } from '../auth/roles.guard';
+import { Article } from './entity/article.entity';
 
 @ApiTags('文章模块')
 @Controller('article')
@@ -28,14 +28,16 @@ export class ArticleController {
   constructor(private articleService: ArticleService) {}
 
   @ApiOkResponse({ description: '文章列表', type: ArticleListResponse })
-  @Get('list')
-  async getMore(@Query() listDTO: ListDTO): Promise<ArticleListVO> {
+  @Post('list')
+  async getMore(@Body() listDTO: ListDTO): Promise<ArticleListVO> {
+    console.log('listDTO', listDTO);
     return await this.articleService.getMore(listDTO);
   }
   @Get('info')
   @ApiOkResponse({ description: '文章详情', type: ArticleInfoResponse })
   async getOne(@Query() idDto: IdDTO): Promise<ArticleInfoVO> {
-    return await this.articleService.getOne(idDto);
+    // console.log('idDto', idDto);
+    return await this.articleService.findById(idDto);
   }
 
   @Post('create')
@@ -45,8 +47,8 @@ export class ArticleController {
   @ApiBearerAuth()
   @ApiOkResponse({ description: '创建文章', type: ArticleInfoResponse })
   async create(
-    @Body() articleCreateDTO: ArticleCreateDTO,
-  ): Promise<ArticleInfoVO> {
+    @Body() articleCreateDTO: ArticleCreateDTO /* 参数 */,
+  ): Promise<Article> /* 返回值 */ {
     // console.log(articleCreateDTO, 'articleCreateDTO');
     return await this.articleService.create(articleCreateDTO);
   }

@@ -2,7 +2,7 @@
  * @Author: 酱
  * @LastEditors: 酱
  * @Date: 2021-11-16 16:52:15
- * @LastEditTime: 2021-12-16 16:09:48
+ * @LastEditTime: 2021-12-21 11:02:58
  * @Description:
  * @FilePath: \blog-server\src\modules\user\user.service.ts
  */
@@ -48,6 +48,7 @@ export class UserService {
     newUser.mobile = mobile;
     newUser.password = hashPassword;
     newUser.salt = salt;
+    mobile;
     return await this.userRepository.save(newUser);
   }
 
@@ -77,10 +78,12 @@ export class UserService {
 
   // 生成 token
   async certificate(user: User) {
+    // 设置在token中的信息
     const payload = {
       id: user.id,
       nickname: user.nickname,
       mobile: user.mobile,
+      role: user.role,
     };
     const token = this.jwtService.sign(payload);
     return token;

@@ -1,6 +1,8 @@
 // src/modules/article/vo/article-list.vo.ts
 
 import { ApiProperty } from '@nestjs/swagger';
+import { Tag } from '../../tag/tag.entity';
+import { Category } from '../../category/category.entity';
 
 class SimpleInfo {
   @ApiProperty({ description: '文章id', example: 1 })
@@ -17,6 +19,12 @@ class SimpleInfo {
 
   @ApiProperty({ description: '文章描述', example: '文章描述' })
   description: string;
+
+  @ApiProperty({ description: '文章分类', example: '文章分类' })
+  category: string;
+
+  @ApiProperty({ description: '文章标签', example: '文章标签' })
+  tags: Array<string>;
 }
 
 class Pagination {

@@ -2,6 +2,8 @@
 import { IsNotEmpty } from 'class-validator';
 // swagger生成文档时有请求参数
 import { ApiProperty } from '@nestjs/swagger';
+import { Tag } from '../../tag/tag.entity';
+import { Category } from '../../category/category.entity';
 
 export class ArticleCreateDTO {
   @ApiProperty({
@@ -24,7 +26,7 @@ export class ArticleCreateDTO {
 
   @ApiProperty()
   @IsNotEmpty({ message: '请选择文章标签' })
-  readonly tags: [];
+  readonly tags: Array<string>;
 
   @ApiProperty({
     description: '文章描述/简介',

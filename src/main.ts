@@ -2,7 +2,7 @@
  * @Author: 酱
  * @LastEditors: 酱
  * @Date: 2021-11-12 17:31:46
- * @LastEditTime: 2021-12-20 22:08:36
+ * @LastEditTime: 2021-12-21 10:25:19
  * @Description:
  * @FilePath: \blog-server\src\main.ts
  */
@@ -33,7 +33,6 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api-doc', app, document);
-
   await app.listen(5000);
 }
 bootstrap();

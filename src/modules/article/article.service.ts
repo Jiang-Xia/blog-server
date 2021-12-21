@@ -32,7 +32,8 @@ export class ArticleService {
         'article.title',
         'article.description',
         'article.createTime',
-        'article.updateTime',
+        'article.category',
+        // 'article.tags',
       ])
       .skip((page - 1) * pageSize)
       .take(pageSize)
@@ -43,7 +44,7 @@ export class ArticleService {
 
     return {
       list,
-      // pagination,
+      pagination,
     };
   }
 
@@ -74,11 +75,14 @@ export class ArticleService {
    * @returns
    */
   async create(articleCreateDTO: ArticleCreateDTO) {
-    console.log('创建文章', ArticleCreateDTO);
     const article = new Article();
-    article.title = articleCreateDTO.title;
-    article.description = articleCreateDTO.description;
-    article.content = articleCreateDTO.content;
+    const { title, description, content, category, tags } = articleCreateDTO;
+    article.title = title;
+    article.description = description;
+    article.content = content;
+    article.category = category;
+    article.tags = tags;
+    console.log('创建文章', article);
     const result = await this.articleRepository.save(article);
 
     return {

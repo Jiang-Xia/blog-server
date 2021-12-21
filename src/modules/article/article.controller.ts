@@ -18,47 +18,51 @@ import { ApiTags, ApiOkResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ArticleInfoVO, ArticleInfoResponse } from './vo/article-info.vo';
 import { ArticleListResponse, ArticleListVO } from './vo/article-list.vo';
 import { AuthGuard } from '@nestjs/passport';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard, Roles } from '../auth/roles.guard';
 
 @ApiTags('文章模块')
 @Controller('article')
+@UseGuards(RolesGuard)
 export class ArticleController {
   constructor(private articleService: ArticleService) {}
 
-  @Get('list')
   @ApiOkResponse({ description: '文章列表', type: ArticleListResponse })
+  @Get('list')
   async getMore(@Query() listDTO: ListDTO): Promise<ArticleListVO> {
     return await this.articleService.getMore(listDTO);
   }
-
-  // @UseGuards(AuthGuard('jwt'))
   @Get('info')
   @ApiOkResponse({ description: '文章详情', type: ArticleInfoResponse })
   async getOne(@Query() idDto: IdDTO): Promise<ArticleInfoVO> {
     return await this.articleService.getOne(idDto);
   }
 
-  // 接口鉴权
-  @UseGuards(AuthGuard('jwt'))
   @Post('create')
   // 文档部分添加鉴权(文档调用是不用鉴权)
+  @Roles('admin')
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ description: '创建文章', type: ArticleInfoResponse })
   async create(
     @Body() articleCreateDTO: ArticleCreateDTO,
   ): Promise<ArticleInfoVO> {
+    // console.log(articleCreateDTO, 'articleCreateDTO');
     return await this.articleService.create(articleCreateDTO);
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Post('edit')
+  @Roles('admin')
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ description: '编辑文章', type: ArticleInfoResponse })
   async update(@Body() articleEditDTO: ArticleEditDTO): Promise<ArticleInfoVO> {
     return await this.articleService.update(articleEditDTO);
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Delete('delete')
+  @Roles('admin')
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ description: '删除文章', type: ArticleInfoResponse })
   async delete(@Body() idDto: IdDTO): Promise<ArticleInfoVO> {

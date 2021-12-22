@@ -26,6 +26,10 @@ export class Category {
   value: string;
 
   @ApiProperty()
+  @Column()
+  color: string;
+
+  @ApiProperty()
   // 一个分类多个文章
   @OneToMany(() => Article, (article) => article.category)
   articles: Array<Article>;

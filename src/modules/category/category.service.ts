@@ -2,7 +2,7 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from './category.entity';
-
+import { getRandomClor } from '../../utils/index';
 @Injectable()
 export class CategoryService {
   constructor(
@@ -25,6 +25,7 @@ export class CategoryService {
     }
 
     const newCategory = await this.categoryRepository.create(Category);
+    newCategory.color = getRandomClor();
     await this.categoryRepository.save(newCategory);
     return newCategory;
   }

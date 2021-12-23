@@ -22,5 +22,7 @@ export class ListDTO {
   // @Matches(regPositive, { message: 'pageSize 不可小于 0' })
   readonly pageSize?: number;
   readonly category?: string;
+  readonly title?: string;
+  readonly content?: string;
   readonly tags?: string[];
 }

@@ -30,7 +30,7 @@ export class ArticleController {
   @ApiOkResponse({ description: '文章列表', type: ArticleListResponse })
   @Post('list')
   async getMore(@Body() listDTO: ListDTO): Promise<ArticleListVO> {
-    console.log('listDTO', listDTO);
+    // console.log('listDTO', listDTO);
     return await this.articleService.getMore(listDTO);
   }
   @Get('info')

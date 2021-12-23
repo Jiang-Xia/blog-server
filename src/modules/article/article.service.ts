@@ -32,38 +32,41 @@ export class ArticleService {
    * @returns
    */
   async getMore(listDTO: ListDTO) {
-    const { page = 1, pageSize = 10, category, tags } = listDTO;
-    console.log(category, tags);
-    // let getList = this.articleRepository
-    //   .createQueryBuilder('article')
-    //   .leftJoinAndSelect('article.category', 'category')
-    //   .leftJoinAndSelect('article.tags', 'tags')
-    //   // 对应的分类 ok
-    //   .where('category.id=:category', { category })
-    //   // 对应的标签 (单条标签可以了)
-    //   .where('tags.id = :id', { id: tags.join() })
-    //   .skip((page - 1) * pageSize)
-    //   .take(pageSize)
-    //   .getManyAndCount();
-    let query = this.articleRepository.createQueryBuilder('article');
-    query
+    const { page = 1, pageSize = 10, title, content, category, tags } = listDTO;
+    const sql = this.articleRepository.createQueryBuilder('article');
+    sql
       .leftJoinAndSelect('article.category', 'category')
       .leftJoinAndSelect('article.tags', 'tags');
+
+    // 标题
+    if (title) {
+      sql.where('article.title like :title', { title: `${title}` });
+    }
+    // 内容
+    if (content) {
+      sql.where('article.title like :title', {
+        content: `${content}`,
+      });
+    }
     // 对应的分类 ok
     if (category) {
-      query = query.where('category.id=:category', { category });
+      // 分类与其他条件为and
+      sql.andWhere('category.id=:category', { category });
+      // SELECT ... FROM users user WHERE user.firstName = 'Timber' AND user.lastName = 'Saw'
     }
     // 对应的标签 (单条标签可以了)
     if (tags && tags.length) {
-      query = query.where('tags.id = :id', { id: tags.join() });
+      // 标签之间为in操作类似 or
+      sql.andWhere('tags.id IN (:...tags)', { tags });
+      // WHERE user.name IN ('Timber', 'Cristal', 'Lina')
     }
     // 获取查询结果
-    const getList = query
+    const getList = sql
       .skip((page - 1) * pageSize)
       .take(pageSize)
       .getManyAndCount();
-
     const [list, total] = await getList;
+    // console.log('文章数：', list.length);
     const pagination = getPagination(total, pageSize, page);
     return {
       list,

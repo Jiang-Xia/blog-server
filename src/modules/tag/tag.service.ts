@@ -1,5 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { getRandomClor } from 'src/utils';
 import { Repository } from 'typeorm';
 import { Tag } from './tag.entity';
 
@@ -23,6 +24,7 @@ export class TagService {
     }
 
     const newTag = await this.tagRepository.create(tag);
+    newTag.color = getRandomClor();
     await this.tagRepository.save(newTag);
     return newTag;
   }

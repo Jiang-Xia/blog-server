@@ -34,24 +34,24 @@ export class CategoryService {
    * 获取所有分类
    */
   async findAll(queryParams): Promise<Category[]> {
-    const { articleStatus } = queryParams;
+    // const { articleStatus } = queryParams;
     const qb = this.categoryRepository
       .createQueryBuilder('category')
       .orderBy('category.createAt', 'ASC');
-
-    if (articleStatus) {
-      qb.leftJoinAndSelect(
-        'category.articles',
-        'articles',
-        'articles.status=:status',
-        {
-          status: articleStatus,
-        },
-      );
-    } else {
-      qb.leftJoinAndSelect('category.articles', 'articles');
-    }
-
+    //增加是否发布字段
+    // if (articleStatus) {
+    //   qb.leftJoinAndSelect(
+    //     'category.articles',
+    //     'articles',
+    //     'articles.status=:status',
+    //     {
+    //       status: articleStatus,
+    //     },
+    //   );
+    // } else {
+    //   qb.leftJoinAndSelect('category.articles', 'articles');
+    // }
+    qb.leftJoinAndSelect('category.articles', 'articles');
     const data = await qb.getMany();
 
     data.forEach((d) => {

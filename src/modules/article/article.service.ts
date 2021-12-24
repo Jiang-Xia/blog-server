@@ -11,7 +11,7 @@ import { ArticleEditDTO } from './dto/article-edit.dto';
 import { IdDTO } from './dto/id.dto';
 import { ListDTO } from './dto/list.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { Article } from './entity/article.entity';
 import { getPagination } from 'src/utils';
 import { TagService } from '../tag/tag.service';
@@ -32,22 +32,20 @@ export class ArticleService {
    * @returns
    */
   async getMore(listDTO: ListDTO) {
-    const { page = 1, pageSize = 10, title, content, category, tags } = listDTO;
+    const {
+      page = 1,
+      pageSize = 10,
+      title,
+      content,
+      category,
+      description,
+      tags,
+    } = listDTO;
     const sql = this.articleRepository.createQueryBuilder('article');
     sql
       .leftJoinAndSelect('article.category', 'category')
       .leftJoinAndSelect('article.tags', 'tags');
 
-    // 标题
-    if (title) {
-      sql.where('article.title like :title', { title: `${title}` });
-    }
-    // 内容
-    if (content) {
-      sql.where('article.title like :title', {
-        content: `${content}`,
-      });
-    }
     // 对应的分类 ok
     if (category) {
       // 分类与其他条件为and
@@ -60,6 +58,29 @@ export class ArticleService {
       sql.andWhere('tags.id IN (:...tags)', { tags });
       // WHERE user.name IN ('Timber', 'Cristal', 'Lina')
     }
+    // 关键字查询
+    sql.andWhere(
+      new Brackets((qb) => {
+        // mysql 中 %%代表模糊查询
+        // 标题
+        if (title) {
+          qb.orWhere('article.title like :title', { title: `%${title}%` });
+        }
+        // 描述
+        if (description) {
+          qb.orWhere('article.description like :description', {
+            description: `%${description}%`,
+          });
+        }
+        // 内容
+        if (content) {
+          qb.orWhere('article.content like :content', {
+            content: `%${description}%`,
+          });
+        }
+      }),
+    );
+
     // 获取查询结果
     const getList = sql
       .skip((page - 1) * pageSize)

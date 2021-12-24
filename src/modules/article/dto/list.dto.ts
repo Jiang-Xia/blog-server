@@ -24,5 +24,6 @@ export class ListDTO {
   readonly category?: string;
   readonly title?: string;
   readonly content?: string;
+  description?: string;
   readonly tags?: string[];
 }

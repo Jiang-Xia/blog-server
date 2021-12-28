@@ -18,15 +18,16 @@ import { Category } from '../../category/category.entity';
 @Entity()
 // 类名为数据库表名
 export class Article {
+  [x: string]: any;
   // 主键id
   @PrimaryGeneratedColumn()
   id: number;
 
-  // 创建时间
-  @CreateDateColumn()
+  // 数据库 创建时间
+  @CreateDateColumn({})
   createTime: Date;
 
-  // 更新时间
+  // 数据库 更新时间
   @UpdateDateColumn()
   updateTime: Date;
 

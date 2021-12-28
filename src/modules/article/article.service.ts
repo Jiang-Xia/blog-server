@@ -16,6 +16,7 @@ import { Article } from './entity/article.entity';
 import { getPagination } from 'src/utils';
 import { TagService } from '../tag/tag.service';
 import { CategoryService } from '../category/category.service';
+import * as dayjs from 'dayjs';
 
 @Injectable()
 export class ArticleService {
@@ -86,11 +87,16 @@ export class ArticleService {
       .skip((page - 1) * pageSize)
       .take(pageSize)
       .getManyAndCount();
+    // let [list, total] = await getList;
     const [list, total] = await getList;
+    const arr = list.map((v: any) => {
+      v.uTime = dayjs(v.updateTime).format('YYYY-MM-DD hh:mm:ss');
+      return v;
+    });
     // console.log('文章数：', list.length);
     const pagination = getPagination(total, pageSize, page);
     return {
-      list,
+      list: arr,
       pagination,
     };
   }
@@ -111,6 +117,7 @@ export class ArticleService {
       .setParameter('id', id)
       .setParameter('title', id);
     const data = await query.getOne();
+    data.uTime = dayjs(data.uTime).format('YYYY-MM-DD hh:mm:ss');
     console.log(data);
     if (!query) {
       throw new NotFoundException('找不到文章');
@@ -132,7 +139,7 @@ export class ArticleService {
     if (exist) {
       throw new HttpException('文章标题已存在', HttpStatus.BAD_REQUEST);
     }
-    console.log('创建文章', article);
+    // console.log('创建文章', article);
     // 查询标签
     tags = await this.tagService.findByIds(('' + tags).split(','));
     // 查询分类

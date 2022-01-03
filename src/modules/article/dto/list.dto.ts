@@ -25,5 +25,7 @@ export class ListDTO {
   readonly title?: string;
   readonly content?: string;
   description?: string;
+  // 时间排序
+  sort?: string;
   readonly tags?: string[];
 }

@@ -2,7 +2,7 @@
  * @Author: 酱
  * @LastEditors: 酱
  * @Date: 2021-11-16 11:53:16
- * @LastEditTime: 2021-12-17 09:54:55
+ * @LastEditTime: 2022-01-03 22:31:38
  * @Description:
  * @FilePath: \blog-server\src\filters\http-execption.filter.ts
  */
@@ -28,7 +28,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     let validatorMessage = exceptionResponse;
     if (typeof validatorMessage === 'object') {
       // 多条message
-      console.log('exceptionResponse:', exceptionResponse);
+      // console.log('exceptionResponse:', exceptionResponse);
       validatorMessage = exceptionResponse.message;
       if (validatorMessage instanceof Array) {
         validatorMessage = validatorMessage[0];

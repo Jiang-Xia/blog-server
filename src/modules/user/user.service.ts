@@ -2,7 +2,7 @@
  * @Author: 酱
  * @LastEditors: 酱
  * @Date: 2021-11-16 16:52:15
- * @LastEditTime: 2021-12-21 11:02:58
+ * @LastEditTime: 2022-01-03 22:31:35
  * @Description:
  * @FilePath: \blog-server\src\modules\user\user.service.ts
  */
@@ -68,7 +68,7 @@ export class UserService {
     }
     const { password: dbPassword, salt } = user;
     const currentHashPassword = encryptPassword(password, salt);
-    console.log({ currentHashPassword, dbPassword });
+    // console.log({ currentHashPassword, dbPassword });
     if (currentHashPassword !== dbPassword) {
       throw new NotFoundException('密码错误');
     }

@@ -41,6 +41,7 @@ export class ArticleService {
       category,
       description,
       tags,
+      sort,
     } = listDTO;
     const sql = this.articleRepository.createQueryBuilder('article');
     sql
@@ -78,6 +79,14 @@ export class ArticleService {
           qb.orWhere('article.content like :content', {
             content: `%${description}%`,
           });
+        }
+        // 排序
+        if (sort && sort.toUpperCase() === 'ASC') {
+          // 按最新排
+          sql.addOrderBy('article.updateTime', 'ASC');
+        } else {
+          // 按最旧排
+          sql.addOrderBy('article.updateTime', 'DESC');
         }
       }),
     );
@@ -118,7 +127,7 @@ export class ArticleService {
       .setParameter('title', id);
     const data = await query.getOne();
     data.uTime = dayjs(data.uTime).format('YYYY-MM-DD hh:mm:ss');
-    console.log(data);
+    // console.log(data);
     if (!query) {
       throw new NotFoundException('找不到文章');
     }

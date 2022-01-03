@@ -67,4 +67,8 @@ export class Article {
   // 文章内容
   @Column('text')
   content: string;
+
+  // 文章html
+  @Column('text')
+  contentHtml?: string;
 }

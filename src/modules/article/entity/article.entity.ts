@@ -57,12 +57,15 @@ export class Article {
   tags: Array<Tag>;
 
   @ApiProperty()
+  @Column('text')
   cover: string; // 封面图
 
   @ApiProperty()
+  @Column('int')
   likes: number; // 喜欢/点赞数
 
   @ApiProperty()
+  @Column('int')
   views: number; // 阅读量
 
   @ApiProperty()

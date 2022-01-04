@@ -204,6 +204,7 @@ export class ArticleService {
    */
   async updateViewsById(id): Promise<Article> {
     const oldArticle = await this.articleRepository.findOne(id);
+    // merge - 将多个实体合并为一个实体。
     const updatedArticle = await this.articleRepository.merge(oldArticle, {
       views: oldArticle.views + 1,
     });

@@ -8,6 +8,9 @@ import {
   Delete,
   Post,
   UseGuards,
+  HttpCode,
+  HttpStatus,
+  Param,
 } from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { ArticleCreateDTO } from './dto/article-create.dto';
@@ -69,5 +72,23 @@ export class ArticleController {
   @ApiOkResponse({ description: '删除文章', type: ArticleInfoResponse })
   async delete(@Body() idDto: IdDTO): Promise<ArticleInfoVO> {
     return await this.articleService.delete(idDto);
+  }
+
+  /**
+   * 文章访问量 +1
+   */
+  @Post('views')
+  @HttpCode(HttpStatus.OK)
+  updateViewsById(@Query('id') id) {
+    return this.articleService.updateViewsById(id);
+  }
+
+  /**
+   * 文章访喜欢量 +1
+   */
+  @Post('likes')
+  @HttpCode(HttpStatus.OK)
+  updateLikesById(@Query('id') id, @Body('type') type) {
+    return this.articleService.updateLikesById(id, type);
   }
 }

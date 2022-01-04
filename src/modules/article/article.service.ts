@@ -28,7 +28,7 @@ export class ArticleService {
   ) {}
 
   /**
-   *
+   * 获取文章列表
    * @param listDTO
    * @returns
    */
@@ -136,7 +136,7 @@ export class ArticleService {
     };
   }
   /**
-   *
+   * 创建文章
    * @param articleCreateDTO
    * @returns
    */
@@ -164,7 +164,7 @@ export class ArticleService {
   }
 
   /**
-   *
+   * 编辑文章
    * @param articleEditDTO
    * @returns
    */
@@ -182,7 +182,7 @@ export class ArticleService {
   }
 
   /**
-   *
+   * 删除文章
    * @param idDTO
    * @returns
    */
@@ -195,5 +195,31 @@ export class ArticleService {
     return {
       info: result,
     };
+  }
+
+  /**
+   * 更新指定文章阅读量 + 1
+   * @param id
+   * @param article
+   */
+  async updateViewsById(id): Promise<Article> {
+    const oldArticle = await this.articleRepository.findOne(id);
+    const updatedArticle = await this.articleRepository.merge(oldArticle, {
+      views: oldArticle.views + 1,
+    });
+    return this.articleRepository.save(updatedArticle);
+  }
+
+  /**
+   * 更新喜欢数
+   * @param id
+   * @returns
+   */
+  async updateLikesById(id, type): Promise<Article> {
+    const oldArticle = await this.articleRepository.findOne(id);
+    const updatedArticle = await this.articleRepository.merge(oldArticle, {
+      likes: type === 'like' ? oldArticle.likes + 1 : oldArticle.likes - 1,
+    });
+    return this.articleRepository.save(updatedArticle);
   }
 }

@@ -57,6 +57,15 @@ export class Article {
   tags: Array<Tag>;
 
   @ApiProperty()
+  cover: string; // 封面图
+
+  @ApiProperty()
+  likes: number; // 喜欢/点赞数
+
+  @ApiProperty()
+  views: number; // 阅读量
+
+  @ApiProperty()
   @Column('simple-enum', { enum: ['draft', 'publish'] })
   status: string; // 文章状态
 

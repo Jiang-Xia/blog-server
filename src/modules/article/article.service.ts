@@ -83,10 +83,10 @@ export class ArticleService {
         // 排序
         if (sort && sort.toUpperCase() === 'ASC') {
           // 按最新排
-          sql.addOrderBy('article.updateTime', 'ASC');
+          sql.addOrderBy('article.createTime', 'ASC');
         } else {
           // 按最旧排
-          sql.addOrderBy('article.updateTime', 'DESC');
+          sql.addOrderBy('article.createTime', 'DESC');
         }
       }),
     );

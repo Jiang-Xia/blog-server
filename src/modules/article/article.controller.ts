@@ -79,7 +79,7 @@ export class ArticleController {
    */
   @Post('views')
   @HttpCode(HttpStatus.OK)
-  updateViewsById(@Query('id') id) {
+  updateViewsById(@Body('id') id) {
     return this.articleService.updateViewsById(id);
   }
 
@@ -88,7 +88,7 @@ export class ArticleController {
    */
   @Post('likes')
   @HttpCode(HttpStatus.OK)
-  updateLikesById(@Query('id') id, @Body('type') type) {
+  updateLikesById(@Body('id') id, @Body('type') type) {
     return this.articleService.updateLikesById(id, type);
   }
 }

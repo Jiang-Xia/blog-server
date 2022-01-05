@@ -7,6 +7,9 @@ import { UserModule } from './modules/user/user.module';
 import { CategoryModule } from './modules/category/category.module';
 import { TagModule } from './modules/tag/tag.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { CommentModule } from './modules/comment/comment.module';
+import { ReplyModule } from './modules/reply/reply.module';
+import { LikeModule } from './modules/like/like.module';
 @Module({
   imports: [
     // 使用 TypeORM 配置数据库
@@ -25,6 +28,9 @@ import { AuthModule } from './modules/auth/auth.module';
     CategoryModule,
     TagModule,
     AuthModule,
+    CommentModule,
+    ReplyModule,
+    LikeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

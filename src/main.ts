@@ -2,7 +2,7 @@
  * @Author: 酱
  * @LastEditors: 酱
  * @Date: 2021-11-12 17:31:46
- * @LastEditTime: 2021-12-21 10:25:19
+ * @LastEditTime: 2022-01-05 23:14:07
  * @Description:
  * @FilePath: \blog-server\src\main.ts
  */
@@ -32,7 +32,7 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup('api-doc', app, document);
+  SwaggerModule.setup('api', app, document);
   await app.listen(5000);
 }
 bootstrap();

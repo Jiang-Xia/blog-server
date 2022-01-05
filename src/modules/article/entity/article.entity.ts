@@ -56,21 +56,21 @@ export class Article {
   @JoinTable()
   tags: Array<Tag>;
 
-  @ApiProperty()
+  @ApiProperty({ description: '封面图' })
   @Column('text')
   cover: string; // 封面图
 
-  @ApiProperty()
+  @ApiProperty({ description: '喜欢/点赞数' })
   @Column('int')
-  likes: number; // 喜欢/点赞数
+  likes: number;
 
-  @ApiProperty()
+  @ApiProperty({ description: '阅读量' })
   @Column('int')
-  views: number; // 阅读量
+  views: number;
 
-  @ApiProperty()
+  @ApiProperty({ description: '文章状态' })
   @Column('simple-enum', { enum: ['draft', 'publish'] })
-  status: string; // 文章状态
+  status: string;
 
   // 文章描述
   @Column('text')

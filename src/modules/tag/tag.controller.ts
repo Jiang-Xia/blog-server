@@ -15,7 +15,7 @@ import { RolesGuard, Roles } from '../auth/roles.guard';
 import { TagService } from './tag.service';
 import { Tag } from './tag.entity';
 
-@ApiTags('Tag')
+@ApiTags('标签模块')
 @Controller('tag')
 @UseGuards(RolesGuard)
 export class TagController {

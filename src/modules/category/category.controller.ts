@@ -15,7 +15,7 @@ import { RolesGuard, Roles } from '../auth/roles.guard';
 import { CategoryService } from './category.service';
 import { Category } from './category.entity';
 
-@ApiTags('Category')
+@ApiTags('分类模块')
 @Controller('category')
 @UseGuards(RolesGuard)
 export class CategoryController {

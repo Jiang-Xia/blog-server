@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>html模板</title>
+  </head>
+  <body>
+    <h1 id="01html标签">01html标签</h1>
+<pre><code>html标签 是组成网页的骨架 
+    区域划分作用：
+                h1 ~ h6 标题标签 
+                    h1权重最高 (页面中 最重要的位置logo 新闻标题)页面中只能出现一次 
+                    标题标签 就用在 有标题效果的区域 让网页更有结构
+                div 盒子标签 布局    最最基础的划分区域的标签 包裹内容
+                p 段落标签 换行的效果 (包裹大篇新闻内容 )
+                列表标签 使用在 布局内容雷同(相似的地方 菜单区域)
+                ul  定义无序列表
+                    li 列表项 (ul父子级关系 不允许 放入其他的标签) li里可以放任意标签
+                    标签内部属性 style=&quot;&quot;  属性名=&quot;属性值&quot;  英文状态下的单双引号都可以
+                ol  定义有序列表
+                    li 列表项
+                    type=&quot;&quot;  默认阿拉伯数字  a A i I
+                dl  定义术语列表
+                    dt 描述术语标题
+                    dd 描述术语内容                
+                &lt;div&gt;&lt;/div&gt; 双标签 99% 开始标签 + 结束标签
+                &lt;meta/&gt; 单标签  / 可加可不加
+    css属性的写法 
+            list-style-type:;  属性名:属性值; 写在能够存放css的地方
+                none 不需要列表样式 (取消 记忆)
+                disc 小黑心远点
+                square 方块
+                circle 空心圆
+            也可以直接写成:
+                list-style:; 可以继承 (除了字体 文本之外的其他的属性 都不能继承
+    内容展示作用
+                span  赋予样式 文字标签 最弱的内容标签 可以与文字横排显示 也可以存放小图标  小按钮
+                    color:;            
+                i   倾斜标签 存放阿里图标  小按钮 存放小图标 
+                b    加粗标签 (不使用了)
+                em  倾斜标签 + 强调效果
+                strong 加粗标签 + 强调效果 用在需要着重强调的区域  em强调效果没有strong大 
+                br 换行标签 单标签 不要使用 不利于维护
+                hr 分割线标签 不要使用    
+    img 图片标签 单标签 
+                四要素
+                src =&gt; 路径
+                    绝对路径 打开文件后缀名
+                        网络绝对    https://img.alicdn.com/tfs/TB1oquGGv9TBuNjy0FcXXbeiFXa-                                                468-1236.png
+                        本地绝对 从盘符出发
+                            C:/Users/HiWin10/Desktop/01/5.jpg
+                    相对路径
+                        ./img/5.jpg  当前目录下 img 文件夹内的5.jpg 
+                        先找 找到了之后 一层一层去敲开门 直到找到图片为止                
+                        ../img/123/5.jpg  html文档退到上一级文件夹目录 图片最外层文件夹继续敲门    
+                alt =&gt; 描述 seo 
+                width =&gt; 宽度  标签属性  px值可以省略
+                height =&gt; 高度   标签属性  不用于修改图片的布局大小(通过css控制布局大小) 写图片的                    实际大小                    
+</code></pre>
+<h5 id="重点：相对路径弄清楚；1、是当前目录2、是父级目录3、是根目录">重点：相对路径弄清楚；1、./是当前目录2、../是父级目录3、/是根目录</h5>
+<h1 id="02-css">02 CSS</h1>
+<pre><code>    超链接标签
+                跳转功能
+                href=&quot;&quot; 要跳转的地址
+                target=&quot;&quot; 何处打开 _self 当前窗口打开  _blank在空白窗口打开
+                    点击图片跳转
+                    &lt;a href=&quot;https://www.jd.com/&quot; target=&quot;_blank&quot;&gt;
+                        &lt;img src=&quot;../image/01.png&quot; alt=&quot;&quot;&gt;
+                    &lt;/a&gt;
+                锚点  先给目的地标记用id标记   a的href里 #id名 
+                    png  支持透明图片 色彩多 大 (精灵图 小图片)
+                    jpg  不支持透明图片  小 失真
+                    gif  支持动态图片 大
+</code></pre>
+<pre><code>    html 网页的骨架 组成
+            css 层叠样式表  赋予样式 血肉 穿好衣服 化好妆 
+            js  与用户的交互 数据的交互
+                标签 自带默认css                
+                css存放位置
+                    1,标签内部(行内样式) &lt;div style=&quot;css属性&quot;&gt;第一个div&lt;/div&gt;
+                            &lt;divstyle=&quot;color:red; font-size:14px&quot;&gt;11&lt;/div&gt;
+                        优缺点: 精准度高 耦合度高(和html过分亲密) 不利于维护,不可复用 造成html文档                        过大
+                        js在操控样式的时候 操控行内样式
+                    2,style标签(内部样式) css的区域
+                        选择器{属性名:属性值;}
+                            选择器=&gt;精准控制到元素 
+                            {}=&gt;需要设置的属性 (声明块)
+                        p{color:red;}  一条声明color:red;
+                        优缺点: 精准度高 耦合度中等 不利于维护, 造成html文档过大
+                    3.外部样式 
+                        @charset &quot;utf-8&quot;; 必带 ;号
+                        &lt;link rel=&quot;stylesheet&quot; href=&quot;css/index.css&quot;&gt;
+                        &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;#&quot;&gt;
+
+                    css 属性名:属性值; 
+                    html注释&lt;!--可视化区域--
+                    css注释 /* 你好 */    
+                    行内样式 &gt; 内部样式 = 外部样式 
+    选择器类型
+            标签选择器 直接通过标签名 来控制标签
+            id作用(1,划分页面的主体结构 大盒子分布局用id属性 2.重要内容用id  3.用于给js提供控制)
+                id选择器 #id名{} 具有权重 具有唯一性 复用性低
+                    
+                    取名字环节:(企业命名规范) 具体参照群内企业命名规范文档
+                        1.见名知意 (不会就翻译一波)
+                        2.英文字母开头(小写)
+                        3.后面能跟数字 
+                        4.连接 - _  驼峰命名information-bar =&gt; informationBar
+                        5.不要命名带有advertising ad adv adver 防止该部分当成垃圾广告过滤掉
+                class选择器  .class名{} =&gt;类名 代码复用性高 灵活 
+                *选择器 选中全部标签 不要使用 (样式初始化的时候)
+</code></pre>
+<h5 id="重点：1、外链式css，js的写法-2、选择器的命名。">重点：1、外链式css，js的写法 2、选择器的命名。</h5>
+<h1 id="03-组合选择-盒模型">03 组合选择 盒模型</h1>
+<pre><code>    盒子模型
+    
+            W3C标准下padding、border所占的空间不在width、height范围内，
+            而IE盒模型width包括content尺寸＋padding＋border的总和
+            
+                content区域
+                    width: 100px;
+                    height: 100px;
+                    内容是在content区域的左上角开始排列的
+                    
+                border边框线 复合属性
+                    border-style 边框线样式 (必写)
+                        solid 实线 dashed虚线  dotted点状线 double双线
+                    border-color 边框线的颜色 (要写)
+                        red blue关键字
+                        十六进制颜色值 三对 红绿蓝
+                            # 0~9  a~f
+                            #0000ff
+                            00=&gt;红色 00=&gt;绿色 ff=&gt;蓝色
+                            纯 000000 ff ff ff 0~f逐渐变白(灰的过程) cccccc
+                            简写:=&gt; #fff #000
+                            
+                    border-width 边框线粗细
+                        px值 关键词=&gt;thin 细的1px  thick 粗的5px  medium默认3px
+                    border-top上  left左 right右  bottom下
+
+                    取消边框线 border:0; none也可以
+
+                快递  content=&gt;电视机 border=&gt;快递盒 padding=&gt;填充物 margin=&gt;外部泡沫板
+                border:4px solid #ccc;
+                border-top:0; 
+                border-style:solid;
+                border-color:red;
+                border-width:3px;
+                border-top-color:blue; 
+                border-top-color:blue;
+                border-left-color:red;
+                border-right-color:purple;
+                border-bottom-color:grey;
+
+                padding 内边距 边框线到内容区域的距离 撑大盒子实际大小 撑大多少 减去对应撑大的宽高
+                    px 
+                    padding-top     left    bottom        right
+                    一个值  =&gt;四个方向
+                    两个值  上下  左右
+                    三个值  上 左右 下
+                    四个值  上 右 下 左
+
+                margin 外边距  边框线以外 添加的泡沫板 
+                    auto 让块级元素 左右居中 布局元素
+                    
+css 存放位置
+            样式
+                选择器+声明 {}
+            基础选择器
+                tagname标签
+                class
+                id
+                * 通配符选择器
+            组合选择器  =&gt;目的 为了更加精准的控制元素
+                依赖于元素嵌套关系
+                    通过后代关系:
+                    .wrap p 空格 后代元素选择器  p必须是.wrap的后代
+                    .wrap &gt; p 选择 子元素选择器  选择wrap的子元素 p
+                    
+                    通过兄弟关系:
+                    p + div      +  邻居关系(毗邻元素选择器)  p后面的一个兄弟元素 div
+                    p ~ div      ~ 下面的所有的符合条件的兄弟元素            
+                    div.wrap     交集选择器 类名为wrap的div标签 
+</code></pre>
+<h5 id="重点：1、记得用padding，撑大多少-减去对应撑大的宽高；2、margin用法。">重点：1、记得用padding，撑大多少 减去对应撑大的宽高；2、margin用法。</h5>
+<h1 id="04-样式初始化-元素类型">04 样式初始化 元素类型</h1>
+<pre><code>    样式初始化 
+                默认样式=&gt; 保持最基本的可读性     html5         多元素选择器 怪异盒模型     元素类型
+    怪异盒模型    box-sizing:border-box;
+                盒子的实际大小    width: 200px;height: 200px;
+            标准盒模型 
+                box-sizing:content-box;
+            盒子的实际大小 content + padding + border    width: 200px;    height: 200px;    
+    元素类型    
+            块级元素   行内(内联)元素
+                display: block块 =&gt;显示类型的   
+                块级元素特性:1.独占一行  2.支持宽高
+                        不设置宽高      宽度 是父级content宽度        高度 由内容撑开 
+                        固定死宽高    什么都撑不开了 固定死了
+                    3.margin padding 支持 margin:auto;
+                    4.嵌套(包裹)其他任意的标签
+                    5.p标签 不能嵌套块级标签 包括p自身
+                        h1~h6 里面嵌套 块级标签        div ul li ol dl dt dd h1~h6 p .....  
+            行内元素     内联元素
+            1.友好 和其他行内元素 横排显示的
+            2.不支持宽高  全部由内容撑开
+            3.  margin 支持左右 不支持上下 不支持auto
+                padding 支持左右  不支持上下(上下显示效果没问题 但是不影响其他的元素)
+            4. 行内元素之间 会解析空格(跟文字大小相关)
+                父级去设置 font-size:0; 
+                span设置回来字体大小
+            5. 基线对齐问题 
+            6. 行内元素 不允许嵌套任意块级元素 
+                a可以包裹任意块级元素 最好外面包裹一层div布局 
+                span a i b strong em.... img input
+    元素类型的转换
+            (块级/行内)变成行内块 
+            行内变成块级
+            display:inline;
+            行内块特性 中和
+                display:inline-block;
+                1.横排显示 inline/inline-block (行内)
+                2.能够支持宽高 (块级)
+                    不设置宽高
+                        由内容撑开 (行内)
+                    固定死宽高之后 
+                        什么都不能撑开了
+                3 margin padding    只是不支持margin auto    
+                4. 会解析空格 会有基线对齐的问题
+                行内不管变成啥 都不能嵌套块级元素 除了a
+            display:none; 让元素消失 包括所有的内容
+            img input 特殊的行内元素  可以认为是行内块元素
+</code></pre>
+<h5 id="重点：1、块级元素：div-ul-li-ol-dl-dt-dd-h1h6-p-和-行内元素：span-a-i-b-strong-em-img-input；">重点：1、块级元素：div ul li ol dl dt dd h1~h6 p 和 行内元素：span a i b strong em.... img input；</h5>
+<h5 id="2、行内变块级元素displayblock">2、行内变块级元素display:block;</h5>
+<h5 id="3、行内块：inline-block：横排显示--能够支持宽高-块级---不设置宽高由内容撑开-行内。">3、行内块：inline-block：横排显示  能够支持宽高 (块级)   不设置宽高由内容撑开 (行内)。</h5>
+<h5 id="4、a可以包裹任意块级元素-最好外面包裹一层div布局">4、a可以包裹任意块级元素 最好外面包裹一层div布局</h5>
+<h1 id="05-外边距合并-背景作业">05 外边距合并 背景作业</h1>
+<pre><code>外边距合并问题  合并取最大的一个值(显示距离为最大值)
+            条件: 块级 相遇  父级和子级 垂直方向相遇 
+                解决方法：1.父级padding（常用） 
+                        2.父级border  
+                兄弟和兄弟之间    垂直方向相遇 
+                1,浮动 定位特性 
+                2,给父级 overflow:hidden; 溢出的处理  hidden隐藏  bfc
+                3.给父级 inline-block 
+背景 色 元素的 底色 
+                transparent 透明色        十六进制 # 0~9 a~f
+                rgb()red green blue     0 ~ 255 0 ~ 255 0 ~ 255 
+                rgba() alpha 透明度 0~1  0完全透明  0.5 半透明 1 完全不透明    0.5 =&gt; .5 
+            背景图片 =&gt; 装饰
+                background-image:url(03.jpg);
+            背景平铺
+                background-repeat    默认repeat 平铺 满盒子     no-repeat 不平铺        
+            背景大小 
+                px % 关键词 cover contain
+                background-size:;
+                只有一个值 背景图的宽度 高度等比缩放
+                两个值 第一个是宽度  第二个 高度
+
+                %  相对于盒子的宽高 
+                
+                cover 让背景图片  充满整个盒子
+                contain 让盒子包裹整个完整的背景图 
+            背景位置
+                background-position 
+                px % 关键词 
+                一个值时  水平方向  另一个方向 居中
+                两个值  水平方向 竖直方向    
+                %  父盒子的20%处  和 背景图的20%处重合 (父盒子-背景宽度)*百分比                
+                left right top bottom center
+                background:url(&#39;22.jpg&#39;) no-repeat 100px;  
+                image  repeat  position/size color
+                如果没有size image  repeat  position color
+                如果没有position  
+</code></pre>
+<h5 id="重点：1、外边距合并问题：解决方法父级padding（常用）；">重点：1、外边距合并问题：解决方法.父级padding（常用）；</h5>
+<h5 id="2、背景backgroundurl22jpg-no-repeat-100px">2、背景background:url(&#39;22.jpg&#39;) no-repeat 100px;</h5>
+<h1 id="06-文本综合问题">06 文本综合问题</h1>
+<pre><code>    牢记
+        行内元素可有左右margin（span img  a）; display要常用；dl dt dd列表要记得用；
+    文字 文本 基线对齐
+            行内 行内块 横排对齐的时候 基于基线对齐 
+            vertical-align:baseline;
+                1.图片下方间隙问题
+                    解决方法 =&gt; 给img任意值覆盖baseline
+                2.图文的对齐方式  行内元素或者行内块元素之间的对齐方式
+                    解决方法
+                        顶部对齐  给两个元素 同时加上vertical-align:top;    
+            top 对齐元素(你设置了vertical的元素)的顶端 与line-box 的顶端对齐
+            bottom  对齐元素(你设置了vertical的元素)的底端 与line-box 的底端对齐
+            middle (常用)对齐元素 的中线 父元素的基线加上小写x的一半
+
+            px进行微调  &lt;input type=&quot;&quot;&gt;&lt;span&gt;你好&lt;/span&gt;
+
+            line-height 行高 决定了行框盒子的顶端和底端
+    文字属性 继承性
+                控制元素内的 文本 
+            文字大小
+            font-size: 
+                默认文字大小 16px 
+                最小文字大小 12px 默认body里面设置字体大小的时候设置12px
+                
+                % 相对于父级字体大小 
+                em (响应式布局) em就是父级的字体大小
+                rem (移动端自适应) rem就是html根标签的字体大小 默认16px
+        
+            color 字体颜色 
+            font-family 字体族 
+                serif 衬线字体 &quot;宋体&quot; 末端加粗 扩张 间隙末端以衬线 
+                sans-serif 非衬线字体  微软雅黑  黑体
+                引入自定义字体
+            font-weight 字体粗细
+                bold 加粗
+                normal 正常 
+                (忽视的:100 ~ 900  lighter更细的 bolder更粗的)
+            font-style 字体倾斜 i em 
+                normal 正常的
+                italic 倾斜字体 
+                oblique 使文字倾斜
+            line-height 行高
+                px       em    当前元素的字体大小    rem (移动端)当前的html根标签的字体大小
+
+            复合写法:
+                font-family最后的一项  倒数第二项是font-size 并且两者必须要有    其他的 写前面就好 
+                font-size/line-height  12px/1.5
+                font: bold italic  12px/1.5 &quot;黑体&quot;;
+            font-variant 定义小型大写字母
+                small-caps
+文本对齐方式
+            text-align   设置在父容器上,来控制自己内部的行内元素 行内块元素 文本
+                left左对齐            right 右对齐    center 居中对齐        justify 两端对齐 
+            text-indent 首行缩进
+                px        em 自身文字大小    rem
+            text-transform 控制文本的大小写
+                uppercase 大写    lowercase 小写    capitalize 首字母大写
+
+            text-decoration 文本修饰
+                underline 下划线     none 取消        overline 上划线    line-through 中划线
+                
+            letter-spacing 字间距  字符
+            word-spacing 词间距 单词左右 
+
+            white-space 决定文本是否换行
+                wrap 换行        nowrap 不换行
+            
+            white-space:nowrap; 不适用于行内元素 
+            overflow:hidden;
+            text-overflow:ellipsis; 实现单排溢出省略号
+            word-break:break-all;
+            文本 字体 继承性 list-style ul=&gt;li 
+
+</code></pre>
+<h1 id="07-浮动">07 浮动</h1>
+<pre><code>    浮动
+                最初的作用 图文环绕效果
+                块级横排显示  布局
+                让元素 脱离文档流 左边或者右边浮动  直到遇到父级的边界或者是相邻的浮动元素 停下来
+                文档流中不占位置 display block inline不遵循
+                后面的 存在于文档流里面的元素 重新去排列文档流
+
+                浮动元素特性:
+                    无论是块级还是行内还是行内块 只要给上浮动 那么就会具备以下特性
+                    !.文档流里不占位置 
+                    1.支持宽高
+                        不给宽高时 由内容撑开
+                        固定死宽高时  什么都撑不开
+                    2.横排显示 (跟 浮动元素横排显示)
+                    3.margin padding 不支持margin auto
+                    4.不会造成空格与基线对齐问题
+    问题
+                子元素掉下来:
+                    1.查看是否全部设置好了浮动 
+                    2.子级宽度是不是太大了
+                        padding border
+                    3.父级宽度不够
+                卡住的问题
+                    1.溢出的部分 或者是其他的浮动元素会卡住掉下的浮动元素
+                    
+                大问题
+                    子元素浮动不在文档流 导致文档流内的爸爸 高度塌陷 页面布局会乱掉 
+                解决方案:(清除浮动对父级的影响)(恰好)
+                    1.给上父级高度 (不灵活 )(一般由内容撑开 )
+                    2.overflow:hidden  (设置出去的定位元素 隐藏掉)
+                    3.display:inline-block  空格 基线对齐问题
+                    4.父元素恰好就是浮动元素 
+                    5.父元素恰好是绝对定位
+                    主动清除
+                        .clearfix:after{
+                            content:&#39;&#39;;
+                            display:block;
+                            clear:both;
+                        }
+                    低版本ie 加给父级 zoom:1;
+    border-radius:10px;
+                px 
+                % 相对于宽高            
+                两个值:左上右下  右上左下    三个值:左上 右上左下 右下
+                四个值:顺时针方向
+                八个值:border-radius:20px 40px 50px 60px / 20px 40px 50px 60px;
+                        
+</code></pre>
+<h1 id="08定位">08定位</h1>
+<pre><code>绝对定位 那就相对这个元素
+
+                    提升层级
+                        后来居上
+                    top
+                        top距离定位父级top 正下 负上
+                    left 
+                        left距离定位父级left 正右 负左
+                    right 
+                        right距离定位父级right  正左 负右
+                    bottom
+                        bottom距离定位父级bottom 正上 负下
+                    如果定位值 未赋值时  默认不是0  而是 auto auto会决定 你的初始位置是你未定位前的位置 但是文档流里 你已经不在了
+
+                    如果给绝对定位元素 找合适的定位父级 那么就找到合适的祖先标签 给上相对定位 
+
+                    如果恰好祖先是相对或者绝对定位元素 那么就不需要给了
+                    
+                    会改变元素的特性 
+                        1.能够支持宽高 
+                        2.如果不給宽高 由内容撑开宽高 但是不会超过定位父级边界
+                            (最好是固定 宽度 )
+                        3.不占位置
+                        4 margin padding 不支持margin auto    
+
+                    相对定位 绝对定位
+                    相对定位:
+                        1.配合绝对定位使用
+                        2.占有原来位置的轻微移动
+                        3.让元素具备层级
+
+                    绝对定位:
+                        1.让元素飘在其他的元素上空
+                        2.元素的位置 比较的特殊
+                    固定定位:
+                        特性同绝对定位 参考物浏览器窗口
+                        作用:侧边导航栏 及 顶部导航栏
+</code></pre>
+<h1 id="09高级选择器">09高级选择器</h1>
+<pre><code>比较优先级时  保证有精准的控制到元素
+                id &gt; class &gt; tagName &gt; *
+                组合选择器中 
+                先去看 id选择器 比较id选择器的个数
+                    个数越多,优先级越高
+                    个数相等
+                        比较类名选择器个数 
+                            个数越多 优先级越高
+                            个数相等 
+                                比较标签选择器个数
+                                    个数越多 优先级越高
+                                    个数相等 优先级同等 下面的覆盖上面的
+                                    
+伪类选择器
+            依赖于 状态
+            hover 依赖于鼠标和元素的状态 
+                :link 未被点击链接的a的状态
+                :visited 已被点击链接的a的状态
+                :hover
+                :active  正在被点击的a的状态
+
+            关于文字
+                :first-letter 控制元素的第一个文字
+                :first-line 控制元素的第一行文字
+                ::selection 控制元素中被鼠标选中的文字的样式 
+ 和结构有关的选择器
+            p:first-of-type
+                选择 父元素中 的第一个p元素 无视其他元素
+
+            p:last-of-type 
+                选择 父元素中 的最后一个p元素 无视其他元素
+
+            p:nth-of-type(7)
+                选择 父元素中 的第n(7)个p元素 无视其他元素
+                2n-1 奇数
+                2n 偶数 
+
+            p:nth-last-of-type()
+                选择 父元素中 的倒数第n(2)个p元素 无视其他元素
+
+
+            p:first-child
+                选择 父元素中 的第一个子元素 并且必须是p标签
+
+            p:last-child
+                选择 父元素中 的最后一个子元素 并且必须是p标签
+
+            p:nth-child(5)
+                选择 父元素中 的第n(5)子元素 并且必须是p标签
+                2n-1 奇数
+                2n 偶数 
+
+            p:nth-last-child()
+                选择 父元素中 的倒数第n(5)子元素 并且必须是p标签
+                
+            p:not(:first-child) 不要第一个p  .box 不要类名为box的p 其他都要
+            
+            td:not(:last-child),th:not(:last-child){
+                color: #666666;
+                border-right:1px solid #eee;
+            }
+            
+            标签类型统一时  用nth-child
+            标签种类换乱时  用nth-of-type
+属性选择器
+            [src] 选择 具有 src属性的元素 
+                
+            [class = &quot;box1&quot;] 具有 class属性 并且值只能是 box1 不能有其他的类名
+
+            [class ~= &quot;box1&quot;]  具有 class属性 并且值内有 box1这个类名
+
+            [src ^= &quot;i&quot;] 具有 src属性 并以 i开头  模糊匹配
+
+            [src $= &quot;jpg&quot;] 具有 src属性 并以 jpg结尾  模糊匹配
+
+            [src *= &quot;05&quot;] 具有 src属性 值内存在 05   模糊匹配
+            after 
+            在元素内容的后面添加伪元素
+        
+        before
+            在元素内容的之前添加伪元素            
+        content
+            伪元素的核心内容  伪元素 本质上 特性和行内元素一样
+                none 伪元素不存在
+                normal 伪元素不存在
+                &quot;你好&quot; 添加文本
+                url() 添加图片
+        作用 : 装小图标  制作小三角形 小原型 (不要用伪元素去做复杂的事情)
+            减少html代码 优化代码结构 
+&quot;opacity visibility&quot;
+            opacity  决定元素的透明度 会影响到里面所有的内容
+            0~1 0完全透明 虽然变透明看不见了 但是存在于页面 占位置并且鼠标能够摸到   1完全不透明
+            ie兼容
+                filter:alpha(opacity=0~100) 0完全透明  100完全不透明
+
+            visibility 
+                visible 可见的
+                hidden 隐藏  让元素不可见 但是元素依然存在于界面 占位置但是鼠标摸不到
+
+            display:none 
+                完全消失 不占位置 鼠标也摸不到
+</code></pre>
+<h1 id="10表单元素和表格元素">10表单元素和表格元素</h1>
+<pre><code>包裹表单元素的一块区域  键值对
+                action=&gt;属性值 =&gt;需要提交的后台的地址 url
+                method=&gt;属性值 =&gt;提交的数据的方式
+                get (获取数据)
+            数据拼接到url后面 =&gt; 后台 根据你的提交url做出对应的处理 (保存数据  清除数据 返回数据)
+                
+                post (提交数据)
+                            数据不会拼接到url后面 
+                target=&#39;_blank&#39; 跳转页面的打开位置
+
+            你好 123
+                数据的传输格式 
+                    键值对  键:值  性别:男  name:value =&gt;age:12
+            input 
+                type 定义表单类型
+                    text 普通的文本框
+                    submit 提交功能按钮 默认value=&quot;提交&quot;
+                    password 密码框 
+                    number 选择数字规格    最小值 min 最大值 max                
+                    range 选择范围框        最小值 min     最大值 max
+                    color 选择颜色框
+                    date 年月日  手动输入值 点击 上下调值
+                    time 时间点  
+                    month 月份
+                    week 周 
+                    datatime-local 日期信息输入
+                    file 文件按钮 加上multiple这条属性 可以传入多个文件                
+                    button  功能按钮 普通的按钮
+                        &lt;button&gt;1234&lt;/button&gt; 也可以
+                    reset 重置按钮 
+                    选项按钮
+                    radio 单选按钮                    
+                好玩的属性:
+                    placeholder =&#39;请输入账户名&#39;属性  用在普通输入文本框
+
+                一般性 我们会被 input取消border 需要就重新给一个border线 
+                    我们还需要取消 outline 外轮廓线  outline:none;
+                
+                label 关联  通过for =&gt;id名  点击对应的label标签 会选中对应 id名的 按钮 
+                disabled 禁选的    checked 默认选中的
+                    resize
+                    none 不能拉动
+                    vertical 垂直能拉动
+                    horizontal 水平方向能拉动
+                    both 两者都可以
+                textarea 文本域
+                select 下拉选框 size属性决定 露出来的选项个数
+                    选项归类 
+                        optgroup
+                            选项 option    默认选中 selected
+
+                datalist (推荐选项)id属性  =&gt; input list属性
+                表单分区
+                    fieldset 分        区标题    legend
+    input相关伪类
+
+                focus 获取焦点(鼠标点击之后具有光标)的时候
+                checked 在按钮被选中时 
+                disabled 在input失效(禁选)时
+                enabled  在input没有失效(没有禁选)时
+    写CSS属性只要注意的顺序。
+                显示属性
+                    float: left;浮动
+                    position: absolute;定位
+                    z-index 
+                    visibility 
+                    overflow
+                    list-style
+                    display 
+                自身属性(盒子相关)
+                    width
+                    height
+                    padding
+                    margin 
+                    border
+                    background
+
+                文本属性
+                    line-height: ;
+                    font-size: ;
+                    text-align: ;这类的文本属性
+
+                css3属性
+                    border-radius
+
+                    box-shadow 盒子阴影
+                    transition 过渡
+                    /* 
+                    
+                    
+table 表格元素
+    thead 表头
+    tbody 表身体(主要的内容) 就算不加 浏览器也会默认生成一个
+    tfoot 表尾 
+
+            定义表格行
+            tr 
+
+            定义表格列
+            th (带有标题效果)
+
+            定义表格列
+            td (不带标题效果)
+
+
+            colspan=&quot;&quot;  跨列  左右 算上自己
+            rowspan   跨行 上下
+            如果把需要代替的td挤走 那么直接删掉不需要的td即可
+
+            border-spacing:10px; 边框线之间的距离 table 
+
+            border-collapse: separate 分离
+            collapse 折叠  上面那条就会失效
+
+
+            table
+            可以设置宽高
+            宽高不给 内容撑开
+            可以支持margin padding支持margin auto
+
+            宽高会平分给 tbody里面的单元格
+            按照内容平分 
+
+            th 上下左右居中 字体加粗
+            td 上下居中  左对齐 
+
+            当前行列的宽高 取决于当前行列中 最高和最宽的单元格
+
+            th td 不给宽高时  如果 table有宽高 他们是根据内容平分
+            table 没有宽高 由内容撑开
+            给上宽高   完全平分table的宽高
+
+            不支持 margin padding效果也比较奇怪
+
+            th td内可以存放任意标签  但是table与其结构中不能随意放其他标签
+
+            */
+</code></pre>
+<h1 id="11阴影、变换、过渡、渐变">11阴影、变换、过渡、渐变</h1>
+<pre><code>
+
+    盒子阴影：
+        box-shadow:x y blur spread color  inset
+
+        x        控制水平位移
+        y        控制竖直位移    
+        blur    控制模糊程度
+        spread    控制阴影大小
+        color    控制阴影颜色
+
+        inset   控制阴影的扩散方向
+        可以给一个盒子添加多个阴影
+
+文字阴影：
+        text-shadow:x y blur color 
+
+        x        控制水平位移
+        y        控制竖直位移
+        blur    控制模糊程度
+        color    控制阴影颜色
+
+        可以给文字添加多个阴影
+    变换：
+        transform 变换属性        变换的基点(圆点) 在盒子的中心点
+            平移变换  translate(x轴,y轴)
+            旋转变换  rotate(角度值)
+                角度值是正数时 表示顺时针旋转
+                角度值是负数时 表示逆时针旋转
+
+            缩放变换  scale(水平缩放比,竖直缩放比)  可以支持负值 负值表示反方向缩放
+
+            拉伸变换  skew(y轴的倾斜角度,x轴的倾斜角度)
+        transform-origin 设置变换的基点
+过渡：
+        transition   过渡(复合属性)
+            这个属性可以检测同一个元素的同一个属性的数字到数字的变化
+            不可以检测字母到字母的变化 也不能检测数字到字母的变化
+
+            transition-property 过渡的属性  默认所有属性都设置过渡效果
+            transition-duration    过渡的时间
+            transition-timing-function  过渡的速度  
+                本质是贝塞尔曲线
+                调试网站 https://cubic-bezier.com/#.39,1.14,.61,-0.3
+
+            transition-delay  设置过渡延迟的时间
+
+
+        transition:属性  时间  延迟  速度
+
+    线性渐变：
+        渐变色  不是颜色  而是图片
+        linear-gradient(角度,渐变起点,渐变重点)
+            会使用自定义的渐变终点的颜色来填满盒子未填充的区域
+        repeating-linear-gradient  
+            会重复使用自定义的渐变来填满盒子未填充的区域
+        180deg  表示从上到下的渐变  默认
+
+        0deg    表示从下到上的渐变
+
+        90deg   表示从左到右的渐变
+
+        270deg  表示从右到左的渐变
+
+    径向渐变:
+        radial-gradient 径向渐变
+            渐变的起点  默认是盒子的中心点center
+                渐变起点的取值和transform-origin的值是一样的
+            渐变的形状  默认是椭圆ellipse   
+                渐变的形状 可以人为设置成circle
+
+        
+        radial-gradient(shape at position,渐变起点,渐变终点)
+</code></pre>
+<h1 id="12、3d变换">12、3D变换</h1>
+<pre><code>&lt;!doctype html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset=&#39;UTF-8&#39;&gt;
+    &lt;title&gt;我的首页&lt;/title&gt;
+    &lt;style&gt;
+        *{
+            margin:0;
+            padding:0;
+        }
+        body{
+            perspective:800px;
+        }
+        .box{
+            position:relative;
+            width:200px;
+            height:200px;
+            margin:100px auto;
+            /* background-color:pink; */
+            /* transform-origin:0 0; */
+            /* transform:skew(0deg,0deg); */
+            transform-style:preserve-3d;/*让子级元素  在 3D空间占据位置*/
+            transition:10s;
+        }
+        .box:hover{
+            transform:rotateX(360deg) rotateY(360deg);
+        }
+        .box .face{
+            position:absolute;
+            left:0;
+            top:0;
+            width:200px;
+            height:200px;
+            /* background-color:rgba(0,0,0,.5); */
+            box-shadow:0 0 10px 0 blue inset;
+        }
+        .box .front{
+            transform:translateZ(100px);    /* z轴平移100px */
+        }
+
+        .box .behind{
+            transform:rotateY(180deg) translateZ(100px);    /* z轴平移100px */
+        }
+
+        .box .left{
+            transform:rotateY(-90deg) translateZ(100px);    /* z轴平移100px */
+        }
+
+        .box .right{
+            transform:rotateY(90deg) translateZ(100px);    /* z轴平移100px */
+        }
+
+        .box .top{
+            transform:rotateX(90deg) translateZ(100px);    /* z轴平移100px */
+        }
+
+        .box .bottom{
+            transform:rotateX(-90deg) translateZ(100px);    /* z轴平移100px */
+        }
+    &lt;/style&gt;
+&lt;/head&gt; 
+&lt;body&gt;
+    &lt;div class=&quot;box&quot;&gt;
+        &lt;div class=&quot;face top&quot;&gt;上面&lt;/div&gt;
+        &lt;div class=&quot;face bottom&quot;&gt;下面&lt;/div&gt;
+        &lt;div class=&quot;face left&quot;&gt;左面&lt;/div&gt;
+        &lt;div class=&quot;face right&quot;&gt;右面&lt;/div&gt;
+        &lt;div class=&quot;face front&quot;&gt;前面&lt;/div&gt;
+        &lt;div class=&quot;face behind&quot;&gt;后面&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<h1 id="13-动画">13 动画</h1>
+<pre><code>&lt;!doctype html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset=&#39;UTF-8&#39;&gt;
+    &lt;title&gt;我的首页&lt;/title&gt;
+    &lt;style&gt;
+        *{
+            margin:0;
+            padding:0;
+        }
+
+        .box{
+            width:200px;
+            height:200px;
+            background-color:pink;
+            /* animation:move 2s; */
+            /* animation-name:move; */    /*要调用动画的名字*/
+            /* animation-duration:2s; */    /*动画执行的时间*/
+            
+            /*控制动画延迟的时间*/
+            /* animation-delay:2s; */
+
+
+            /*控制元素在动画结束后 保留动画的最后一帧*/
+            /* animation-fill-mode:forwards; */
+
+            /* animation-fill-mode:both; */
+
+            /*控制动画相邻帧之间的速度*/
+            /* animation-timing-function:cubic-bezier(.21,1.25,1,-0.68); */
+
+            /*控制动画执行的方向*/
+            /* animation-direction:alternate; */
+            /*控制动画的执行次数*/
+            /* animation-iteration-count:infinite; */
+
+            animation:move 2s 1s infinite cubic-bezier(.21,1.25,1,-0.68);
+        }
+
+        .box:hover{
+            /*控制动画的运行状态   paused 暂停  running 运行(默认)*/
+            /* animation-play-state:paused; */
+        }
+        /* @keyframes 定义动画  run动画的名字 */
+        @keyframes move {
+            0%{width:400px/* ;height:300px */}
+            /* 50%{width:500px;height:400px}
+            75%{width:800px;height:500px} */
+            100%{width:700px/* ;height:700px */}
+        }
+    &lt;/style&gt;
+&lt;/head&gt; 
+&lt;body&gt;
+    &lt;div class=&quot;box&quot;&gt;&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+&lt;!doctype html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset=&#39;UTF-8&#39;&gt;
+    &lt;title&gt;我的首页&lt;/title&gt;
+    &lt;style&gt;
+        *{
+            margin:0;
+            padding:0;
+        }
+        .box{
+            width:200px;
+            height:100px;
+            background-color:pink;
+            animation:go 5s steps(3);
+        }
+
+        @keyframes go{
+            0%{width:300px;}
+            100%{width:500px;}
+        }
+    &lt;/style&gt;
+&lt;/head&gt; 
+&lt;body&gt;
+    &lt;div class=&quot;box&quot;&gt;&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+<h1 id="14-弹性模型">14 弹性模型</h1>
+<pre><code>&lt;!doctype html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset=&#39;UTF-8&#39;&gt;
+    &lt;title&gt;我的首页&lt;/title&gt;
+    &lt;style&gt;
+        *{
+            margin:0;
+            padding:0;
+        }
+        .box{
+            display:flex    ;/*开启块级弹性盒模型*/
+
+            /* justify-content:space-between; */
+            /* flex-direction:column; */
+            /* flex-wrap:wrap; */
+            /* align-content:flex-end; */
+            /* align-items:baseline; */
+            width:800px;
+            height:300px;
+            /* margin:100px auto; */
+            box-shadow:0 0 10px 0 blue inset;
+        }
+
+        .box1{
+            /* flex-shrink:0; */
+            /* flex-grow:1; */
+            width:150px;
+            flex-basis:200px;
+            height:70px;
+            box-shadow:0 0 10px 0 purple inset;
+        }
+
+        /* .box2{
+            font-size:50px;
+        } */
+    &lt;/style&gt;
+&lt;/head&gt; 
+&lt;body&gt;
+    &lt;div class=&quot;box&quot;&gt;
+        &lt;span class=&quot;box1&quot;&gt;1&lt;/span&gt;
+        &lt;span class=&quot;box1 box2&quot;&gt;2&lt;/span&gt;
+        &lt;span class=&quot;box1&quot;&gt;3&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;box&quot;&gt;
+        &lt;span class=&quot;box1&quot;&gt;1&lt;/span&gt;
+        &lt;span class=&quot;box1 box2&quot;&gt;2&lt;/span&gt;
+        &lt;span class=&quot;box1&quot;&gt;3&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+        弹性盒模型的组成   
+            弹性容器 + 弹性子元素
+
+            弹性容器  谁加上display:flex  谁就是弹性容器了
+
+            弹性盒模型的内部规则 
+                1.所有的盒子默认都会横排显示并且支持宽高（不管是块级 行内块 行内元素）
+                2.如果弹性子元素的宽度之和大于弹性容器的宽度  则弹性子元素会等比例收缩??
+                来保证弹性子元素不换行
+
+            下面的值：都是设置在弹性容器上的
+                justify-content        控制弹性子元素在主轴方向的位置
+                    flex-start    ：弹性子元素靠近主轴起点
+                    flex-end    ：弹性子元素靠近主轴终点
+                    center        ：弹性子元素靠近主轴中点
+
+                    space-around    弹性子元素水平均分 在主轴两侧仍然有间隙
+                    space-between   弹性子元素水平均分 在主轴两侧没有有间隙
+                    
+
+                flex-direction        控制主轴的方向
+                    row                默认从左到右
+                    row-reverse        从右向左
+                    column            从上到下
+                    column-reverse  从下到上
+                flex-wrap            控制弹性子元素换行（默认弹性子元素是不换行的）
+                    wrap            让弹性子元素换行
+
+
+                align-content            控制弹性子元素在交叉轴的位置（多排弹性子元素被当做一个整体）
+                    flex-start            &#39;弹性子元素靠近交叉轴起点&#39;
+                    flex-end            弹性子元素靠近交叉轴终点
+                    center                弹性子元素靠近交叉轴中点
+                    space-around        弹性子元素竖直均分 在交叉轴两侧仍然有间隙
+                    space-between       弹性子元素竖直均分 在交叉轴两侧没有有间隙
+
+                align-items                控制弹性子元素在交叉轴的位置（多排弹性子元素不会被当做一个整体）
+                    flex-start            弹性子元素靠近交叉轴起点
+                    flex-end            弹性子元素靠近交叉轴终点
+                    center                弹性子元素靠近交叉轴中点
+
+            下面的值：都是设置在弹性子元素上的
+                align-self                控制单个弹性子元素在交叉轴的位置
+                    flex-start            在交叉轴的起点
+                    flex-end            在交叉轴的终点
+                    center                在交叉轴的中点
+
+                order                    控制弹性子元素的排列位置
+                
+
+                flex-shrink                控制弹性子元素的收缩比例（默认是1 即等比例收缩）值是0的时候  表示不收缩
+                flex-grow                控制弹性子元素的放大比例（默认是0 即不放大）值是非0的时候  按对应比例放大
+                flex-basis                在主轴方向有剩余空间时,控制弹性子元素的宽度  优先级高于width
+                在flex布局模式下,        弹性子元素的float、clear和vertical-align属性将失效。
+                 align-items:center弹性盒子元素在该行的侧轴（纵轴）上居中放置
+                 
+                justify-content用于设置或检索弹性盒子元素在主轴（横轴）方向上的对齐方式
+                align-items:baseline如弹性盒子元素的行内轴与侧轴为同一条，则该值与&#39;flex-start&#39;等效；其它情况下，该值将参与基线对齐
+                align-content属性在弹性容器内的各项没有占用交叉轴上所有可用的空间时对齐容器内的各项（垂直）
+               order属性设置或检索弹性盒模型对象的子元素出现的順序，且用整数值来定义排列顺序，数值小的排在前面，可以为负值。4个里的值分别是4、0、-1、1，因为数值小的排在前面，所以排序为-1、0、1、4即JavaScript、CSS、JQuery、HTML
+                flex-grow 属性用于设置或检索弹性盒的扩展比率，默认值是0，是没有任何效果的；它的值要是一个数字，不能是百分比或者别的非数字的，不管设置数字几，只要每个子项目的值一样，子项目占据容器的空间就会一样
+</code></pre>
+<h1 id="音视频">音视频</h1>
+<pre><code>&lt;video&gt;
+    &lt;source src=&quot;&quot;&gt;
+&lt;/video&gt;
+</code></pre>
+
+  </body>
+</html>

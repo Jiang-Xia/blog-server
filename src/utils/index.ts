@@ -1,3 +1,4 @@
+import './test';
 export default class utils {
   getPagination;
 }

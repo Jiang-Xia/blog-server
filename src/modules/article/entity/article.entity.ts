@@ -57,15 +57,15 @@ export class Article {
   tags: Array<Tag>;
 
   @ApiProperty({ description: '封面图' })
-  @Column('text')
+  @Column('varchar', { default: '' })
   cover: string; // 封面图
 
   @ApiProperty({ description: '喜欢/点赞数' })
-  @Column('int')
+  @Column('int', { default: 0 })
   likes: number;
 
   @ApiProperty({ description: '阅读量' })
-  @Column('int')
+  @Column('int', { default: 0 })
   views: number;
 
   @ApiProperty({ description: '文章状态' })

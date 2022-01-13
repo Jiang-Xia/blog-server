@@ -48,4 +48,4 @@ const parseMDToHtml = function (
 const assetspath = path.join(__dirname, '../../assets/');
 const filepath = path.join(assetspath, 'HTML和CSS必备知识.md');
 const filepath2 = path.join(assetspath, 'template.html');
-parseMDToHtml(filepath, filepath2, 'newHtml.html');
+// parseMDToHtml(filepath, filepath2, 'newHtml.html');

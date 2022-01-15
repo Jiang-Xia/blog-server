@@ -18,7 +18,7 @@ import { LikeModule } from './modules/like/like.module';
       host: 'localhost',
       port: 3306,
       username: 'root',
-      password: '123456',
+      password: 'jiang123!!',
       database: 'myblog',
       entities: ['dist/**/*.entity{.ts,.js}'], // 路径不要改
       synchronize: true,

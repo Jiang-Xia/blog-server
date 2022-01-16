@@ -26,7 +26,7 @@ module.exports = {
       },
       env_production: {
         // 环境参数,当前指定为生产环境
-        NODE_ENV: 'production',
+        NODE_ENV: 'production', //使用production模式 pm2 start ecosystem.config.js --env production
       },
       env_test: {
         // 环境参数,当前为测试环境
@@ -42,16 +42,16 @@ module.exports = {
       // 服务器ip
       host: '42.192.145.236',
       // 服务器ssh登录端口，未修改的话一般默认为22
-      port: "22",
+      port: '22',
       // 指定拉取的分支
       ref: 'origin/master',
       // 远程仓库地址
       repo: 'git@gitee.com:jiang-xia/blog-server.git',
       // 指定代码拉取到服务器的目录
-      path: '/blog/pm-test',
-      'ssh_options':'73c2d74c351a0406f3640f1a276ed60b',
+      path: '/blog/pm2-serve/blog-server',
+      ssh_options: 'StrictHostKeyChecking=no',
       'post-deploy':
-        'npm install && npm run build && pm2 reload ecosystem.config.js --env production',
+        'npm install && npm run build && pm2 reload ecosystem.config.js --env production'
     },
   },
 };

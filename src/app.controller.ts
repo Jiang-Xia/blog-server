@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
+import { NestLogger } from 'nest-logs';
 import { AppService } from './app.service';
-
+@NestLogger()
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}

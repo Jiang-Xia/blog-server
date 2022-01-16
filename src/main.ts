@@ -2,7 +2,7 @@
  * @Author: 酱
  * @LastEditors: 酱
  * @Date: 2021-11-12 17:31:46
- * @LastEditTime: 2022-01-07 11:19:31
+ * @LastEditTime: 2022-01-16 16:11:22
  * @Description:
  * @FilePath: \blog-server\src\main.ts
  */
@@ -15,6 +15,7 @@ import { HttpExceptionFilter } from './filters/http-execption.filter';
 // 全局表单类验证器
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { Logger } from 'nest-logs';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

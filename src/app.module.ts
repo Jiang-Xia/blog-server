@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { NestLogsModule } from 'nest-logs';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -20,9 +21,10 @@ import { LikeModule } from './modules/like/like.module';
       username: 'root',
       password: 'jiang123!!',
       database: 'myblog',
-      entities: ['dist/**/*.entity{.ts,.js}'], // 路径不要改
+      entities: [__dirname + '/**/*.entity{.ts,.js}'], // 路径不要改
       synchronize: true,
     }),
+    NestLogsModule,
     ArticleModule,
     UserModule,
     CategoryModule,

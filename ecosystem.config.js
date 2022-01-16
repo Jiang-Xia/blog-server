@@ -48,7 +48,7 @@ module.exports = {
       // 远程仓库地址
       repo: 'git@gitee.com:jiang-xia/blog-server.git',
       // 指定代码拉取到服务器的目录
-      path: '/blog/pm2-serve/blog-server',
+      path: '/blog/pm2-serve',
       ssh_options: 'StrictHostKeyChecking=no',
       'pre-deploy': 'git fetch --all', // 部署前执行
       // 部署后执行

@@ -50,8 +50,10 @@ module.exports = {
       // 指定代码拉取到服务器的目录
       path: '/blog/pm2-serve/blog-server',
       ssh_options: 'StrictHostKeyChecking=no',
+      'pre-deploy': 'git fetch --all', // 部署前执行
+      // 部署后执行
       'post-deploy':
-        'npm install && npm run build && pm2 reload ecosystem.config.js --env production'
+        'npm install && npm run build && pm2 reload ecosystem.config.js --env production',
     },
   },
 };

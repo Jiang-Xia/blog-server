@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { NestLogsModule } from 'nest-logs';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -11,20 +10,15 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { ReplyModule } from './modules/reply/reply.module';
 import { LikeModule } from './modules/like/like.module';
+import { databaseConfig } from './config';
 @Module({
   imports: [
     // 使用 TypeORM 配置数据库
     TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'root',
-      password: 'jiang123!!',
-      database: 'myblog',
+      ...databaseConfig,
       entities: [__dirname + '/**/*.entity{.ts,.js}'], // 路径不要改
       synchronize: true,
     }),
-    NestLogsModule,
     ArticleModule,
     UserModule,
     CategoryModule,

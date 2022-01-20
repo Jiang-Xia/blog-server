@@ -1,4 +1,6 @@
 import './test';
+// 需要全部导入
+import * as os from 'os';
 export default class utils {
   getPagination;
 }
@@ -49,3 +51,26 @@ export const getRandomClor = () => {
   const index = Math.floor(Math.random() * colors.length);
   return colors[index];
 };
+
+// 获取本机ip
+export function getLocalIP() {
+  const osType = os.type(); //系统类型
+  const netInfo = os.networkInterfaces(); //网络信息
+  let ip = '';
+  if (osType === 'Windows_NT') {
+    for (const dev in netInfo) {
+      //win7的网络信息中显示为本地连接，win10显示为以太网
+      if (dev === '本地连接' || dev === '以太网') {
+        for (let j = 0; j < netInfo[dev].length; j++) {
+          if (netInfo[dev][j].family === 'IPv4') {
+            ip = netInfo[dev][j].address;
+            break;
+          }
+        }
+      }
+    }
+  } else if (osType === 'Linux') {
+    ip = netInfo.eth0[0].address;
+  }
+  return ip;
+}

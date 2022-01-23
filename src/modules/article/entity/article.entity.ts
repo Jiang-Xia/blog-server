@@ -77,10 +77,10 @@ export class Article {
   description: string;
 
   // 文章内容
-  @Column('text')
+  @Column('longtext')
   content: string;
 
   // 文章html
-  @Column('text')
+  @Column('longtext')
   contentHtml?: string;
 }

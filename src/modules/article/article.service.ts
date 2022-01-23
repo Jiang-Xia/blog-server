@@ -159,6 +159,7 @@ export class ArticleService {
       category: existCategory,
       tags,
     });
+    // console.log(newArticle);
     await this.articleRepository.save(newArticle);
     return newArticle;
   }

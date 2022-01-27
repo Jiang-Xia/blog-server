@@ -9,6 +9,15 @@ export class LikeService {
     @InjectRepository(Like)
     private readonly likeRepository: Repository<Like>,
   ) {}
+  updateLike(LikeDTO: Like) {
+    if (LikeDTO.status) {
+      // 新增
+      this.likeRepository.save(LikeDTO);
+    } else {
+      // 删除
+      this.likeRepository.delete(LikeDTO.id);
+    }
+  }
 }
 
 @Injectable()

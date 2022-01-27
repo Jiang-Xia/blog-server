@@ -1,7 +1,8 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RolesGuard } from '../auth/roles.guard';
 import { CollectService, LikeService } from './like.service';
+import { Like, Collect } from './like.entity';
 // 文档
 @ApiTags('喜欢模块')
 @Controller('like')
@@ -11,9 +12,10 @@ export class LikeController {
   constructor(private readonly likeService: LikeService) {}
 
   // https://www.cnblogs.com/xiaoyantongxue/p/15758271.html
-  @Get('id')
-  getLike() {
-    return [];
+  @Post()
+  updateLikeById(@Body() LikeDTO: Like) {
+    // console.log(LikeDTO);
+    return this.likeService.updateLike(LikeDTO);
   }
 }
 

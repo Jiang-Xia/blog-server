@@ -10,6 +10,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { ReplyModule } from './modules/reply/reply.module';
 import { LikeModule } from './modules/like/like.module';
+
+import { ResourcesModule } from './modules/resources/resources.module';
 import { databaseConfig } from './config';
 @Module({
   imports: [
@@ -27,6 +29,7 @@ import { databaseConfig } from './config';
     CommentModule,
     ReplyModule,
     LikeModule,
+    ResourcesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -14,7 +14,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
+  // 需要权限校验时才会触发这个函数
   async validate(payload: User) {
+    // console.log(payload, 'payload');
     const user = await this.authService.validateUser(payload);
     if (!user) {
       throw new UnauthorizedException('身份验证失败');

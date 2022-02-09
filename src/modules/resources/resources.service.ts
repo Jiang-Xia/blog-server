@@ -8,7 +8,7 @@ export class ResourcesService {
   }
   // 调用第三方api 默认为一张
   async getImg(n = '1') {
-    console.log(n);
+    // console.log(n);
     const res = await axios.get(
       'http://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=' + n,
     );

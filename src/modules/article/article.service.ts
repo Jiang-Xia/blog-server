@@ -16,6 +16,8 @@ import { Article } from './entity/article.entity';
 import { getPagination } from 'src/utils';
 import { TagService } from '../tag/tag.service';
 import { CategoryService } from '../category/category.service';
+import { LikeService } from '../like/like.service';
+
 import * as dayjs from 'dayjs';
 
 @Injectable()
@@ -25,6 +27,7 @@ export class ArticleService {
     private readonly articleRepository: Repository<Article>,
     private readonly tagService: TagService,
     private readonly categoryService: CategoryService,
+    private readonly likeService: LikeService,
   ) {}
 
   /**
@@ -32,7 +35,7 @@ export class ArticleService {
    * @param listDTO
    * @returns
    */
-  async getMore(listDTO: ListDTO) {
+  async getMore(listDTO: ListDTO, uid: number) {
     const {
       page = 1,
       pageSize = 10,
@@ -90,7 +93,6 @@ export class ArticleService {
         }
       }),
     );
-
     // 获取查询结果
     const getList = sql
       .skip((page - 1) * pageSize)
@@ -98,7 +100,11 @@ export class ArticleService {
       .getManyAndCount();
     // let [list, total] = await getList;
     const [list, total] = await getList;
-    const arr = list.map((v: any) => {
+    const likeCounts = await this.findLike(list, uid);
+    const arr = list.map((v: any, i: number) => {
+      // 点赞统计数
+      v.likes = likeCounts[i].count;
+      v.checked = likeCounts[i].checked;
       v.uTime = dayjs(v.updateTime).format('YYYY-MM-DD hh:mm:ss');
       return v;
     });
@@ -109,12 +115,23 @@ export class ArticleService {
       pagination,
     };
   }
-
+  // 先把文章列表查询出来，再根据列表组装一一根据文章去查询对应点赞数
+  async findLike(list: any, uid: number) {
+    const sArr = [];
+    // 组装多个异步函数查询
+    list.forEach((v: any) => {
+      sArr.push(this.likeService.findLike(v.id, uid));
+    });
+    const res = await Promise.all(sArr);
+    // console.log(res);
+    return res;
+  }
+  // 查询当前用户是否点赞该文章
   /**
    * 获取指定id文章信息
    * @param idDto
    */
-  async findById(idDto: IdDTO) {
+  async findById(idDto: IdDTO, uid: number) {
     const { id } = idDto;
     const query = this.articleRepository
       .createQueryBuilder('article')
@@ -126,6 +143,9 @@ export class ArticleService {
       .setParameter('id', id)
       .setParameter('title', id);
     const data = await query.getOne();
+    const likeCount = await this.likeService.findLike(id, uid);
+    data.likes = likeCount.count;
+    data.checked = likeCount.checked;
     data.uTime = dayjs(data.uTime).format('YYYY-MM-DD hh:mm:ss');
     // console.log(data);
     if (!query) {

@@ -1,6 +1,8 @@
 import './test';
 // 需要全部导入
 import * as os from 'os';
+import jwtDecode from 'jwt-decode';
+
 export default class utils {
   getPagination;
 }
@@ -73,4 +75,14 @@ export function getLocalIP() {
     ip = netInfo.eth0[0].address;
   }
   return ip;
+}
+
+// 获取用户uid
+export function getUid(authorization = '') {
+  if (!authorization) return;
+  const token = authorization.replace('Bearer ', '');
+  const user: any = jwtDecode(token);
+  const uid = user.id;
+  // console.log(uid);
+  return uid;
 }

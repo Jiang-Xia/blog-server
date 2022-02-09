@@ -11,6 +11,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Headers,
 } from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { ArticleCreateDTO } from './dto/article-create.dto';
@@ -23,7 +24,7 @@ import { ArticleListResponse, ArticleListVO } from './vo/article-list.vo';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard, Roles } from '../auth/roles.guard';
 import { Article } from './entity/article.entity';
-
+import { getUid } from 'src/utils';
 @ApiTags('文章模块')
 @Controller('article')
 @UseGuards(RolesGuard)
@@ -32,15 +33,26 @@ export class ArticleController {
 
   @ApiOkResponse({ description: '文章列表', type: ArticleListResponse })
   @Post('list')
-  async getMore(@Body() listDTO: ListDTO): Promise<ArticleListVO> {
+  async getMore(
+    @Body() listDTO: ListDTO,
+    @Headers() headers,
+  ): Promise<ArticleListVO> {
     // console.log('listDTO', listDTO);
-    return await this.articleService.getMore(listDTO);
+    return await this.articleService.getMore(
+      listDTO,
+      getUid(headers.authorization),
+    );
   }
   @Get('info')
   @ApiOkResponse({ description: '文章详情', type: ArticleInfoResponse })
-  async getOne(@Query() idDto: IdDTO): Promise<ArticleInfoVO> {
-    // console.log('idDto', idDto);
-    return await this.articleService.findById(idDto);
+  async getOne(
+    @Query() idDto: IdDTO,
+    @Headers() headers,
+  ): Promise<ArticleInfoVO> {
+    return await this.articleService.findById(
+      idDto,
+      getUid(headers.authorization),
+    );
   }
 
   @Post('create')

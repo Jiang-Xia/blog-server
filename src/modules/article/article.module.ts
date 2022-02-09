@@ -6,12 +6,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 import { CategoryModule } from '../category/category.module';
 import { TagModule } from '../tag/tag.module';
+import { LikeModule } from '../like/like.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Article]),
     CategoryModule,
     TagModule,
+    LikeModule,
     AuthModule,
   ],
   providers: [ArticleService],

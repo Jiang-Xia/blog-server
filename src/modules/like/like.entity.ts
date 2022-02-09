@@ -9,7 +9,7 @@ export class Like {
 
   @ApiProperty()
   @Column()
-  articleId: string;
+  articleId: number;
 
   @ApiProperty()
   @Column()

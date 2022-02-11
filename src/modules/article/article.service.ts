@@ -233,16 +233,63 @@ export class ArticleService {
     return this.articleRepository.save(updatedArticle);
   }
 
+  // /**
+  //  * 更新喜欢数
+  //  * @param id
+  //  * @returns
+  //  */
+  // async updateLikesById(id, type): Promise<Article> {
+  //   const oldArticle = await this.articleRepository.findOne(id);
+  //   const updatedArticle = await this.articleRepository.merge(oldArticle, {
+  //     likes: type === 'like' ? oldArticle.likes + 1 : oldArticle.likes - 1,
+  //   });
+  //   return this.articleRepository.save(updatedArticle);
+  // }
+
   /**
-   * 更新喜欢数
-   * @param id
-   * @returns
+   * 获取文章归档
    */
-  async updateLikesById(id, type): Promise<Article> {
-    const oldArticle = await this.articleRepository.findOne(id);
-    const updatedArticle = await this.articleRepository.merge(oldArticle, {
-      likes: type === 'like' ? oldArticle.likes + 1 : oldArticle.likes - 1,
+  async getArchives(): Promise<{ [key: string]: Article[] }> {
+    const data = await this.articleRepository.find({
+      where: { status: 'publish' },
+      order: { createTime: 'DESC' },
     });
-    return this.articleRepository.save(updatedArticle);
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+    const ret = {};
+    data.forEach((d) => {
+      const year = new Date(d.createTime).getFullYear();
+      const month = new Date(d.createTime).getMonth();
+      // 分年
+      if (!ret[year]) {
+        ret[year] = {};
+      }
+      // 分月并转换月份
+      if (!ret[year][months[month]]) {
+        ret[year][months[month]] = [];
+      }
+      // 优化 只返回用到的字段
+      const { title, id, createTime, uTime } = d;
+      const rep = {
+        title,
+        id,
+        createTime,
+        uTime,
+      };
+      ret[year][months[month]].push(rep);
+    });
+    return ret;
   }
 }

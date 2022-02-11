@@ -77,7 +77,7 @@ export class Article {
   views: number;
 
   @ApiProperty({ description: '文章状态' })
-  @Column('simple-enum', { enum: ['draft', 'publish'] })
+  @Column('simple-enum', { enum: ['draft', 'publish'], default: 'publish' })
   status: string;
 
   // 文章描述

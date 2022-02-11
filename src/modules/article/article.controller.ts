@@ -103,9 +103,18 @@ export class ArticleController {
   /**
    * 文章访喜欢量 +1
    */
-  @Post('likes')
+  // @Post('likes')
+  // @HttpCode(HttpStatus.OK)
+  // updateLikesById(@Body('id') id, @Body('type') type) {
+  //   return this.articleService.updateLikesById(id, type);
+  // }
+
+  /**
+   * 获取所有文章归档
+   */
+  @Get('archives')
   @HttpCode(HttpStatus.OK)
-  updateLikesById(@Body('id') id, @Body('type') type) {
-    return this.articleService.updateLikesById(id, type);
+  getArchives(): Promise<{ [key: string]: Article[] }> {
+    return this.articleService.getArchives();
   }
 }

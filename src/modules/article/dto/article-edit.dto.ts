@@ -1,10 +1,11 @@
 // src/modules/article/dto/article-edit.dto.ts
 
-import { IsNotEmpty, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsOptional, Matches } from 'class-validator';
 import { IdDTO } from './id.dto';
 import { ApiProperty } from '@nestjs/swagger';
+import { regPositive } from 'src/utils/regex.util';
 
-export class ArticleEditDTO extends IdDTO {
+export class ArticleEditDTO {
   @ApiProperty({
     description: '文章标题',
     example: '啊！美丽的大海',
@@ -31,4 +32,13 @@ export class ArticleEditDTO extends IdDTO {
   @IsOptional()
   @IsNotEmpty({ message: '请输入文章内容' })
   readonly content?: string;
+
+  @IsNotEmpty({ message: '文章html内容不能为空' })
+  readonly contentHtml?: string;
+
+  // regPositive 这个正则校验有问题
+  // @Matches(regPositive, { message: () => '请输入有效 id' })
+  @IsNotEmpty({ message: 'id 不能为空' })
+  // 文章id
+  id: number;
 }

@@ -31,6 +31,14 @@ export class Article {
   @UpdateDateColumn()
   updateTime: Date;
 
+  // 文章的更新时间
+  @Column('text')
+  uTime: string;
+
+  // 用户id
+  @Column()
+  uid: number;
+
   // 软删除
   @Column({
     default: false,

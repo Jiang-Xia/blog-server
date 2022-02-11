@@ -63,9 +63,13 @@ export class ArticleController {
   @ApiOkResponse({ description: '创建文章', type: ArticleInfoResponse })
   async create(
     @Body() articleCreateDTO: ArticleCreateDTO /* 参数 */,
+    @Headers() headers,
   ): Promise<Article> /* 返回值 */ {
     // console.log(articleCreateDTO, 'articleCreateDTO');
-    return await this.articleService.create(articleCreateDTO);
+    return await this.articleService.create(
+      articleCreateDTO,
+      getUid(headers.authorization),
+    );
   }
 
   @Post('edit')
@@ -74,6 +78,7 @@ export class ArticleController {
   @ApiBearerAuth()
   @ApiOkResponse({ description: '编辑文章', type: ArticleInfoResponse })
   async update(@Body() articleEditDTO: ArticleEditDTO): Promise<ArticleInfoVO> {
+    // console.log('articleEditDTO', articleEditDTO);
     return await this.articleService.update(articleEditDTO);
   }
 

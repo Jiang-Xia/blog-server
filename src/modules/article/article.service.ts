@@ -6,7 +6,6 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { ArticleCreateDTO } from './dto/article-create.dto';
 import { ArticleEditDTO } from './dto/article-edit.dto';
 import { IdDTO } from './dto/id.dto';
 import { ListDTO } from './dto/list.dto';
@@ -105,7 +104,6 @@ export class ArticleService {
       // 点赞统计数
       v.likes = likeCounts[i].count;
       v.checked = likeCounts[i].checked;
-      v.uTime = dayjs(v.updateTime).format('YYYY-MM-DD hh:mm:ss');
       return v;
     });
     // console.log('文章数：', list.length);
@@ -146,7 +144,6 @@ export class ArticleService {
     const likeCount = await this.likeService.findLike(id, uid);
     data.likes = likeCount.count;
     data.checked = likeCount.checked;
-    data.uTime = dayjs(data.uTime).format('YYYY-MM-DD hh:mm:ss');
     // console.log(data);
     if (!query) {
       throw new NotFoundException('找不到文章');
@@ -160,7 +157,7 @@ export class ArticleService {
    * @param articleCreateDTO
    * @returns
    */
-  async create(article: Partial<Article>): Promise<Article> {
+  async create(article: Partial<Article>, uid: number): Promise<Article> {
     let tags = article.tags;
     const { title = '', category } = article;
     // 查询文章标题是否已经存在
@@ -176,6 +173,8 @@ export class ArticleService {
     // 创建文章
     const newArticle = await this.articleRepository.create({
       ...article,
+      uTime: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+      uid,
       category: existCategory,
       tags,
     });
@@ -195,6 +194,8 @@ export class ArticleService {
     articleToUpdate.title = articleEditDTO.title;
     articleToUpdate.description = articleEditDTO.description;
     articleToUpdate.content = articleEditDTO.content;
+    articleToUpdate.contentHtml = articleEditDTO.contentHtml;
+    articleToUpdate.uTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
     const result = await this.articleRepository.save(articleToUpdate);
 
     return {

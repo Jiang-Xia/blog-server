@@ -42,4 +42,12 @@ export class ArticleInfoResponse {
 
   @ApiProperty({ description: '请求结果信息', example: '请求成功' })
   message: string;
+  [x: string]: any;
+}
+
+export class ArticleDeleteVO {
+  @ApiProperty({ type: Article })
+  info: {
+    [x: string]: any;
+  };
 }

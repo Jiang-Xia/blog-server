@@ -210,12 +210,14 @@ export class ArticleService {
    */
   async delete(idDTO: IdDTO) {
     const { id } = idDTO;
-    const articleToUpdate = await this.articleRepository.findOne({ id });
-    articleToUpdate.isDelete = true;
-    const result = await this.articleRepository.save(articleToUpdate);
-
+    // const articleToUpdate = await this.articleRepository.findOne({ id });
+    // articleToUpdate.isDelete = true;
+    // const result = await this.articleRepository.save(articleToUpdate);
+    await this.articleRepository.delete(id);
     return {
-      info: result,
+      info: {
+        message: '删除成功',
+      },
     };
   }
 

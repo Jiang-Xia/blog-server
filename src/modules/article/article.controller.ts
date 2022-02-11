@@ -19,7 +19,11 @@ import { ArticleEditDTO } from './dto/article-edit.dto';
 import { IdDTO } from './dto/id.dto';
 import { ListDTO } from './dto/list.dto';
 import { ApiTags, ApiOkResponse, ApiBearerAuth } from '@nestjs/swagger';
-import { ArticleInfoVO, ArticleInfoResponse } from './vo/article-info.vo';
+import {
+  ArticleInfoVO,
+  ArticleDeleteVO,
+  ArticleInfoResponse,
+} from './vo/article-info.vo';
 import { ArticleListResponse, ArticleListVO } from './vo/article-list.vo';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard, Roles } from '../auth/roles.guard';
@@ -87,7 +91,7 @@ export class ArticleController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ description: '删除文章', type: ArticleInfoResponse })
-  async delete(@Body() idDto: IdDTO): Promise<ArticleInfoVO> {
+  async delete(@Query() idDto: IdDTO): Promise<ArticleDeleteVO> {
     return await this.articleService.delete(idDto);
   }
 

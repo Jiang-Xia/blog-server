@@ -209,16 +209,18 @@ export class ArticleService {
    * @returns
    */
   async delete(idDTO: IdDTO) {
-    const { id } = idDTO;
-    // const articleToUpdate = await this.articleRepository.findOne({ id });
-    // articleToUpdate.isDelete = true;
-    // const result = await this.articleRepository.save(articleToUpdate);
-    await this.articleRepository.delete(id);
-    return {
-      info: {
-        message: '删除成功',
-      },
-    };
+    const { id, uid } = idDTO;
+    const articleToUpdate = await this.articleRepository.findOne({ id });
+    if (articleToUpdate.uid === uid) {
+      await this.articleRepository.delete(id);
+      return {
+        info: {
+          message: '删除成功',
+        },
+      };
+    } else {
+      throw new HttpException('权限不足', HttpStatus.UNAUTHORIZED);
+    }
   }
 
   /**

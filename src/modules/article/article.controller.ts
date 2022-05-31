@@ -91,7 +91,11 @@ export class ArticleController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ description: '删除文章', type: ArticleInfoResponse })
-  async delete(@Query() idDto: IdDTO): Promise<ArticleDeleteVO> {
+  async delete(
+    @Query() idDto: IdDTO,
+    @Headers() headers,
+  ): Promise<ArticleDeleteVO> {
+    idDto.uid = getUid(headers.authorization);
     return await this.articleService.delete(idDto);
   }
 

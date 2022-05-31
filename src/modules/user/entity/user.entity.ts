@@ -34,7 +34,7 @@ export class User {
   version: number;
 
   // 用户角色 开发阶段默认为admin
-  @Column('simple-enum', { enum: ['admin', 'visitor'], default: 'admin' })
+  @Column('simple-enum', { enum: ['admin', 'visitor'], default: 'visitor' })
   role: string;
 
   /// 用户状态

@@ -2,7 +2,7 @@
  * @Author: 酱
  * @LastEditors: 酱
  * @Date: 2021-11-16 16:52:15
- * @LastEditTime: 2022-01-03 22:31:35
+ * @LastEditTime: 2022-06-03 21:17:12
  * @Description:
  * @FilePath: \blog-server\src\modules\user\user.service.ts
  */
@@ -109,6 +109,6 @@ export class UserService {
    * @param id
    */
   async findById(id): Promise<User> {
-    return this.userRepository.findOne(id);
+    return await this.userRepository.findOne(id);
   }
 }

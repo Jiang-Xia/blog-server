@@ -1,7 +1,16 @@
-import { Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RolesGuard } from '../auth/roles.guard';
 import { CommentService } from './comment.service';
+import { Comment } from './comment.entity';
 
 // 文档
 @ApiTags('评论模块')
@@ -13,14 +22,14 @@ export class CommentController {
 
   // 创建评论
   @Post('create')
-  async create() {
-    return await this.commentService.create();
+  async create(@Body() comment: Comment) {
+    return await this.commentService.create(comment);
   }
 
   // 刪除评论
-  @Post('delete')
-  async delete() {
-    return await this.commentService.delete();
+  @Delete('delete')
+  async delete(@Query('id') id) {
+    return await this.commentService.delete(id);
   }
 
   // 获取对应文章所有评论

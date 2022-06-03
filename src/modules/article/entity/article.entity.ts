@@ -11,10 +11,13 @@ import {
   JoinTable,
   JoinColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Tag } from '../../tag/tag.entity';
 import { Category } from '../../category/category.entity';
+import { Comment } from '../../comment/comment.entity';
+
 @Entity()
 // 类名为数据库表名
 export class Article {
@@ -63,6 +66,11 @@ export class Article {
   @ManyToMany(() => Tag, (tag) => tag.articles, { cascade: true })
   @JoinTable()
   tags: Array<Tag>;
+
+  // 评论
+  @ApiProperty()
+  @OneToMany(() => Comment, (comment) => comment.articleId)
+  comments: Array<Comment>;
 
   @ApiProperty({ description: '封面图' })
   @Column('varchar', { default: '' })

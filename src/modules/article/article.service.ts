@@ -16,6 +16,7 @@ import { getPagination } from 'src/utils';
 import { TagService } from '../tag/tag.service';
 import { CategoryService } from '../category/category.service';
 import { LikeService } from '../like/like.service';
+import { CommentService } from '../comment/comment.service';
 
 import * as dayjs from 'dayjs';
 
@@ -27,6 +28,7 @@ export class ArticleService {
     private readonly tagService: TagService,
     private readonly categoryService: CategoryService,
     private readonly likeService: LikeService,
+    private readonly commentService: CommentService,
   ) {}
 
   /**
@@ -49,7 +51,6 @@ export class ArticleService {
     sql
       .leftJoinAndSelect('article.category', 'category')
       .leftJoinAndSelect('article.tags', 'tags');
-
     // 对应的分类 ok
     if (category) {
       // 分类与其他条件为and
@@ -100,10 +101,13 @@ export class ArticleService {
     // let [list, total] = await getList;
     const [list, total] = await getList;
     const likeCounts = await this.findLike(list, uid);
+    const commentCounts = await this.findComment(list);
+    // console.log(commentCounts, '文章列表对应评论');
     const arr = list.map((v: any, i: number) => {
       // 点赞统计数
       v.likes = likeCounts[i].count;
       v.checked = likeCounts[i].checked;
+      v.commentCount = commentCounts[i].length;
       return v;
     });
     // console.log('文章数：', list.length);
@@ -142,7 +146,9 @@ export class ArticleService {
       .setParameter('title', id);
     const data = await query.getOne();
     const likeCount = await this.likeService.findLike(id, uid);
+    const comments = await this.commentService.findAll(id);
     data.likes = likeCount.count;
+    data.comments = comments;
     data.checked = likeCount.checked;
     // console.log(data);
     if (!query) {
@@ -152,6 +158,18 @@ export class ArticleService {
       info: data,
     };
   }
+
+  // 先把文章列表查询出来，再根据列表组装一一根据文章去查询对应评论数
+  async findComment(list: any) {
+    const sArr = [];
+    // 组装多个异步函数查询
+    list.forEach((v: any) => {
+      sArr.push(this.commentService.findAll(v.id));
+    });
+    const res = await Promise.all(sArr);
+    return res;
+  }
+
   /**
    * 创建文章
    * @param articleCreateDTO

@@ -7,6 +7,7 @@ import { AuthModule } from '../auth/auth.module';
 import { CategoryModule } from '../category/category.module';
 import { TagModule } from '../tag/tag.module';
 import { LikeModule } from '../like/like.module';
+import { CommentModule } from '../comment/comment.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { LikeModule } from '../like/like.module';
     CategoryModule,
     TagModule,
     LikeModule,
+    CommentModule,
     AuthModule,
   ],
   providers: [ArticleService],

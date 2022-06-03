@@ -10,10 +10,10 @@ export class CommentService {
   ) {}
   async create() {}
   async delete() {}
-  async findAll(id: string) {
+  async findAll(id: number) {
     const qb = this.commentRepository.createQueryBuilder('comment');
     qb.where('comment.articleId = :id', { id });
-    const data = await qb.getOne();
+    const data = await qb.getMany();
     return data;
   }
 }

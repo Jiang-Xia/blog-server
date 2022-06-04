@@ -4,6 +4,7 @@ import { Any, EntityManager, Repository } from 'typeorm';
 import { Comment } from './comment.entity';
 import { UserService } from '../user/user.service';
 import { User } from '../user/entity/user.entity';
+import { getPagination } from 'src/utils';
 
 @Injectable()
 export class CommentService {
@@ -38,18 +39,26 @@ export class CommentService {
 
     const qb = this.commentRepository.createQueryBuilder('comment');
     qb.where('comment.articleId = :id', { id });
-    let list: any = await qb.getMany();
+    const page = 1;
+    const pageSize = 100; // 写死获取第一页，一页一百条
+    const getList = qb
+      .skip((page - 1) * pageSize)
+      .take(pageSize)
+      .getManyAndCount();
+    const [list, total] = await getList;
+    // 先保留分页功能（评论多时需要分页展示了）
+    // const pagination = getPagination(total, pageSize, page);
     // console.log(list);
+    // console.log('pagination', pagination);
     const sArr = [];
     // 组装多个异步函数查询
     list.forEach((v: any) => {
       sArr.push(this.userService.findById(v.uid));
     });
     const users = await Promise.all(sArr);
-    list = list.map((v: any, i: number) => {
+    return list.map((v: any, i: number) => {
       v.userInfo = users[i];
       return v;
     });
-    return list;
   }
 }

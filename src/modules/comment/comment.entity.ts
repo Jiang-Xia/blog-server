@@ -5,6 +5,8 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   JoinColumn,
+  UpdateDateColumn,
+  CreateDateColumn,
 } from 'typeorm';
 import { User } from '../user/entity/user.entity';
 
@@ -12,6 +14,14 @@ import { User } from '../user/entity/user.entity';
 export class Comment {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  // 数据库 创建时间
+  @CreateDateColumn({})
+  createTime: Date;
+
+  // 数据库 更新时间
+  @UpdateDateColumn()
+  updateTime: Date;
 
   @ApiProperty({ description: '文章id' })
   @Column()

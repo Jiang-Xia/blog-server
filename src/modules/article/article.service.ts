@@ -146,9 +146,9 @@ export class ArticleService {
       .setParameter('title', id);
     const data = await query.getOne();
     const likeCount = await this.likeService.findLike(id, uid);
-    const comments = await this.commentService.findAll(id);
+    // const comments = await this.commentService.findAll(id);
     data.likes = likeCount.count;
-    data.comments = comments;
+    // data.comments = comments;
     data.checked = likeCount.checked;
     // console.log(data);
     if (!query) {

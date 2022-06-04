@@ -101,13 +101,15 @@ export class ArticleService {
     // let [list, total] = await getList;
     const [list, total] = await getList;
     const likeCounts = await this.findLike(list, uid);
-    const commentObj: any = await this.findComment(list);
+    const commentResArr: any = await this.findComment(list);
     // console.log(commentCounts, '文章列表对应评论');
+    // console.log(commentResArr, 'commentResArr');
+
     const arr = list.map((v: any, i: number) => {
       // 点赞统计数
       v.likes = likeCounts[i].count;
       v.checked = likeCounts[i].checked;
-      v.commentCount = commentObj.list[i].length;
+      v.commentCount = commentResArr[i].list.length;
       return v;
     });
     // console.log('文章数：', list.length);

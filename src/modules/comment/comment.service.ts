@@ -36,7 +36,6 @@ export class CommentService {
     const list: any[] = await qb.getMany();
     // console.log(list);
     return list; */
-
     const qb = this.commentRepository.createQueryBuilder('comment');
     qb.where('comment.articleId = :id', { id });
     qb.addOrderBy('comment.createTime', 'ASC');
@@ -61,6 +60,7 @@ export class CommentService {
       v.userInfo = users[i];
       return v;
     });
+    // console.log(data);
     return {
       list: data,
       pagination,

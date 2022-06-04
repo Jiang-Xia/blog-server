@@ -39,6 +39,7 @@ export class CommentService {
 
     const qb = this.commentRepository.createQueryBuilder('comment');
     qb.where('comment.articleId = :id', { id });
+    qb.addOrderBy('comment.createTime', 'ASC');
     const page = 1;
     const pageSize = 100; // 写死获取第一页，一页一百条
     const getList = qb
@@ -47,7 +48,7 @@ export class CommentService {
       .getManyAndCount();
     const [list, total] = await getList;
     // 先保留分页功能（评论多时需要分页展示了）
-    // const pagination = getPagination(total, pageSize, page);
+    const pagination = getPagination(total, pageSize, page);
     // console.log(list);
     // console.log('pagination', pagination);
     const sArr = [];
@@ -56,9 +57,13 @@ export class CommentService {
       sArr.push(this.userService.findById(v.uid));
     });
     const users = await Promise.all(sArr);
-    return list.map((v: any, i: number) => {
+    const data = list.map((v: any, i: number) => {
       v.userInfo = users[i];
       return v;
     });
+    return {
+      list: data,
+      pagination,
+    };
   }
 }

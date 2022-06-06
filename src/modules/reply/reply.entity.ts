@@ -6,13 +6,13 @@ export class Reply {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ApiProperty({ description: '评论id' })
+  @ApiProperty({ description: '评论id(父级id)' })
   @Column()
-  commentId: string;
+  parentId: string;
 
   @ApiProperty({ description: '回复目标id' })
   @Column()
-  replyId: string;
+  replyUid: string;
 
   @ApiProperty({ description: '回复内容' })
   @Column()

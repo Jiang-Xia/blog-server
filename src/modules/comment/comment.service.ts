@@ -51,10 +51,12 @@ export class CommentService {
     // console.log(list);
     // console.log('pagination', pagination);
     const sArr = [];
+    const rArr = [];
     // 组装多个异步函数查询
     list.forEach((v: any) => {
       sArr.push(this.userService.findById(v.uid));
     });
+
     const users = await Promise.all(sArr);
     const data = list.map((v: any, i: number) => {
       v.userInfo = users[i];

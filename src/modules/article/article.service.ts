@@ -103,13 +103,16 @@ export class ArticleService {
     const likeCounts = await this.findLike(list, uid);
     const commentResArr: any = await this.findComment(list);
     // console.log(commentCounts, '文章列表对应评论');
-    // console.log(commentResArr, 'commentResArr');
+    console.log(commentResArr, 'commentResArr');
 
     const arr = list.map((v: any, i: number) => {
+      // 计算所有评论数
+      let commentCount = 0;
+      commentResArr[i].list.map((v: any) => (commentCount += v.allReplyCount));
       // 点赞统计数
       v.likes = likeCounts[i].count;
       v.checked = likeCounts[i].checked;
-      v.commentCount = commentResArr[i].list.length;
+      v.commentCount = commentResArr[i].list.length + commentCount; // 评论和回复数
       return v;
     });
     // console.log('文章数：', list.length);

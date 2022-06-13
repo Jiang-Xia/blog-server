@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Post,
   Query,
   UseGuards,
@@ -23,6 +25,9 @@ export class CommentController {
   // 创建评论
   @Post('create')
   async create(@Body() comment: Comment) {
+    if (!comment.uid) {
+      throw new HttpException('请先登录！', HttpStatus.UNAUTHORIZED);
+    }
     return await this.commentService.create(comment);
   }
 

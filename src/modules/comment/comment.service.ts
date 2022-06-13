@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Any, EntityManager, Repository } from 'typeorm';
 import { Comment } from './comment.entity';
 import { UserService } from '../user/user.service';
-import { User } from '../user/entity/user.entity';
+import { ReplyService } from '../reply/reply.service';
 import { getPagination } from 'src/utils';
 
 @Injectable()
@@ -12,6 +12,7 @@ export class CommentService {
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
     private readonly userService: UserService,
+    private readonly replyService: ReplyService,
   ) {}
   async create(comment: any) {
     const newComment: any = await this.commentRepository.create(comment);
@@ -19,6 +20,7 @@ export class CommentService {
   }
   async delete(id: string) {
     await this.commentRepository.delete(id);
+    this.replyService.deleteByParentId(id);
   }
   async findAll(id: number) {
     /* 
@@ -55,11 +57,17 @@ export class CommentService {
     // 组装多个异步函数查询
     list.forEach((v: any) => {
       sArr.push(this.userService.findById(v.uid));
+      rArr.push(this.replyService.findAll(v.id));
     });
 
     const users = await Promise.all(sArr);
+    const replys = await Promise.all(rArr);
+    // console.log('replys', replys);
     const data = list.map((v: any, i: number) => {
-      v.userInfo = users[i];
+      const { nickname, id } = users[i];
+      v.userInfo = { nickname, id }; // 简洁返回用户信息
+      v.replys = replys[i].list; // 所有回复列表
+      v.allReplyCount = replys[i].total; // 一个父级评论下的所有回复数
       return v;
     });
     // console.log(data);

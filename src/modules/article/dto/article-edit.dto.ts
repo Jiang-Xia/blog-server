@@ -41,4 +41,8 @@ export class ArticleEditDTO {
   @IsNotEmpty({ message: 'id 不能为空' })
   // 文章id
   id: number;
+
+  @IsNotEmpty({ message: '封面 不能为空' })
+  // 文章id
+  cover: string;
 }

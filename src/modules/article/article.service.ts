@@ -103,7 +103,7 @@ export class ArticleService {
     const likeCounts = await this.findLike(list, uid);
     const commentResArr: any = await this.findComment(list);
     // console.log(commentCounts, '文章列表对应评论');
-    console.log(commentResArr, 'commentResArr');
+    // console.log(commentResArr, 'commentResArr');
 
     const arr = list.map((v: any, i: number) => {
       // 计算所有评论数
@@ -218,6 +218,7 @@ export class ArticleService {
     articleToUpdate.description = articleEditDTO.description;
     articleToUpdate.content = articleEditDTO.content;
     articleToUpdate.contentHtml = articleEditDTO.contentHtml;
+    articleToUpdate.cover = articleEditDTO.cover;
     articleToUpdate.uTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
     const result = await this.articleRepository.save(articleToUpdate);
 

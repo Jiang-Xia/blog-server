@@ -67,7 +67,7 @@ export class Article {
   tags: Array<Tag>;
 
   @ApiProperty({ description: '封面图' })
-  @Column('varchar', { default: '' })
+  @Column('longtext')
   cover: string; // 封面图
 
   @ApiProperty({ description: '喜欢/点赞数' })

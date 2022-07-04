@@ -29,6 +29,8 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard, Roles } from '../auth/roles.guard';
 import { Article } from './entity/article.entity';
 import { getUid } from 'src/utils';
+// import { XMLParser, XMLValidator } from 'fast-xml-parser';
+
 @ApiTags('文章模块')
 @Controller('article')
 @UseGuards(RolesGuard)
@@ -38,10 +40,15 @@ export class ArticleController {
   @ApiOkResponse({ description: '文章列表', type: ArticleListResponse })
   @Post('list')
   async getMore(
-    @Body() listDTO: ListDTO,
+    @Body() listDTO: any,
     @Headers() headers,
   ): Promise<ArticleListVO> {
-    // console.log('listDTO', listDTO);
+    console.log('listDTO', listDTO);
+
+    // 解析xml传输数据格式
+    // const parser = new XMLParser();
+    // console.log('xml', parser.parse(listDTO));
+
     return await this.articleService.getMore(
       listDTO,
       getUid(headers.authorization),

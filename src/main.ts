@@ -2,7 +2,7 @@
  * @Author: 酱
  * @LastEditors: 酱
  * @Date: 2021-11-12 17:31:46
- * @LastEditTime: 2022-06-13 19:53:32
+ * @LastEditTime: 2022-07-10 21:40:50
  * @Description:
  * @FilePath: \blog-server\src\main.ts
  */
@@ -28,6 +28,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new TransformInterceptor());
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalPipes(new ValidationPipe());
+
   app.use(json({ limit: '5mb' })); // http传输设置
   // 允许跨域
   app.enableCors();

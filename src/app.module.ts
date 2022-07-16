@@ -10,6 +10,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { ReplyModule } from './modules/reply/reply.module';
 import { LikeModule } from './modules/like/like.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 import { ResourcesModule } from './modules/resources/resources.module';
 import { databaseConfig } from './config';
@@ -30,6 +31,7 @@ import { databaseConfig } from './config';
     ReplyModule,
     LikeModule,
     ResourcesModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -79,7 +79,7 @@ export class ArticleService {
         }
         // 内容
         if (content) {
-          qb.orWhere('article.content like :content', {
+          qb.orWhere('article.contentHtml like :content', {
             content: `%${description}%`,
           });
         }
@@ -216,7 +216,7 @@ export class ArticleService {
     const articleToUpdate = await this.articleRepository.findOne({ id });
     articleToUpdate.title = articleEditDTO.title;
     articleToUpdate.description = articleEditDTO.description;
-    articleToUpdate.content = articleEditDTO.content;
+    // articleToUpdate.content = articleEditDTO.content;
     articleToUpdate.contentHtml = articleEditDTO.contentHtml;
     articleToUpdate.cover = articleEditDTO.cover;
     articleToUpdate.uTime = dayjs().format('YYYY-MM-DD HH:mm:ss');

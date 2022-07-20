@@ -1,5 +1,6 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Headers } from '@nestjs/common';
 import { ApiTags, ApiBody, ApiOkResponse } from '@nestjs/swagger';
+import { getUid } from 'src/utils';
 import { LoginDTO } from './dto/login.dto';
 import { RegisterDTO } from './dto/register.dto';
 import { UserService } from './user.service';
@@ -23,5 +24,12 @@ export class UserController {
   @Post('login')
   async login(@Body() loginDTO: LoginDTO): Promise<any> {
     return this.userService.login(loginDTO);
+  }
+
+  @ApiOkResponse({ description: '用户信息', type: TokenResponse })
+  @Get('info')
+  async userInfo(@Headers() headers): Promise<any> {
+    const id = getUid(headers.authorization);
+    return this.userService.findById(id);
   }
 }

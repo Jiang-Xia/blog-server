@@ -33,5 +33,5 @@ export class ArticleCreateDTO {
     example: '给你讲述美丽的大海',
   })
   @IsNotEmpty({ message: '请输入文章内容' })
-  readonly content: string;
+  readonly contentHtml: string;
 }

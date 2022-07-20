@@ -4,7 +4,7 @@ export interface Article {
   description: ''; // 描述
   category: '';
   tags: [];
-  content: ''; // content
+  contentHtml: ''; // content
   createTime?: ''; // 创建时间
   updateTime?: ''; // 更新时间
   isDelete?: ''; // 是否删除

@@ -2,7 +2,7 @@
  * @Author: 酱
  * @LastEditors: 酱
  * @Date: 2021-11-16 16:52:15
- * @LastEditTime: 2022-06-03 21:17:12
+ * @LastEditTime: 2022-07-09 14:31:40
  * @Description:
  * @FilePath: \blog-server\src\modules\user\user.service.ts
  */
@@ -108,7 +108,7 @@ export class UserService {
    * 获取指定用户
    * @param id
    */
-  async findById(id): Promise<User> {
+  async findById(id: number): Promise<User> {
     return await this.userRepository.findOne(id);
   }
 }

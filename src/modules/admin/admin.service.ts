@@ -59,7 +59,7 @@ export class MenuService {
         menuTree.push(v);
       }
     });
-    console.log('所有菜单：', { menuTree });
+    // console.log('所有菜单：', {menuTree});
     return menuTree;
   }
 }

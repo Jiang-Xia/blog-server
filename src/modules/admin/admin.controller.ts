@@ -1,20 +1,61 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { RolesGuard } from '../auth/roles.guard';
-import { MenuService } from './admin.service';
-import { Menu } from './admin.entity';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Roles, RolesGuard } from '../auth/roles.guard';
+import { MenuService, LinkService } from './admin.service';
+import { Menu, Link } from './admin.entity';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 // 文档
-@ApiTags('管理台模块')
+@ApiTags('管理台菜单模块')
 @Controller('admin')
-// 权限
 @UseGuards(RolesGuard)
 export class MenuController {
-  constructor(private readonly adminService: MenuService) {}
+  constructor(private readonly menuService: MenuService) {}
 
   // https://www.cnblogs.com/xiaoyantongxue/p/15758271.html
 
   @Get('menu')
-  findAllMenu(@Body() AdminDTO: Menu) {
-    return this.adminService.findAll();
+  findAllMenu(@Body() MenuDTO: Menu) {
+    return this.menuService.findAll();
+  }
+}
+
+@ApiTags('外链模块')
+@Controller('link')
+@UseGuards(RolesGuard)
+// 外链
+export class LinkController {
+  constructor(private readonly linkService: LinkService) {}
+
+  @ApiResponse({ status: 200, description: '添加分类', type: [Link] })
+  @Post()
+  create(@Body() Link) {
+    return this.linkService.create(Link);
+  }
+
+  @Get()
+  findAll(@Query() queryParams): Promise<Link[]> {
+    return this.linkService.findAll(queryParams);
+  }
+
+  @Patch(':id')
+  updateById(@Param('id') id, @Body() Link) {
+    return this.linkService.updateById(id, Link);
+  }
+
+  @Delete(':id')
+  @Roles(['admin', 'super'])
+  @UseGuards(JwtAuthGuard)
+  deleteById(@Param('id') id) {
+    return this.linkService.deleteById(id);
   }
 }

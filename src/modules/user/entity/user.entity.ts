@@ -38,7 +38,8 @@ export class User {
   // 用户角色 开发阶段默认为admin
 
   /**
-   * admin 可以修改网站的所有内容
+   * super 可以 admin和author进行角色控制，主要用于用户管理
+   * admin 可以修改网站的所有内容，除了管理端的用户管理
    * author 可以增删改查文章，评论，回复。
    */
   @Column('simple-enum', {

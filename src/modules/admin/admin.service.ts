@@ -1,7 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Menu } from './admin.entity';
+import { Link, Menu } from './admin.entity';
 
 // 接口继承
 interface MenuState extends Menu {
@@ -61,5 +66,57 @@ export class MenuService {
     });
     // console.log('所有菜单：', {menuTree});
     return menuTree;
+  }
+}
+
+// 外链
+@Injectable()
+export class LinkService {
+  constructor(
+    @InjectRepository(Link)
+    private readonly linkRepository: Repository<Link>,
+  ) {}
+
+  async create(Link: Partial<Link>): Promise<Link> {
+    const { url } = Link;
+    const existCategory = await this.linkRepository.findOne({
+      where: { url },
+    });
+
+    if (existCategory) {
+      throw new HttpException('外链已存在', HttpStatus.BAD_REQUEST);
+    }
+    const newCategory = await this.linkRepository.create(Link);
+    await this.linkRepository.save(newCategory);
+    return newCategory;
+  }
+
+  async findAll(queryParams): Promise<Link[]> {
+    // const { articleStatus } = queryParams;
+    const qb = this.linkRepository
+      .createQueryBuilder('category')
+      .orderBy('category.createAt', 'ASC');
+    const data = await qb.getMany();
+    return data;
+    // return this.linkRepository.find({ order: { createAt: 'ASC' } });
+  }
+
+  async updateById(id, category: Partial<Link>): Promise<Link> {
+    const oldCategory = await this.linkRepository.findOne(id);
+    const updatedCategory = await this.linkRepository.merge(
+      oldCategory,
+      category,
+    );
+    return this.linkRepository.save(updatedCategory);
+  }
+
+  async deleteById(id) {
+    try {
+      const link = await this.linkRepository.findOne(id);
+      await this.linkRepository.remove(link);
+      return true;
+    } catch (e) {
+      throw new HttpException('删除失败', HttpStatus.BAD_REQUEST);
+    }
   }
 }

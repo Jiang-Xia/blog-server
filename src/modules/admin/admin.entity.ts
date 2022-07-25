@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+  CreateDateColumn,
+} from 'typeorm';
 
 /* admin 菜单表 */
 @Entity()
@@ -46,6 +53,14 @@ export class Menu {
 /* 友链 */
 @Entity()
 export class Link {
+  // 数据库 创建时间
+  @CreateDateColumn()
+  createTime: Date;
+
+  // 数据库 更新时间
+  @UpdateDateColumn()
+  updateTime: Date;
+
   @ApiProperty({ description: '自身id' })
   @PrimaryGeneratedColumn()
   id: string;

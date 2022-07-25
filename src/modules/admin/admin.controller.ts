@@ -27,6 +27,23 @@ export class MenuController {
   findAllMenu(@Body() MenuDTO: Menu) {
     return this.menuService.findAll();
   }
+
+  @Post('menu')
+  create(@Body() Link) {
+    return this.menuService.create(Link);
+  }
+
+  @Patch('menu:id')
+  updateById(@Param('id') id, @Body() Link) {
+    return this.menuService.updateById(id, Link);
+  }
+
+  @Delete('menu:id')
+  @Roles(['super'])
+  @UseGuards(JwtAuthGuard)
+  deleteById(@Param('id') id) {
+    return this.menuService.deleteById(id);
+  }
 }
 
 @ApiTags('外链模块')
@@ -47,9 +64,9 @@ export class LinkController {
     return this.linkService.findAll(queryParams);
   }
 
-  @Patch(':id')
-  updateById(@Param('id') id, @Body() Link) {
-    return this.linkService.updateById(id, Link);
+  @Patch()
+  updateById(@Body() Link) {
+    return this.linkService.updateById(Link.id, Link);
   }
 
   @Delete(':id')

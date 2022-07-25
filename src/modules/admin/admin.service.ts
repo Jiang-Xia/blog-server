@@ -67,6 +67,36 @@ export class MenuService {
     // console.log('所有菜单：', {menuTree});
     return menuTree;
   }
+
+  async create(Menu: Partial<Menu>): Promise<Menu> {
+    const { id } = Menu;
+    const exist = await this.menuRepository.findOne({
+      where: { id },
+    });
+
+    if (exist) {
+      throw new HttpException('菜单已存在', HttpStatus.BAD_REQUEST);
+    }
+    const newItem = await this.menuRepository.create(Menu);
+    await this.menuRepository.save(newItem);
+    return newItem;
+  }
+
+  async updateById(id, item: Partial<Menu>): Promise<Menu> {
+    const oldItem = await this.menuRepository.findOne(id);
+    const updatedItem = await this.menuRepository.merge(oldItem, item);
+    return this.menuRepository.save(updatedItem);
+  }
+
+  async deleteById(id) {
+    try {
+      const menu = await this.menuRepository.findOne(id);
+      await this.menuRepository.remove(menu);
+      return true;
+    } catch (e) {
+      throw new HttpException('删除失败', HttpStatus.BAD_REQUEST);
+    }
+  }
 }
 
 // 外链
@@ -94,20 +124,17 @@ export class LinkService {
   async findAll(queryParams): Promise<Link[]> {
     // const { articleStatus } = queryParams;
     const qb = this.linkRepository
-      .createQueryBuilder('category')
-      .orderBy('category.createAt', 'ASC');
+      .createQueryBuilder('link')
+      .orderBy('link.createTime', 'ASC');
     const data = await qb.getMany();
     return data;
     // return this.linkRepository.find({ order: { createAt: 'ASC' } });
   }
 
-  async updateById(id, category: Partial<Link>): Promise<Link> {
-    const oldCategory = await this.linkRepository.findOne(id);
-    const updatedCategory = await this.linkRepository.merge(
-      oldCategory,
-      category,
-    );
-    return this.linkRepository.save(updatedCategory);
+  async updateById(id, item: Partial<Link>): Promise<Link> {
+    const oldItem = await this.linkRepository.findOne(id);
+    const updatedItem = await this.linkRepository.merge(oldItem, item);
+    return this.linkRepository.save(updatedItem);
   }
 
   async deleteById(id) {

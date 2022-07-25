@@ -43,7 +43,7 @@ export class ArticleController {
     @Body() listDTO: any,
     @Headers() headers,
   ): Promise<ArticleListVO> {
-    console.log('listDTO', listDTO);
+    // console.log('listDTO', listDTO);
 
     // 解析xml传输数据格式
     // const parser = new XMLParser();
@@ -68,7 +68,7 @@ export class ArticleController {
 
   @Post('create')
   // 文档部分添加鉴权(文档调用是不用鉴权)
-  @Roles('admin')
+  // 只要登陆了都可以增删改查
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ description: '创建文章', type: ArticleInfoResponse })
@@ -84,7 +84,6 @@ export class ArticleController {
   }
 
   @Post('edit')
-  @Roles('admin')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ description: '编辑文章', type: ArticleInfoResponse })
@@ -94,7 +93,6 @@ export class ArticleController {
   }
 
   @Delete('delete')
-  @Roles('admin')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ description: '删除文章', type: ArticleInfoResponse })

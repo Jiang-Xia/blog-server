@@ -27,7 +27,7 @@ export class TagController {
    */
   @ApiResponse({ status: 200, description: '创建标签', type: [Tag] })
   @Post()
-  @Roles('admin')
+  @Roles(['admin'])
   @UseGuards(JwtAuthGuard)
   create(@Body() tag) {
     return this.tagService.create(tag);
@@ -65,7 +65,7 @@ export class TagController {
    * @param tag
    */
   @Patch(':id')
-  @Roles('admin')
+  @Roles(['admin'])
   @UseGuards(JwtAuthGuard)
   updateById(@Param('id') id, @Body() tag) {
     return this.tagService.updateById(id, tag);
@@ -76,7 +76,7 @@ export class TagController {
    * @param id
    */
   @Delete(':id')
-  @Roles('admin')
+  @Roles(['admin'])
   @UseGuards(JwtAuthGuard)
   deleteById(@Param('id') id) {
     return this.tagService.deleteById(id);

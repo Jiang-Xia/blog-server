@@ -27,7 +27,7 @@ export class CategoryController {
    */
   @ApiResponse({ status: 200, description: '添加分类', type: [Category] })
   @Post()
-  @Roles('admin')
+  @Roles(['admin', 'super'])
   @UseGuards(JwtAuthGuard)
   create(@Body() category) {
     return this.categoryService.create(category);
@@ -56,7 +56,7 @@ export class CategoryController {
    * @param category
    */
   @Patch(':id')
-  @Roles('admin')
+  @Roles(['admin'])
   @UseGuards(JwtAuthGuard)
   updateById(@Param('id') id, @Body() category) {
     return this.categoryService.updateById(id, category);
@@ -67,7 +67,7 @@ export class CategoryController {
    * @param id
    */
   @Delete(':id')
-  @Roles('admin')
+  @Roles(['admin', 'super'])
   @UseGuards(JwtAuthGuard)
   deleteById(@Param('id') id) {
     return this.categoryService.deleteById(id);

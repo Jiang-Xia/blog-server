@@ -32,14 +32,14 @@ export class MenuService {
     // 设置一下属性和删属性
     const setMenuTree = (item: any) => {
       const { order, icon, locale, requiresAuth } = item;
-      console.log('item1', item);
+      // console.log('item1', item);
       item.meta = {
         order,
         icon,
         locale,
         requiresAuth,
       };
-      console.log('item1', item);
+      // console.log('item1', item);
 
       Object.keys(item.meta).forEach((key) => {
         delete item[key]; // 删除原本层级的属性
@@ -59,7 +59,7 @@ export class MenuService {
         menuTree.push(v);
       }
     });
-    console.log('所有菜单：', menuTree);
+    console.log('所有菜单：', { menuTree });
     return menuTree;
   }
 }

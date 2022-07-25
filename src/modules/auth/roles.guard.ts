@@ -9,7 +9,10 @@ import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
 import { User } from '../user/entity/user.entity';
 
-export const Roles = (...roles: string[]) => SetMetadata('roles', roles);
+export const Roles = (roles: string[]) => {
+  // console.log('SetMetadata', roles);
+  return SetMetadata('roles', roles);
+};
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -19,6 +22,7 @@ export class RolesGuard implements CanActivate {
   ) {}
 
   canActivate(context: ExecutionContext): boolean {
+    // 取消 SetMetadata 设置的roles
     const roles = this.reflector.get<string[]>('roles', context.getHandler());
     // console.log('roles', roles);
     if (!roles) {
@@ -36,7 +40,7 @@ export class RolesGuard implements CanActivate {
     if (!user) {
       return false;
     }
-    const hasRole = roles.some((role) => role === user.role);
+    const hasRole = roles.includes(user.role);
     // console.log(user, user.role, hasRole);
     if (user && user.role && hasRole) {
       return true;

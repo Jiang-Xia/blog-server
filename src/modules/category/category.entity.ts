@@ -17,6 +17,10 @@ export class Category {
 
   @ApiProperty()
   @Column()
+  uid: number;
+
+  @ApiProperty()
+  @Column()
   label: string;
 
   @ApiProperty()

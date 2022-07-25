@@ -36,9 +36,14 @@ export class User {
   version: number;
 
   // 用户角色 开发阶段默认为admin
+
+  /**
+   * admin 可以修改网站的所有内容
+   * author 可以增删改查文章，评论，回复。
+   */
   @Column('simple-enum', {
-    enum: ['super', 'admin', 'visitor'],
-    default: 'admin',
+    enum: ['super', 'admin', 'author'],
+    default: 'author',
   })
   role: string;
 

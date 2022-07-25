@@ -17,6 +17,10 @@ export class Tag {
 
   @ApiProperty()
   @Column()
+  uid: number;
+
+  @ApiProperty()
+  @Column()
   label: string;
 
   @ApiProperty()

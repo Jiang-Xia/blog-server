@@ -2,7 +2,7 @@
  * @Author: 酱
  * @LastEditors: 酱
  * @Date: 2021-11-16 16:52:15
- * @LastEditTime: 2022-07-09 14:31:40
+ * @LastEditTime: 2022-07-25 15:54:47
  * @Description:
  * @FilePath: \blog-server\src\modules\user\user.service.ts
  */
@@ -66,6 +66,10 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('用户不存在');
     }
+    // console.log({ user });
+    // if (loginDTO.admin && user.role !== 'admin') {
+    //   throw new NotFoundException('该用户不是管理员登录不了管理端!');
+    // }
     const { password: dbPassword, salt } = user;
     const currentHashPassword = encryptPassword(password, salt);
     // console.log({ currentHashPassword, dbPassword });

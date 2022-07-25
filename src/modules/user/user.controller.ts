@@ -1,6 +1,19 @@
-import { Body, Controller, Get, Post, Headers } from '@nestjs/common';
-import { ApiTags, ApiBody, ApiOkResponse } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Headers,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiBody,
+  ApiOkResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { getUid } from 'src/utils';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { LoginDTO } from './dto/login.dto';
 import { RegisterDTO } from './dto/register.dto';
 import { UserService } from './user.service';
@@ -26,6 +39,9 @@ export class UserController {
     return this.userService.login(loginDTO);
   }
 
+  // 获取用户信息需要鉴权
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @ApiOkResponse({ description: '用户信息', type: TokenResponse })
   @Get('info')
   async userInfo(@Headers() headers): Promise<any> {

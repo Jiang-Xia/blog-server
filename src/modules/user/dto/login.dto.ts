@@ -19,4 +19,10 @@ export class LoginDTO {
   })
   @IsNotEmpty({ message: '请输入密码' })
   readonly password: string;
+
+  @ApiProperty({
+    description: 'admin端',
+    example: true,
+  })
+  readonly admin?: boolean;
 }

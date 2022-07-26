@@ -4,6 +4,8 @@ import { IsNotEmpty, IsOptional, Matches } from 'class-validator';
 import { IdDTO } from './id.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { regPositive } from 'src/utils/regex.util';
+import { Category } from 'src/modules/category/category.entity';
+import { Tag } from 'src/modules/tag/tag.entity';
 
 export class ArticleEditDTO {
   @ApiProperty({
@@ -23,6 +25,14 @@ export class ArticleEditDTO {
   @IsOptional()
   @IsNotEmpty({ message: '请输入文章描述' })
   readonly description?: string;
+
+  @ApiProperty()
+  @IsNotEmpty({ message: '请选择文章分类' })
+  readonly category: Category;
+
+  @ApiProperty()
+  @IsNotEmpty({ message: '请选择文章标签' })
+  readonly tags: Array<Tag>;
 
   @ApiProperty({
     description: '文章内容',

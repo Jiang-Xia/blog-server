@@ -122,11 +122,15 @@ export class LinkService {
   }
 
   async findAll(queryParams): Promise<Link[]> {
+    const { client } = queryParams;
     // const { articleStatus } = queryParams;
-    const qb = this.linkRepository
-      .createQueryBuilder('link')
-      .orderBy('link.createTime', 'ASC');
-    const data = await qb.getMany();
+    const sql = this.linkRepository.createQueryBuilder('link');
+    // 客戶端只返回已同意申请的
+    if (client) {
+      sql.andWhere('link.agreed=:agreed', { agreed: true });
+    }
+    sql.orderBy('link.createTime', 'ASC');
+    const data = await sql.getMany();
     return data;
     // return this.linkRepository.find({ order: { createAt: 'ASC' } });
   }

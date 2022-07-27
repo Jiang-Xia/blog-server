@@ -219,7 +219,14 @@ export class ArticleService {
     // articleToUpdate.content = articleEditDTO.content;
     articleToUpdate.contentHtml = articleEditDTO.contentHtml;
     articleToUpdate.cover = articleEditDTO.cover;
+    articleToUpdate.category = articleEditDTO.category;
+    // 需要去数据库找那个查询是否存在，才能赋值更新
+    const tags = await this.tagService.findByIds(
+      ('' + articleEditDTO.tags).split(','),
+    );
+    articleToUpdate.tags = tags;
     articleToUpdate.uTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
+    // console.log({ articleToUpdate });
     const result = await this.articleRepository.save(articleToUpdate);
 
     return {

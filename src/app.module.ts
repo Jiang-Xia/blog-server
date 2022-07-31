@@ -10,6 +10,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { ReplyModule } from './modules/reply/reply.module';
 import { LikeModule } from './modules/like/like.module';
+import { MsgboardModule } from './modules/msgboard/msgboard.module';
 import { AdminModule } from './modules/admin/admin.module';
 
 import { ResourcesModule } from './modules/resources/resources.module';
@@ -31,6 +32,7 @@ import { databaseConfig } from './config';
     ReplyModule,
     LikeModule,
     ResourcesModule,
+    MsgboardModule,
     AdminModule,
   ],
   controllers: [AppController],

@@ -28,4 +28,6 @@ export class ListDTO {
   // 时间排序
   sort?: string;
   readonly tags?: string[];
+
+  readonly client?: boolean; // 用于判断home还是admin端
 }

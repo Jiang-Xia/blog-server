@@ -46,6 +46,7 @@ export class ArticleService {
       description,
       tags,
       sort,
+      client,
     } = listDTO;
     const sql = this.articleRepository.createQueryBuilder('article');
     sql
@@ -62,6 +63,10 @@ export class ArticleService {
       // 标签之间为in操作类似 or
       sql.andWhere('tags.id IN (:...tags)', { tags });
       // WHERE user.name IN ('Timber', 'Cristal', 'Lina')
+    }
+    // home 请求不返回已软删除的（禁用）
+    if (client) {
+      sql.andWhere('article.isDelete=:isDelete', { isDelete: false });
     }
     // 关键字查询
     sql.andWhere(
@@ -86,13 +91,17 @@ export class ArticleService {
         // 排序
         if (sort && sort.toUpperCase() === 'ASC') {
           // 按最新排
-          sql.addOrderBy('article.createTime', 'ASC');
+          sql.orderBy('article.createTime', 'ASC');
         } else {
           // 按最旧排
-          sql.addOrderBy('article.createTime', 'DESC');
+          sql.orderBy('article.createTime', 'DESC');
         }
+
+        // 置顶排序
+        sql.orderBy('article.topping', 'DESC');
       }),
     );
+
     // 获取查询结果
     const getList = sql
       .skip((page - 1) * pageSize)
@@ -113,6 +122,7 @@ export class ArticleService {
       v.likes = likeCounts[i].count;
       v.checked = likeCounts[i].checked;
       v.commentCount = commentResArr[i].list.length + commentCount; // 评论和回复数
+      v.contentHtml = ''; // 置空文章内容
       return v;
     });
     // console.log('文章数：', list.length);
@@ -220,6 +230,10 @@ export class ArticleService {
     articleToUpdate.contentHtml = articleEditDTO.contentHtml;
     articleToUpdate.cover = articleEditDTO.cover;
     articleToUpdate.category = articleEditDTO.category;
+    // 只有admin端才传
+    if (articleToUpdate.isDelete !== undefined) {
+      articleToUpdate.isDelete = articleEditDTO.isDelete;
+    }
     // 需要去数据库找那个查询是否存在，才能赋值更新
     const tags = await this.tagService.findByIds(
       ('' + articleEditDTO.tags).split(','),
@@ -266,6 +280,22 @@ export class ArticleService {
       views: oldArticle.views + 1,
     });
     return this.articleRepository.save(updatedArticle);
+  }
+
+  /**
+   * @description: 设置文章的启用和禁用
+   * @param {*} id 文章id
+   * @param {false} isDelete
+   * @return {*} 设置成功信息
+   */
+  async disableArticle(id, isDelete: false) {
+    const articleToUpdate = await this.articleRepository.findOne({ id });
+    articleToUpdate.isDelete = isDelete;
+    // console.log({ articleToUpdate });
+    const result = await this.articleRepository.save(articleToUpdate);
+    return {
+      info: result,
+    };
   }
 
   // /**

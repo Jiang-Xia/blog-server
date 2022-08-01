@@ -12,6 +12,7 @@ import {
   HttpStatus,
   Param,
   Headers,
+  Patch,
 } from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { ArticleCreateDTO } from './dto/article-create.dto';
@@ -114,13 +115,13 @@ export class ArticleController {
   }
 
   /**
-   * 文章访喜欢量 +1
+   * 启用禁用文章
    */
-  // @Post('likes')
-  // @HttpCode(HttpStatus.OK)
-  // updateLikesById(@Body('id') id, @Body('type') type) {
-  //   return this.articleService.updateLikesById(id, type);
-  // }
+  @Patch('disabled')
+  @HttpCode(HttpStatus.OK)
+  updateArticleIsDelete(@Body('id') id, @Body('isDelete') isDelete) {
+    return this.articleService.disableArticle(id, isDelete);
+  }
 
   /**
    * 获取所有文章归档

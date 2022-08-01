@@ -115,14 +115,22 @@ export class ArticleController {
   }
 
   /**
-   * 启用禁用文章
+   * 更新文章字段  禁用和置顶
    */
   @Patch('disabled')
   @HttpCode(HttpStatus.OK)
-  updateArticleIsDelete(@Body('id') id, @Body('isDelete') isDelete) {
-    return this.articleService.disableArticle(id, isDelete);
+  updateArticleIsDelete(@Body() field) {
+    return this.articleService.updateArticleField(field);
   }
 
+  /**
+   * 更新文章字段  禁用和置顶
+   */
+  @Patch('updateField')
+  @HttpCode(HttpStatus.OK)
+  updateArticleTopping(@Body() field) {
+    return this.articleService.updateArticleField(field);
+  }
   /**
    * 获取所有文章归档
    */

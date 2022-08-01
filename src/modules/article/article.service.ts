@@ -283,19 +283,18 @@ export class ArticleService {
   }
 
   /**
-   * @description: 设置文章的启用和禁用
-   * @param {*} id 文章id
-   * @param {false} isDelete
+   * @description: 更新文章字段  文章 禁用和置顶
    * @return {*} 设置成功信息
    */
-  async disableArticle(id, isDelete: false) {
-    const articleToUpdate = await this.articleRepository.findOne({ id });
-    articleToUpdate.isDelete = isDelete;
-    // console.log({ articleToUpdate });
-    const result = await this.articleRepository.save(articleToUpdate);
-    return {
-      info: result,
-    };
+  async updateArticleField(field) {
+    const { id } = field;
+    delete field.id;
+    const oldArticle = await this.articleRepository.findOne(id);
+    // merge - 将多个实体合并为一个实体。
+    const updatedArticle = await this.articleRepository.merge(oldArticle, {
+      ...field,
+    });
+    return this.articleRepository.save(updatedArticle);
   }
 
   // /**

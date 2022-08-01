@@ -115,7 +115,7 @@ export class ArticleController {
   }
 
   /**
-   * 更新文章字段  禁用和置顶
+   *  禁用
    */
   @Patch('disabled')
   @HttpCode(HttpStatus.OK)
@@ -124,9 +124,9 @@ export class ArticleController {
   }
 
   /**
-   * 更新文章字段  禁用和置顶
+   * 置顶
    */
-  @Patch('updateField')
+  @Patch('topping')
   @HttpCode(HttpStatus.OK)
   updateArticleTopping(@Body() field) {
     return this.articleService.updateArticleField(field);

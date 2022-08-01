@@ -35,7 +35,7 @@ export class Article {
 
   // 文章的更新时间
   @Column('text')
-  uTime: string;
+  uTime: Date;
 
   // 用户id
   @Column()

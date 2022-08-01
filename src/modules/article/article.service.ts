@@ -88,20 +88,22 @@ export class ArticleService {
             content: `%${description}%`,
           });
         }
+        console.log('排序方式:', sort);
+        /* 如果你使用了多个.orderBy，后面的将覆盖所有之前的ORDER BY表达式。 */
         // 排序
         if (sort && sort.toUpperCase() === 'ASC') {
-          // 按最新排
-          sql.orderBy('article.createTime', 'ASC');
+          // select * from article a order by a.topping desc,a.uTime asc 先置顶再按时间排序
+          // 改为更新时间排序 置顶排序
+          // 按最旧排 升序 从小到大
+          sql.orderBy({ 'article.topping': 'DESC', 'article.uTime': 'ASC' });
         } else {
-          // 按最旧排
-          sql.orderBy('article.createTime', 'DESC');
+          // 按最新排 降序 从大到小
+          sql.orderBy({ 'article.topping': 'DESC', 'article.uTime': 'DESC' });
         }
-
-        // 置顶排序
-        sql.orderBy('article.topping', 'DESC');
       }),
     );
 
+    console.warn('查询文章sql：', sql.getSql());
     // 获取查询结果
     const getList = sql
       .skip((page - 1) * pageSize)
@@ -126,6 +128,8 @@ export class ArticleService {
       return v;
     });
     // console.log('文章数：', list.length);
+    // console.log({ list });
+
     const pagination = getPagination(total, pageSize, page);
     return {
       list: arr,
@@ -157,6 +161,7 @@ export class ArticleService {
       .leftJoinAndSelect('article.tags', 'tags')
       .where('article.id=:id')
       .orWhere('article.title=:title')
+      .printSql()
       .setParameter('id', id)
       .setParameter('title', id);
     const data = await query.getOne();
@@ -206,7 +211,7 @@ export class ArticleService {
     // 创建文章
     const newArticle = await this.articleRepository.create({
       ...article,
-      uTime: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+      uTime: new Date(),
       uid,
       category: existCategory,
       tags,
@@ -239,7 +244,7 @@ export class ArticleService {
       ('' + articleEditDTO.tags).split(','),
     );
     articleToUpdate.tags = tags;
-    articleToUpdate.uTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
+    articleToUpdate.uTime = new Date();
     // console.log({ articleToUpdate });
     const result = await this.articleRepository.save(articleToUpdate);
 

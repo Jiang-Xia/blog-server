@@ -1,9 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Link, Menu } from './admin.entity';
@@ -83,7 +78,7 @@ export class MenuService {
     const exist = await this.menuRepository.findOne({
       where: { id },
     });
-
+    // console.log({ Menu, exist });
     if (exist) {
       throw new HttpException('菜单已存在', HttpStatus.BAD_REQUEST);
     }
@@ -100,7 +95,12 @@ export class MenuService {
     const updatedItem = await this.menuRepository.merge(oldItem, {
       ...field,
     });
+    // console.log({ field, updatedItem });
     return this.menuRepository.save(updatedItem);
+  }
+
+  async findById(id: number): Promise<Menu> {
+    return await this.menuRepository.findOne(id);
   }
 
   async deleteById(id) {

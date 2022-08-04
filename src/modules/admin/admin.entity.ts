@@ -48,6 +48,12 @@ export class Menu {
   @Column({ default: '' })
   filePath: string;
 
+  // 软删除
+  @Column({
+    default: false,
+  })
+  isDelete: boolean;
+
   @Column({ default: true })
   super: boolean;
 

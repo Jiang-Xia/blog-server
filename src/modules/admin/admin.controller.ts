@@ -30,12 +30,19 @@ export class MenuController {
 
   @Post('menu')
   create(@Body() menu) {
+    // console.log({ menu });
     return this.menuService.create(menu);
   }
 
   @Patch('menu')
   updateById(@Body() menu) {
     return this.menuService.updateField(menu);
+  }
+
+  @Get('menu/detail')
+  findById(@Query('id') id) {
+    // console.log({ id });
+    return this.menuService.findById(id);
   }
 
   @Delete('menu')

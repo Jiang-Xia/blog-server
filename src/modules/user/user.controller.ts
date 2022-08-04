@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Delete,
+  Query,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -66,8 +67,10 @@ export class UserController {
 
   @Roles(['super'])
   @UseGuards(JwtAuthGuard)
+  // http://localhost:5000/user/10 @Delete(':id') 需配合 (@Param('id') id）
+  // 这样收到的参数是一个对象即{id} 需前后端配合比较麻烦
   @Delete()
-  deleteById(@Param('id') id) {
+  deleteById(@Query('id') id) {
     return this.userService.deleteById(id);
   }
 }

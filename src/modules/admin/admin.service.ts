@@ -92,9 +92,14 @@ export class MenuService {
     return newItem;
   }
 
-  async updateById(id, item: Partial<Menu>): Promise<Menu> {
+  async updateField(field) {
+    const { id } = field;
+    delete field.id;
     const oldItem = await this.menuRepository.findOne(id);
-    const updatedItem = await this.menuRepository.merge(oldItem, item);
+    // merge - 将多个实体合并为一个实体。
+    const updatedItem = await this.menuRepository.merge(oldItem, {
+      ...field,
+    });
     return this.menuRepository.save(updatedItem);
   }
 

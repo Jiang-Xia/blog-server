@@ -2,7 +2,7 @@
  * @Author: 酱
  * @LastEditors: 酱
  * @Date: 2021-11-16 16:52:15
- * @LastEditTime: 2022-08-04 17:49:51
+ * @LastEditTime: 2022-08-04 18:24:00
  * @Description:
  * @FilePath: \blog-server\src\modules\user\user.service.ts
  */
@@ -124,8 +124,11 @@ export class UserService {
   }
 
   async findAll(queryParams): Promise<userListVO> {
-    const { page = 1, pageSize = 20 } = queryParams;
+    const { page = 1, pageSize = 20, mobile } = queryParams;
     const sql = this.userRepository.createQueryBuilder('user');
+    if (mobile) {
+      sql.andWhere('user.mobile like :mobile', { mobile: `%${mobile}%` });
+    }
     sql.orderBy('user.createTime', 'ASC');
     const getList = sql
       .skip((page - 1) * pageSize)
@@ -156,7 +159,9 @@ export class UserService {
 
   async deleteById(id) {
     try {
+      /* !!! 注意 如果id为undefined会找到第一个 导致删除数据 */
       const user = await this.userRepository.findOne(id);
+      // console.log(id, user);
       await this.userRepository.remove(user);
       return true;
     } catch (e) {

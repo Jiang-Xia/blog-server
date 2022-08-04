@@ -24,18 +24,18 @@ export class MenuController {
   // https://www.cnblogs.com/xiaoyantongxue/p/15758271.html
 
   @Get('menu')
-  findAllMenu(@Query('role') role: string) {
+  findAll(@Query('role') role: string) {
     return this.menuService.findAll(role);
   }
 
   @Post('menu')
-  create(@Body() Link) {
-    return this.menuService.create(Link);
+  create(@Body() menu) {
+    return this.menuService.create(menu);
   }
 
-  @Patch('menu:id')
-  updateById(@Param('id') id, @Body() Link) {
-    return this.menuService.updateById(id, Link);
+  @Patch('menu')
+  updateById(@Body() menu) {
+    return this.menuService.updateField(menu);
   }
 
   @Delete('menu:id')

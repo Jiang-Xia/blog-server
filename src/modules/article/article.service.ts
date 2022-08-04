@@ -103,7 +103,7 @@ export class ArticleService {
       }),
     );
 
-    console.warn('查询文章sql：', sql.getSql());
+    // console.warn('查询文章sql：', sql.getSql());
     // 获取查询结果
     const getList = sql
       .skip((page - 1) * pageSize)

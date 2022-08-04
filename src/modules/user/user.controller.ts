@@ -5,6 +5,9 @@ import {
   Post,
   Headers,
   UseGuards,
+  Param,
+  Patch,
+  Delete,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -14,11 +17,13 @@ import {
 } from '@nestjs/swagger';
 import { getUid } from 'src/utils';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Roles } from '../auth/roles.guard';
 import { LoginDTO } from './dto/login.dto';
 import { RegisterDTO } from './dto/register.dto';
 import { UserService } from './user.service';
 import { TokenResponse } from './vo/token.vo';
 import { UserInfoResponse } from './vo/user-info.vo';
+import { userListVO } from './vo/user-list.vo';
 
 @ApiTags('用户模块')
 @Controller('user')
@@ -47,5 +52,22 @@ export class UserController {
   async userInfo(@Headers() headers): Promise<any> {
     const id = getUid(headers.authorization);
     return this.userService.findById(id);
+  }
+
+  @Post('list')
+  async getMore(@Body() listDTO: any): Promise<userListVO> {
+    return await this.userService.findAll(listDTO);
+  }
+  // 改变状态
+  @Patch('status')
+  updateById(@Body() user) {
+    return this.userService.updateField(user);
+  }
+
+  @Roles(['super'])
+  @UseGuards(JwtAuthGuard)
+  @Delete()
+  deleteById(@Param('id') id) {
+    return this.userService.deleteById(id);
   }
 }

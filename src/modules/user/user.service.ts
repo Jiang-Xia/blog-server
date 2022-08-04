@@ -2,11 +2,17 @@
  * @Author: 酱
  * @LastEditors: 酱
  * @Date: 2021-11-16 16:52:15
- * @LastEditTime: 2022-07-25 17:34:21
+ * @LastEditTime: 2022-08-04 17:49:51
  * @Description:
  * @FilePath: \blog-server\src\modules\user\user.service.ts
  */
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { encryptPassword, makeSalt } from 'src/utils/cryptogram.util';
 import { Repository } from 'typeorm';
@@ -14,6 +20,8 @@ import { RegisterDTO } from './dto/register.dto';
 import { LoginDTO } from './dto/login.dto';
 import { User } from './entity/user.entity';
 import { JwtService } from '@nestjs/jwt';
+import { getPagination } from 'src/utils';
+import { userListVO } from './vo/user-list.vo';
 
 @Injectable()
 export class UserService {
@@ -65,11 +73,10 @@ export class UserService {
 
     if (!user) {
       throw new NotFoundException('用户不存在');
+    } else if (user.status === 'locked') {
+      throw new UnauthorizedException('账号已被锁定！');
     }
     // console.log({ user });
-    if (loginDTO.admin && user.role !== 'admin') {
-      throw new NotFoundException('该用户不是管理员登录不了管理端!');
-    }
     const { password: dbPassword, salt } = user;
     const currentHashPassword = encryptPassword(password, salt);
     // console.log({ currentHashPassword, dbPassword });
@@ -114,5 +121,46 @@ export class UserService {
    */
   async findById(id: number): Promise<User> {
     return await this.userRepository.findOne(id);
+  }
+
+  async findAll(queryParams): Promise<userListVO> {
+    const { page = 1, pageSize = 20 } = queryParams;
+    const sql = this.userRepository.createQueryBuilder('user');
+    sql.orderBy('user.createTime', 'ASC');
+    const getList = sql
+      .skip((page - 1) * pageSize)
+      .take(pageSize)
+      .getManyAndCount();
+    const [list, total] = await getList;
+    const pagination = getPagination(total, pageSize, page);
+    return {
+      list: list,
+      pagination,
+    };
+  }
+
+  /**
+   * @description: 更新字段
+   * @return {*} 设置成功信息
+   */
+  async updateField(field) {
+    const { id } = field;
+    delete field.id;
+    const oldItem = await this.userRepository.findOne(id);
+    // merge - 将多个实体合并为一个实体。
+    const updatedItem = await this.userRepository.merge(oldItem, {
+      ...field,
+    });
+    return this.userRepository.save(updatedItem);
+  }
+
+  async deleteById(id) {
+    try {
+      const user = await this.userRepository.findOne(id);
+      await this.userRepository.remove(user);
+      return true;
+    } catch (e) {
+      throw new HttpException('删除失败', HttpStatus.BAD_REQUEST);
+    }
   }
 }

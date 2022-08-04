@@ -47,6 +47,15 @@ export class Menu {
   @ApiProperty({ description: '菜单路由对应前端组件路径' })
   @Column({ default: '' })
   filePath: string;
+
+  @Column({ default: true })
+  super: boolean;
+
+  @Column({ default: true })
+  admin: boolean;
+
+  @Column({ default: false })
+  author: boolean;
 }
 // 可以建多个表
 

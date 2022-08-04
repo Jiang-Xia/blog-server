@@ -24,8 +24,8 @@ export class MenuController {
   // https://www.cnblogs.com/xiaoyantongxue/p/15758271.html
 
   @Get('menu')
-  findAllMenu(@Body() MenuDTO: Menu) {
-    return this.menuService.findAll();
+  findAllMenu(@Query('role') role: string) {
+    return this.menuService.findAll(role);
   }
 
   @Post('menu')

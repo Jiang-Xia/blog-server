@@ -27,12 +27,22 @@ export class MenuService {
     @InjectRepository(Menu)
     private readonly menuRepository: Repository<Menu>,
   ) {}
-  async findAll(): Promise<Menu[]> {
+  async findAll(role: string): Promise<Menu[]> {
     // const { articleStatus } = queryParams;
-    const qb = this.menuRepository
-      .createQueryBuilder('menu')
-      .orderBy('menu.order', 'ASC');
+    const qb = this.menuRepository.createQueryBuilder('menu');
+
+    // 作者权限只返回文章管理
+    if (role === 'author') {
+      qb.andWhere('menu.author=:author', { author: true });
+    } else if (role === 'admin') {
+      // 不返回用户设置
+      qb.andWhere('menu.admin=:admin', { admin: true });
+    } else {
+      qb.andWhere('menu.super=:super', { super: true });
+    }
+    qb.orderBy('menu.order', 'ASC');
     const data = await qb.getMany();
+    // console.log({ role, data });
     const menuTree = [];
     // 设置一下属性和删属性
     const setMenuTree = (item: any) => {

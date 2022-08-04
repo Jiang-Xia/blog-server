@@ -5,7 +5,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from '../user/user.module';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
-
 const passModule = PassportModule.register({ defaultStrategy: 'jwt' });
 const jwtModule = JwtModule.register({
   secret: 'xia',

@@ -38,10 +38,10 @@ export class MenuController {
     return this.menuService.updateField(menu);
   }
 
-  @Delete('menu:id')
+  @Delete('menu')
   @Roles(['super'])
   @UseGuards(JwtAuthGuard)
-  deleteById(@Param('id') id) {
+  deleteById(@Query('id') id) {
     return this.menuService.deleteById(id);
   }
 }
@@ -69,10 +69,10 @@ export class LinkController {
     return this.linkService.updateById(Link.id, Link);
   }
 
-  @Delete(':id')
-  @Roles(['admin', 'super'])
+  @Delete()
+  @Roles(['super'])
   @UseGuards(JwtAuthGuard)
-  deleteById(@Param('id') id) {
+  deleteById(@Query('id') id) {
     return this.linkService.deleteById(id);
   }
 }

@@ -2,7 +2,7 @@
  * @Author: 酱
  * @LastEditors: 酱
  * @Date: 2021-11-16 16:52:15
- * @LastEditTime: 2022-08-04 18:24:00
+ * @LastEditTime: 2022-08-05 11:46:42
  * @Description:
  * @FilePath: \blog-server\src\modules\user\user.service.ts
  */
@@ -22,14 +22,30 @@ import { User } from './entity/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { getPagination } from 'src/utils';
 import { userListVO } from './vo/user-list.vo';
-
+import { accountConfig } from 'src/config';
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
-  ) {}
+  ) {
+    /* class 初始化时会执行 constructor*/
+    // 初始化账户
+    const cUser: RegisterDTO = { ...accountConfig };
+
+    this.register(cUser, true)
+      .then(() =>
+        console.log(
+          `管理员账户创建成功，手机号：${accountConfig.mobile}，密码：${accountConfig.password}，请及时登录系统修改默认密码`,
+        ),
+      )
+      .catch(() => {
+        console.log(
+          `管理员账户已经存在，手机号：${accountConfig.mobile}，密码：${accountConfig.password}，请及时登录系统修改默认密码`,
+        );
+      });
+  }
 
   // 校验注册信息
   async checkRegisterForm(registerDTO: RegisterDTO): Promise<any> {
@@ -44,10 +60,13 @@ export class UserService {
   }
 
   // 注册
-  async register(registerDTO: RegisterDTO): Promise<any> {
+  async register(registerDTO: RegisterDTO, init?: boolean): Promise<any> {
     await this.checkRegisterForm(registerDTO);
+    return await this.createUser(registerDTO, init);
+  }
 
-    const { nickname, password, mobile } = registerDTO;
+  async createUser(registerDTO: RegisterDTO, init?: boolean) {
+    const { nickname, password, mobile, role } = registerDTO;
     const salt = makeSalt(); // 制作密码盐
     const hashPassword = encryptPassword(password, salt); // 加密密码
 
@@ -56,10 +75,13 @@ export class UserService {
     newUser.mobile = mobile;
     newUser.password = hashPassword;
     newUser.salt = salt;
-    mobile;
+
+    if (role && init) {
+      newUser.role = role;
+    }
     return await this.userRepository.save(newUser);
   }
-
+  // 校验登录用户
   async checkLoginForm(loginDTO: LoginDTO): Promise<any> {
     const { mobile, password } = loginDTO;
     const user = await this.userRepository

@@ -1,7 +1,8 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Link, Menu } from './admin.entity';
+import MenuList = require('./menu.json');
 
 // 接口继承
 interface MenuState extends Menu {
@@ -21,7 +22,22 @@ export class MenuService {
   constructor(
     @InjectRepository(Menu)
     private readonly menuRepository: Repository<Menu>,
-  ) {}
+  ) {
+    /* 初始化菜单列表 需要捕获错误防止已存在*/
+    MenuList.forEach(async (v: Menu, index: number) => {
+      await this.create(v)
+        .then(() => {
+          if (MenuList.length === index + 1) {
+            console.log(`默认菜单创建成功，`);
+          }
+        })
+        .catch(() => {
+          if (MenuList.length === index + 1) {
+            console.log(`默认菜单已经存在`);
+          }
+        });
+    });
+  }
   async findAll(role: string): Promise<Menu[]> {
     // const { articleStatus } = queryParams;
     const qb = this.menuRepository.createQueryBuilder('menu');

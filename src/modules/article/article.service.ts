@@ -50,8 +50,7 @@ export class ArticleService {
       client,
       onlyMy,
     } = listDTO;
-    const { id: uid, role } = info;
-    // console.log({ info, uid });
+    const uid = info?.id;
     const sql = this.articleRepository.createQueryBuilder('article');
     sql
       .leftJoinAndSelect('article.category', 'category')
@@ -96,7 +95,7 @@ export class ArticleService {
             content: `%${description}%`,
           });
         }
-        console.log('排序方式:', sort);
+        // console.log('排序方式:', sort);
         /* 如果你使用了多个.orderBy，后面的将覆盖所有之前的ORDER BY表达式。 */
         // 排序
         if (sort && sort.toUpperCase() === 'ASC') {

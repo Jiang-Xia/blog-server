@@ -30,11 +30,11 @@
         "isDelete": false
     },
     {
-        "id": "p80000",
+        "id": "p188880",
         "pid": "0",
         "path": "\/system",
         "name": "System",
-        "order": 1,
+        "order": 188,
         "icon": "icon-settings",
         "locale": "menu.server.system",
         "requiresAuth": true,
@@ -45,11 +45,11 @@
         "isDelete": false
     },
     {
-        "id": "p80001",
-        "pid": "p80000",
+        "id": "p188881",
+        "pid": "p188880",
         "path": "\/system\/userManage",
         "name": "UserManage",
-        "order": 1,
+        "order": 188,
         "icon": "",
         "locale": "menu.server.userManage",
         "requiresAuth": true,
@@ -60,11 +60,11 @@
         "isDelete": false
     },
     {
-        "id": "p80002",
-        "pid": "p80000",
+        "id": "p188882",
+        "pid": "p188880",
         "path": "\/system\/menuManage",
         "name": "MenuManage",
-        "order": 1,
+        "order": 188,
         "icon": "",
         "locale": "menu.server.menuManage",
         "requiresAuth": true,

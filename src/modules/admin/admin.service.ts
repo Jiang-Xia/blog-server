@@ -32,9 +32,9 @@ export class MenuService {
           }
         })
         .catch(() => {
-          if (MenuList.length === index + 1) {
-            console.log(`默认菜单已经存在`);
-          }
+          // if (MenuList.length === index + 1) {
+          //   console.log(`默认菜单已经存在`);
+          // }
         });
     });
   }

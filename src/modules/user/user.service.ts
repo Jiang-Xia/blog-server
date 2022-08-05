@@ -2,7 +2,7 @@
  * @Author: 酱
  * @LastEditors: 酱
  * @Date: 2021-11-16 16:52:15
- * @LastEditTime: 2022-08-05 11:46:42
+ * @LastEditTime: 2022-08-05 12:22:37
  * @Description:
  * @FilePath: \blog-server\src\modules\user\user.service.ts
  */
@@ -41,9 +41,9 @@ export class UserService {
         ),
       )
       .catch(() => {
-        console.log(
-          `管理员账户已经存在，手机号：${accountConfig.mobile}，密码：${accountConfig.password}，请及时登录系统修改默认密码`,
-        );
+        // console.log(
+        //   `管理员账户已经存在，手机号：${accountConfig.mobile}，密码：${accountConfig.password}，请及时登录系统修改默认密码`,
+        // );
       });
   }
 

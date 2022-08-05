@@ -25,6 +25,7 @@ import { UserService } from './user.service';
 import { TokenResponse } from './vo/token.vo';
 import { UserInfoResponse } from './vo/user-info.vo';
 import { userListVO } from './vo/user-list.vo';
+import { User } from './entity/user.entity';
 
 @ApiTags('用户模块')
 @Controller('user')
@@ -48,21 +49,35 @@ export class UserController {
   // 获取用户信息需要鉴权
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOkResponse({ description: '用户信息', type: TokenResponse })
+  @ApiOkResponse({ description: '用户信息', type: UserInfoResponse })
   @Get('info')
   async userInfo(@Headers() headers): Promise<any> {
     const id = getUid(headers.authorization);
     return this.userService.findById(id);
   }
 
+  @ApiOkResponse({ description: '用户列表', type: userListVO })
   @Post('list')
   async getMore(@Body() listDTO: any): Promise<userListVO> {
     return await this.userService.findAll(listDTO);
   }
-  // 改变状态
+
+  @ApiOkResponse({ description: '锁定状态', type: Boolean })
   @Patch('status')
-  updateById(@Body() user) {
+  updateStatus(@Body() user) {
     return this.userService.updateField(user);
+  }
+
+  @ApiOkResponse({ description: '修改用户信息', type: UserInfoResponse })
+  @Patch('edit')
+  updateUser(@Body() user) {
+    return this.userService.updateField(user);
+  }
+
+  @ApiOkResponse({ description: '修改密码', type: Boolean })
+  @Patch('password')
+  updatePassword(@Body() user) {
+    return this.userService.updatePassword(user);
   }
 
   @Roles(['super'])

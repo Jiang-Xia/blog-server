@@ -2,7 +2,7 @@
  * @Author: 酱
  * @LastEditors: 酱
  * @Date: 2021-11-16 16:52:15
- * @LastEditTime: 2022-08-05 12:22:37
+ * @LastEditTime: 2022-08-05 17:23:32
  * @Description:
  * @FilePath: \blog-server\src\modules\user\user.service.ts
  */
@@ -176,7 +176,22 @@ export class UserService {
     const updatedItem = await this.userRepository.merge(oldItem, {
       ...field,
     });
+    console.log({ updatedItem });
     return this.userRepository.save(updatedItem);
+  }
+
+  async updatePassword(field) {
+    const { password, passwordRepeat, id } = field;
+    if (password !== passwordRepeat) {
+      throw new NotFoundException('两次输入的密码不一致，请检查');
+    }
+    const salt = makeSalt(); // 制作密码盐
+    const hashPassword = encryptPassword(password, salt); // 加密密码
+    return await this.updateField({
+      password: hashPassword,
+      salt,
+      id,
+    });
   }
 
   async deleteById(id) {

@@ -55,7 +55,7 @@
         "requiresAuth": true,
         "filePath": "UserManage",
         "super": true,
-        "admin": true,
+        "admin": false,
         "author": false,
         "isDelete": false
     },

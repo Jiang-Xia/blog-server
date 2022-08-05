@@ -29,7 +29,7 @@ import { ArticleListResponse, ArticleListVO } from './vo/article-list.vo';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard, Roles } from '../auth/roles.guard';
 import { Article } from './entity/article.entity';
-import { getUid } from 'src/utils';
+import { getUserInfo, getUid } from 'src/utils';
 // import { XMLParser, XMLValidator } from 'fast-xml-parser';
 
 @ApiTags('文章模块')
@@ -52,7 +52,7 @@ export class ArticleController {
 
     return await this.articleService.getMore(
       listDTO,
-      getUid(headers.authorization),
+      getUserInfo(headers.authorization),
     );
   }
   @Get('info')

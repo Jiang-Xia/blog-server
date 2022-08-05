@@ -2,7 +2,7 @@
  * @Author: 酱
  * @LastEditors: 酱
  * @Date: 2021-11-16 16:52:15
- * @LastEditTime: 2022-08-05 17:23:32
+ * @LastEditTime: 2022-08-05 22:51:02
  * @Description:
  * @FilePath: \blog-server\src\modules\user\user.service.ts
  */
@@ -100,9 +100,8 @@ export class UserService {
     }
     // console.log({ user });
     const { password: dbPassword, salt } = user;
-    const currentHashPassword = encryptPassword(password, salt);
     // console.log({ currentHashPassword, dbPassword });
-    if (currentHashPassword !== dbPassword) {
+    if (!User.compactPass(password, dbPassword, salt)) {
       throw new NotFoundException('密码错误');
     }
 
@@ -176,22 +175,35 @@ export class UserService {
     const updatedItem = await this.userRepository.merge(oldItem, {
       ...field,
     });
-    console.log({ updatedItem });
+    // console.log({ updatedItem });
     return this.userRepository.save(updatedItem);
   }
 
   async updatePassword(field) {
-    const { password, passwordRepeat, id } = field;
+    const { password, passwordRepeat, passwordOld, id } = field;
     if (password !== passwordRepeat) {
       throw new NotFoundException('两次输入的密码不一致，请检查');
     }
-    const salt = makeSalt(); // 制作密码盐
-    const hashPassword = encryptPassword(password, salt); // 加密密码
-    return await this.updateField({
+    // console.log({ password, passwordRepeat, passwordOld, id });
+    const { password: dbPassword, salt } = await this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.salt')
+      .addSelect('user.password')
+      .where('user.id = :id', { id })
+      .getOne();
+    // console.log(user);
+
+    if (!User.compactPass(passwordOld, dbPassword, salt)) {
+      throw new NotFoundException('旧密码不不正确，请检查！');
+    }
+    const newSalt = makeSalt(); // 制作新密码盐
+    const hashPassword = encryptPassword(password, newSalt); // 加密密码
+    await this.updateField({
       password: hashPassword,
-      salt,
+      salt: newSalt,
       id,
     });
+    return true;
   }
 
   async deleteById(id) {

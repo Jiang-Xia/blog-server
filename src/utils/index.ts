@@ -2,6 +2,7 @@ import './test';
 // 需要全部导入
 import * as os from 'os';
 import jwtDecode from 'jwt-decode';
+import { User } from 'src/modules/user/entity/user.entity';
 
 export default class utils {
   getPagination;
@@ -85,4 +86,12 @@ export function getUid(authorization = '') {
   const uid = user.id;
   // console.log(uid);
   return uid;
+}
+
+export function getUserInfo(authorization = ''): User {
+  if (!authorization) return;
+  const token = authorization.replace('Bearer ', '');
+  const user: any = jwtDecode(token);
+  // console.log(uid);
+  return user;
 }

@@ -26,8 +26,9 @@
 - **TypeScript**: 应用程序级 `JavaScript` 的语言
 - **代码规范**：丰富的规范插件及极高的代码规范
 
-## 推荐IDE
-- [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar)
+## 推荐工具
+- **IDE** [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar)
+- **数据库工具** [DBeaver](https://dbeaver.io/)
 
 
 ## 安装使用

@@ -19,6 +19,7 @@ import { LikeService } from '../like/like.service';
 import { CommentService } from '../comment/comment.service';
 
 import * as dayjs from 'dayjs';
+import { User } from '../user/entity/user.entity';
 
 @Injectable()
 export class ArticleService {
@@ -36,7 +37,7 @@ export class ArticleService {
    * @param listDTO
    * @returns
    */
-  async getMore(listDTO: ListDTO, uid: number) {
+  async getMore(listDTO: ListDTO, info: User) {
     const {
       page = 1,
       pageSize = 10,
@@ -47,7 +48,10 @@ export class ArticleService {
       tags,
       sort,
       client,
+      onlyMy,
     } = listDTO;
+    const { id: uid, role } = info;
+    // console.log({ info, uid });
     const sql = this.articleRepository.createQueryBuilder('article');
     sql
       .leftJoinAndSelect('article.category', 'category')
@@ -67,6 +71,10 @@ export class ArticleService {
     // home 请求不返回已软删除的（禁用）
     if (client) {
       sql.andWhere('article.isDelete=:isDelete', { isDelete: false });
+    }
+
+    if (onlyMy) {
+      sql.andWhere('article.uid=:uid', { uid });
     }
     // 关键字查询
     sql.andWhere(

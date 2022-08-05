@@ -29,5 +29,12 @@ export class ListDTO {
   sort?: string;
   readonly tags?: string[];
 
-  readonly client?: boolean; // 用于判断home还是admin端
+  readonly client?: boolean; // home端
+
+  readonly admin?: boolean; // admin端
+
+  @ApiProperty({
+    description: '是否只返回自身账号的文章',
+  })
+  readonly onlyMy?: boolean;
 }

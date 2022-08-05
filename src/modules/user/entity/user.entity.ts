@@ -1,5 +1,7 @@
 // src/modules/user/entity/user.entity.ts
 
+import { ApiProperty } from '@nestjs/swagger';
+import { encryptPassword } from 'src/utils/cryptogram.util';
 import {
   Entity,
   Column,
@@ -13,6 +15,18 @@ import { Comment } from '../../comment/comment.entity';
 
 @Entity()
 export class User {
+  /**
+   * @description: 比较密码是否相等
+   * @param {string} password0  未加密密码
+   * @param {string} dbPassword 已加盐加密的数据库中密码
+   * @param {string} salt
+   * @return {boolean}
+   */
+  static compactPass(password0: string, dbPassword: string, salt: string) {
+    const currentHashPassword = encryptPassword(password0, salt);
+    return dbPassword === currentHashPassword;
+  }
+
   // 主键id
   @PrimaryGeneratedColumn()
   id: number;
@@ -61,10 +75,23 @@ export class User {
   mobile: string;
 
   // 加密后的密码
-  @Column('text', { select: false })
+  @Column('text', { select: false /* 默认查询不选择的，需要时 andSelect */ })
   password: string;
 
   // 加密盐
   @Column('text', { select: false })
   salt: string;
+
+  /* 额外资料 */
+  @ApiProperty({ description: '简介或者个性签名' })
+  @Column('varchar', { default: '' })
+  intro?: string;
+
+  @ApiProperty({ description: '头像' })
+  @Column('varchar', { default: '' })
+  avatar?: string;
+
+  @ApiProperty({ description: '个人主页' })
+  @Column('varchar', { default: '' })
+  homepage?: string;
 }

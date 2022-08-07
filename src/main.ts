@@ -2,7 +2,7 @@
  * @Author: 酱
  * @LastEditors: 酱
  * @Date: 2021-11-12 17:31:46
- * @LastEditTime: 2022-07-04 17:15:27
+ * @LastEditTime: 2022-08-07 18:57:16
  * @Description:
  * @FilePath: \blog-server\src\main.ts
  */
@@ -17,13 +17,20 @@ import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { serveConfig } from './config';
 import { json, text } from 'body-parser';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
   console.log(serveConfig.isDev ? '==生产环境==' : '==开发环境==');
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: serveConfig.isDev
       ? ['log', 'debug', 'error', 'warn']
       : ['error', 'warn'],
+  });
+  // 配置静态资源目录
+  app.useStaticAssets('public');
+  // 3.1 设置虚拟路径
+  app.useStaticAssets('public', {
+    prefix: '/static/',
   });
   app.useGlobalInterceptors(new TransformInterceptor());
   app.useGlobalFilters(new HttpExceptionFilter());

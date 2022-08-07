@@ -31,3 +31,9 @@ export const accountConfig = {
   nickname: 'super',
   passwordRepeat: 'super',
 };
+
+/* 文件存储位置 */
+export const fileConfig = {
+  // filePath:env === 'production' ? '/blog/static/uploads/' : './public/uploads/',
+  filePath: './public/uploads/', // 直接使用本nestjs服务做静态资源服务
+};

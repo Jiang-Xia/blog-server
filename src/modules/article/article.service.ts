@@ -18,7 +18,6 @@ import { CategoryService } from '../category/category.service';
 import { LikeService } from '../like/like.service';
 import { CommentService } from '../comment/comment.service';
 
-import * as dayjs from 'dayjs';
 import { User } from '../user/entity/user.entity';
 
 @Injectable()

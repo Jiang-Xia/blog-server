@@ -59,7 +59,7 @@ export class ResourcesController {
    * 获取指定文件
    * @param id
    */
-  @Get('files:id')
+  @Get('file:id')
   findById(@Param('id') id) {
     return this.resourcesService.findById(id);
   }
@@ -68,10 +68,10 @@ export class ResourcesController {
    * 删除文件
    * @param id
    */
-  @Delete('file:id')
+  @Delete('file')
   @Roles(['super', 'admin'])
   @UseGuards(JwtAuthGuard)
-  deleteById(@Param('id') id) {
+  deleteById(@Query('id') id) {
     return this.resourcesService.deleteById(id);
   }
 }

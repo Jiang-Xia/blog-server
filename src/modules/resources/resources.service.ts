@@ -4,6 +4,39 @@ import { Repository } from 'typeorm';
 import { File } from './resources.entity';
 import * as dayjs from 'dayjs';
 import { InjectRepository } from '@nestjs/typeorm';
+import fs = require('fs');
+
+function delPath(path: string) {
+  // console.log('start');
+  try {
+    if (!fs.existsSync(path)) {
+      console.log('路径不存在');
+      return '路径不存在';
+    }
+    const info = fs.statSync(path);
+    // console.log(info);
+    if (info.isDirectory()) {
+      //目录
+      const data = fs.readdirSync(path);
+      if (data.length > 0) {
+        for (let i = 0; i < data.length; i++) {
+          delPath(`${path}/${data[i]}`); //使用递归
+          if (i == data.length - 1) {
+            //删了目录里的内容就删掉这个目录
+            delPath(`${path}`);
+          }
+        }
+      } else {
+        fs.rmdirSync(path); //删除空目录
+      }
+    } else if (info.isFile()) {
+      fs.unlinkSync(path); //删除文件
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 @Injectable()
 export class ResourcesService {
   constructor(
@@ -28,6 +61,7 @@ export class ResourcesService {
    */
   async uploadFile(file: Express.Multer.File): Promise<File> {
     const { originalname, destination, mimetype, path, size, filename } = file;
+    // console.log(file);
     // console.log(file);
     const newFile = await this.fileRepository.create({
       originalname,
@@ -87,6 +121,8 @@ export class ResourcesService {
   async deleteById(id) {
     const target = await this.fileRepository.findOne(id);
     // await this.oss.deleteFile(target.filename);
+    const path: string = target.url.replace('/static/', './public/');
+    delPath(path);
     return this.fileRepository.remove(target);
   }
 }

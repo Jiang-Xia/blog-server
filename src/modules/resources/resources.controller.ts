@@ -50,7 +50,7 @@ export class ResourcesController {
   /**
    * 获取所有文件
    */
-  @Get('file')
+  @Get('files')
   findAll(@Query() queryParam) {
     return this.resourcesService.findAll(queryParam);
   }
@@ -59,7 +59,7 @@ export class ResourcesController {
    * 获取指定文件
    * @param id
    */
-  @Get('file:id')
+  @Get('files:id')
   findById(@Param('id') id) {
     return this.resourcesService.findById(id);
   }

@@ -34,7 +34,7 @@ export class ResourcesService {
       filename,
       type: mimetype,
       size,
-      url: destination.replace('./public', '/static/') + filename,
+      url: destination.replace('./public/', '/static/') + '/' + filename,
     });
     return await this.fileRepository.save(newFile);
   }

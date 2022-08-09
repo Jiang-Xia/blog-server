@@ -7,6 +7,7 @@ import {
   Post,
   Query,
   UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -15,7 +16,10 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles, RolesGuard } from '../auth/roles.guard';
 import { ResourcesService } from './resources.service';
 import { File } from './resources.entity';
-import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  FileInterceptor,
+  FileFieldsInterceptor,
+} from '@nestjs/platform-express';
 // 文档
 @ApiTags('资源模块')
 @Controller('resources')
@@ -34,17 +38,25 @@ export class ResourcesController {
    */
   @ApiResponse({ status: 200, description: '上传文件', type: [File] })
   @Post('uploadFile')
+  // {
+  //   limits: {
+  //     fieldSize: 50 * 1024 * 1024,
+  //   },
+  // }
   @UseInterceptors(
-    FileInterceptor('file', {
-      limits: {
-        fieldSize: 50 * 1024 * 1024,
-      },
-    }),
+    /* 一个fileContents里面可以有多个文件对象，前端使用formData同一个fileContents传多个值 */
+    FileFieldsInterceptor([{ name: 'fileContents', maxCount: 10 }]),
   )
   @UseGuards(JwtAuthGuard)
-  uploadFile(@UploadedFile() file: Express.Multer.File) {
+  uploadFile(
+    @UploadedFiles()
+    files: {
+      fileContents?: Express.Multer.File[];
+    },
+  ) {
     /* !!! 这里的 file 已经是保存后的文件信息了，在此处做数据库处理，或者直接返回保存后的文件信息 */
-    return this.resourcesService.uploadFile(file);
+    // console.log(files.fileContents);
+    return this.resourcesService.uploadFile(files.fileContents);
   }
 
   /**

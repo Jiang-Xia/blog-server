@@ -6,32 +6,43 @@ import * as dayjs from 'dayjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import fs = require('fs');
 
-function delPath(path: string) {
+async function delPath(path: string) {
   // console.log('start');
   try {
     if (!fs.existsSync(path)) {
       console.log('路径不存在');
       return '路径不存在';
     }
-    const info = fs.statSync(path);
-    // console.log(info);
-    if (info.isDirectory()) {
-      //目录
-      const data = fs.readdirSync(path);
-      if (data.length > 0) {
-        for (let i = 0; i < data.length; i++) {
-          delPath(`${path}/${data[i]}`); //使用递归
-          if (i == data.length - 1) {
-            //删了目录里的内容就删掉这个目录
-            delPath(`${path}`);
+    // 异步执行
+    fs.stat(path, (err, info) => {
+      // console.log(info);
+      if (info.isDirectory()) {
+        //目录
+        fs.readdir(path, (_err: any, data: any) => {
+          if (data.length > 0) {
+            for (let i = 0; i < data.length; i++) {
+              delPath(`${path}/${data[i]}`); //使用递归
+              if (i == data.length - 1) {
+                //删了目录里的内容就删掉这个目录
+                delPath(`${path}`);
+              }
+            }
+          } else {
+            fs.rmdir(path, (_err) => {
+              if (!_err) {
+                // console.log('删除空目录');
+              }
+            }); //删除空目录
           }
-        }
-      } else {
-        fs.rmdirSync(path); //删除空目录
+        });
+      } else if (info.isFile()) {
+        fs.unlink(path, (_err) => {
+          if (!_err) {
+            // console.log('成功删除文件');
+          }
+        }); //删除文件
       }
-    } else if (info.isFile()) {
-      fs.unlinkSync(path); //删除文件
-    }
+    });
   } catch (error) {
     console.log(error);
   }
@@ -59,18 +70,23 @@ export class ResourcesService {
    * 上传文件
    * @param file
    */
-  async uploadFile(file: Express.Multer.File): Promise<File> {
-    const { originalname, destination, mimetype, path, size, filename } = file;
-    // console.log(file);
-    // console.log(file);
-    const newFile = await this.fileRepository.create({
-      originalname,
-      filename,
-      type: mimetype,
-      size,
-      url: destination.replace('./public/', '/static/') + '/' + filename,
+  async uploadFile(files: Express.Multer.File[]): Promise<File[]> {
+    const newFiles = [];
+    files.forEach((file: Express.Multer.File) => {
+      const { originalname, destination, mimetype, size, filename } = file;
+      const item: Partial<File> = {
+        originalname,
+        filename,
+        type: mimetype,
+        size,
+        url: destination.replace('./public/', '/static/') + '/' + filename,
+      };
+      // 组装多个实例
+      newFiles.push(this.fileRepository.create(item));
     });
-    return await this.fileRepository.save(newFile);
+    // console.log({ newFiles });
+    // 批量保存文件信息
+    return await this.fileRepository.save(newFiles);
   }
 
   /**

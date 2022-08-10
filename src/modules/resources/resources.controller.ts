@@ -45,7 +45,9 @@ export class ResourcesController {
   // }
   @UseInterceptors(
     /* 一个fileContents里面可以有多个文件对象，前端使用formData同一个fileContents传多个值 */
-    FileFieldsInterceptor([{ name: 'fileContents', maxCount: 10 }]),
+    FileFieldsInterceptor([
+      { name: 'fileContents', maxCount: 10 /* 每个字段可接受的最大文件数 */ },
+    ]),
   )
   @UseGuards(JwtAuthGuard)
   uploadFile(

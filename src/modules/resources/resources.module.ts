@@ -13,20 +13,24 @@ import { fileConfig } from '../../config';
   imports: [
     TypeOrmModule.forFeature([File]),
     AuthModule,
-    MulterModule.register({
-      storage: diskStorage({
-        // 配置文件上传后的文件夹路径
-        destination: `${fileConfig.filePath}${dayjs().format('YYYY-MM-DD')}`,
-        filename: (req, file, cb) => {
-          // console.log(req, file);
-          const { originalname } = file;
-          // 在此处自定义保存后的文件名称
-          // const filename = `${nuid.next()}.${file.originalname.split('/')[1]}`;
-          const filename = `${nuid.next().toLowerCase()}-${originalname}`;
+    MulterModule.registerAsync({
+      imports: [],
+      useFactory: async () => ({
+        storage: diskStorage({
+          // 配置文件上传后的文件夹路径
+          destination: `${fileConfig.filePath}${dayjs().format('YYYY-MM-DD')}`,
+          filename: (req, file, cb) => {
+            // console.log(req, file);
+            const { originalname } = file;
+            // 在此处自定义保存后的文件名称
+            // const filename = `${nuid.next()}.${file.originalname.split('/')[1]}`;
+            const filename = `${nuid.next().toLowerCase()}-${originalname}`;
 
-          return cb(null, filename);
-        },
+            return cb(null, filename);
+          },
+        }),
       }),
+      inject: [],
     }),
   ],
   exports: [ResourcesService],

@@ -101,10 +101,16 @@ export class ArticleService {
           // select * from article a order by a.topping desc,a.uTime asc 先置顶再按时间排序
           // 改为更新时间排序 置顶排序
           // 按最旧排 升序 从小到大
-          sql.orderBy({ 'article.topping': 'DESC', 'article.uTime': 'ASC' });
+          sql.orderBy({
+            'article.topping': 'DESC',
+            'article.createTime': 'ASC',
+          });
         } else {
           // 按最新排 降序 从大到小
-          sql.orderBy({ 'article.topping': 'DESC', 'article.uTime': 'DESC' });
+          sql.orderBy({
+            'article.topping': 'DESC',
+            'article.createTime': 'DESC',
+          });
         }
       }),
     );

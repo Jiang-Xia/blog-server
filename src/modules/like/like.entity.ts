@@ -12,8 +12,8 @@ export class Like {
   articleId: number;
 
   @ApiProperty()
-  @Column()
-  uid: number;
+  @Column({ default: '' })
+  ip: string;
 
   @ApiProperty()
   @Column({

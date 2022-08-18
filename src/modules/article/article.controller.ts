@@ -30,7 +30,6 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard, Roles } from '../auth/roles.guard';
 import { Article } from './entity/article.entity';
 import { getUserInfo, getUid } from 'src/utils';
-import { IpAddress } from 'src/utils/common';
 // import { XMLParser, XMLValidator } from 'fast-xml-parser';
 
 @ApiTags('文章模块')
@@ -120,12 +119,7 @@ export class ArticleController {
    */
   @Post('likes')
   @HttpCode(HttpStatus.OK)
-  updateLikesById(
-    @IpAddress() clinetIp: string,
-    @Body('articleId') articleId,
-    @Body('status') status,
-  ) {
-    // console.log({ clinetIp });
+  updateLikesById(@Body('articleId') articleId, @Body('status') status) {
     return this.articleService.updateLikesById(articleId, status);
   }
 

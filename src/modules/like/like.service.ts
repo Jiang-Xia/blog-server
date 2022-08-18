@@ -11,10 +11,10 @@ export class LikeService {
   ) {}
   async updateLike(LikeDTO: Like) {
     // console.log(data);
-    const { articleId, uid } = LikeDTO;
+    const { articleId, ip } = LikeDTO;
     if (LikeDTO.status) {
       const [list, count] = await this.likeRepository.findAndCount({
-        where: { articleId, uid },
+        where: { articleId, ip },
       });
       if (count) {
         throw new NotFoundException('该文章您已点赞！');
@@ -23,14 +23,14 @@ export class LikeService {
       this.likeRepository.save(LikeDTO);
     } else {
       const list = await this.likeRepository.find({
-        where: { articleId, uid },
+        where: { articleId, ip },
       });
       // 删除
       this.likeRepository.delete(list[0].id);
     }
   }
 
-  async findLike(articleId: number, uid: number) {
+  async findLike(articleId: number, ip: number) {
     const [list, count] = await this.likeRepository.findAndCount({
       where: {
         articleId,
@@ -40,7 +40,7 @@ export class LikeService {
     const [list2, count2] = await this.likeRepository.findAndCount({
       where: {
         articleId,
-        uid,
+        ip,
       },
     });
     return {

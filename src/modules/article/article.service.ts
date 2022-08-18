@@ -36,7 +36,7 @@ export class ArticleService {
    * @param listDTO
    * @returns
    */
-  async getMore(listDTO: ListDTO, info: User) {
+  async getMore(listDTO: ListDTO, info: User, ip: string) {
     const {
       page = 1,
       pageSize = 10,
@@ -123,7 +123,7 @@ export class ArticleService {
       .getManyAndCount();
     // let [list, total] = await getList;
     const [list, total] = await getList;
-    // const likeCounts = await this.findLike(list, uid);
+    const likeCounts = await this.findLike(list, ip);
     const commentResArr: any = await this.findComment(list);
     // console.log(commentCounts, '文章列表对应评论');
     // console.log(commentResArr, 'commentResArr');
@@ -133,7 +133,8 @@ export class ArticleService {
       let commentCount = 0;
       commentResArr[i].list.map((v: any) => (commentCount += v.allReplyCount));
       // 点赞统计数
-      // v.likes = likeCounts[i].count;
+      v.likes = likeCounts[i].count;
+      v.checked = likeCounts[i].checked;
       v.commentCount = commentResArr[i].list.length + commentCount; // 评论和回复数
       v.contentHtml = ''; // 置空文章内容
       return v;
@@ -148,11 +149,11 @@ export class ArticleService {
     };
   }
   // 先把文章列表查询出来，再根据列表组装一一根据文章去查询对应点赞数
-  async findLike(list: any, uid: number) {
+  async findLike(list: any, ip: string) {
     const sArr = [];
     // 组装多个异步函数查询
     list.forEach((v: any) => {
-      sArr.push(this.likeService.findLike(v.id, uid));
+      sArr.push(this.likeService.findLike(v.id, ip));
     });
     const res = await Promise.all(sArr);
     // console.log(res);
@@ -163,7 +164,7 @@ export class ArticleService {
    * 获取指定id文章信息
    * @param idDto
    */
-  async findById(idDto: IdDTO, uid: number) {
+  async findById(idDto: IdDTO, ip: string) {
     const { id } = idDto;
     const query = this.articleRepository
       .createQueryBuilder('article')
@@ -176,9 +177,9 @@ export class ArticleService {
       .setParameter('id', id)
       .setParameter('title', id);
     const data = await query.getOne();
-    const likeCount = await this.likeService.findLike(id, uid);
+    const likeCount = await this.likeService.findLike(id, ip);
     // const comments = await this.commentService.findAll(id);
-    // data.likes = likeCount.count;
+    data.likes = likeCount.count;
     // data.comments = comments;
     data.checked = likeCount.checked;
     // console.log(data);

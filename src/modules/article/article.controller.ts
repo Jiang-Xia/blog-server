@@ -30,6 +30,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard, Roles } from '../auth/roles.guard';
 import { Article } from './entity/article.entity';
 import { getUserInfo, getUid } from 'src/utils';
+import { IpAddress } from 'src/utils/common';
 // import { XMLParser, XMLValidator } from 'fast-xml-parser';
 
 @ApiTags('文章模块')
@@ -43,6 +44,7 @@ export class ArticleController {
   async getMore(
     @Body() listDTO: any,
     @Headers() headers,
+    @IpAddress() ip: string,
   ): Promise<ArticleListVO> {
     // console.log('listDTO', listDTO);
 
@@ -53,18 +55,16 @@ export class ArticleController {
     return await this.articleService.getMore(
       listDTO,
       getUserInfo(headers.authorization),
+      ip,
     );
   }
   @Get('info')
   @ApiOkResponse({ description: '文章详情', type: ArticleInfoResponse })
   async getOne(
     @Query() idDto: IdDTO,
-    @Headers() headers,
+    @IpAddress() ip: string,
   ): Promise<ArticleInfoVO> {
-    return await this.articleService.findById(
-      idDto,
-      getUid(headers.authorization),
-    );
+    return await this.articleService.findById(idDto, ip);
   }
 
   @Post('create')

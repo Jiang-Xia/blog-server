@@ -16,8 +16,9 @@ export class LikeService {
       const [list, count] = await this.likeRepository.findAndCount({
         where: { articleId, ip },
       });
-      if (count) {
-        throw new NotFoundException('该文章您已点赞！');
+      // 同一文章和同一ip点赞数不能超过二十次
+      if (count > 20) {
+        throw new NotFoundException('该文章您点赞太过频繁了！');
       }
       // 新增
       this.likeRepository.save(LikeDTO);
@@ -30,7 +31,7 @@ export class LikeService {
     }
   }
 
-  async findLike(articleId: number, ip: number) {
+  async findLike(articleId: number, ip: string) {
     const [list, count] = await this.likeRepository.findAndCount({
       where: {
         articleId,
@@ -45,7 +46,7 @@ export class LikeService {
     });
     return {
       count,
-      checked: count2,
+      checked: !!count2,
     };
   }
 }

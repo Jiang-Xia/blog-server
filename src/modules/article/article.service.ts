@@ -123,7 +123,7 @@ export class ArticleService {
       .getManyAndCount();
     // let [list, total] = await getList;
     const [list, total] = await getList;
-    const likeCounts = await this.findLike(list, uid);
+    // const likeCounts = await this.findLike(list, uid);
     const commentResArr: any = await this.findComment(list);
     // console.log(commentCounts, '文章列表对应评论');
     // console.log(commentResArr, 'commentResArr');
@@ -133,8 +133,7 @@ export class ArticleService {
       let commentCount = 0;
       commentResArr[i].list.map((v: any) => (commentCount += v.allReplyCount));
       // 点赞统计数
-      v.likes = likeCounts[i].count;
-      v.checked = likeCounts[i].checked;
+      // v.likes = likeCounts[i].count;
       v.commentCount = commentResArr[i].list.length + commentCount; // 评论和回复数
       v.contentHtml = ''; // 置空文章内容
       return v;
@@ -179,7 +178,7 @@ export class ArticleService {
     const data = await query.getOne();
     const likeCount = await this.likeService.findLike(id, uid);
     // const comments = await this.commentService.findAll(id);
-    data.likes = likeCount.count;
+    // data.likes = likeCount.count;
     // data.comments = comments;
     data.checked = likeCount.checked;
     // console.log(data);
@@ -319,13 +318,13 @@ export class ArticleService {
   //  * @param id
   //  * @returns
   //  */
-  // async updateLikesById(id, type): Promise<Article> {
-  //   const oldArticle = await this.articleRepository.findOne(id);
-  //   const updatedArticle = await this.articleRepository.merge(oldArticle, {
-  //     likes: type === 'like' ? oldArticle.likes + 1 : oldArticle.likes - 1,
-  //   });
-  //   return this.articleRepository.save(updatedArticle);
-  // }
+  async updateLikesById(articleId: number, status: number): Promise<Article> {
+    const oldArticle = await this.articleRepository.findOne(articleId);
+    const updatedArticle = await this.articleRepository.merge(oldArticle, {
+      likes: status === 1 ? oldArticle.likes + 1 : oldArticle.likes - 1,
+    });
+    return this.articleRepository.save(updatedArticle);
+  }
 
   /**
    * 获取文章归档

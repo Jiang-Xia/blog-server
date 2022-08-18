@@ -30,6 +30,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard, Roles } from '../auth/roles.guard';
 import { Article } from './entity/article.entity';
 import { getUserInfo, getUid } from 'src/utils';
+import { IpAddress } from 'src/utils/common';
 // import { XMLParser, XMLValidator } from 'fast-xml-parser';
 
 @ApiTags('文章模块')
@@ -112,6 +113,20 @@ export class ArticleController {
   @HttpCode(HttpStatus.OK)
   updateViewsById(@Body('id') id) {
     return this.articleService.updateViewsById(id);
+  }
+
+  /**
+   * 文章访喜欢量 +1
+   */
+  @Post('likes')
+  @HttpCode(HttpStatus.OK)
+  updateLikesById(
+    @IpAddress() clinetIp: string,
+    @Body('articleId') articleId,
+    @Body('status') status,
+  ) {
+    // console.log({ clinetIp });
+    return this.articleService.updateLikesById(articleId, status);
   }
 
   /**

@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   UploadedFile,
@@ -87,5 +88,16 @@ export class ResourcesController {
   @UseGuards(JwtAuthGuard)
   deleteById(@Query('id') id) {
     return this.resourcesService.deleteById(id);
+  }
+
+  // 增加文件夹
+  @Post('folder')
+  async addFolder(@Body('name') name: string) {
+    return await this.resourcesService.addFolder(name);
+  }
+
+  @Patch('file')
+  updateById(@Body() file: any) {
+    return this.resourcesService.updateField(file);
   }
 }

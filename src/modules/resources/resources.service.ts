@@ -141,4 +141,31 @@ export class ResourcesService {
     delPath(path);
     return this.fileRepository.remove(target);
   }
+
+  // 增加文件夹
+  async addFolder(name: string) {
+    const item: Partial<File> = {
+      originalname: name,
+      filename: name,
+      type: '',
+      size: 0,
+      url: '',
+      isFolder: true,
+    };
+    const newFile = this.fileRepository.create(item);
+    return await this.fileRepository.save(newFile);
+  }
+
+  // 修改文件属性
+  async updateField(field) {
+    const { id } = field;
+    delete field.id;
+    const oldItem = await this.fileRepository.findOne(id);
+    // merge - 将多个实体合并为一个实体。
+    const updatedItem = await this.fileRepository.merge(oldItem, {
+      ...field,
+    });
+    // console.log({ field, updatedItem });
+    return this.fileRepository.save(updatedItem);
+  }
 }

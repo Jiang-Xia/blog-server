@@ -14,6 +14,14 @@ export class File {
   id: string;
 
   @ApiProperty()
+  @Column({ default: '0' })
+  pid: string; // 文件名
+
+  @ApiProperty()
+  @Column({ default: false })
+  isFolder: boolean; // 文件名
+
+  @ApiProperty()
   @Column()
   originalname: string; // 文件名
 

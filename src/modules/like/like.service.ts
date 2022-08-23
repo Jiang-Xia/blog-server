@@ -20,6 +20,9 @@ export class LikeService {
       if (count > 20) {
         throw new NotFoundException('该文章您点赞太过频繁了！');
       }
+      if (!LikeDTO.uid) {
+        LikeDTO.id = undefined;
+      }
       // 新增
       this.likeRepository.save(LikeDTO);
     } else {

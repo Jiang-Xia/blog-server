@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import './test';
 // 需要全部导入
 import * as os from 'os';
@@ -86,12 +87,4 @@ export function getUid(authorization = '') {
   const uid = user.id;
   // console.log(uid);
   return uid;
-}
-
-export function getUserInfo(authorization = ''): User {
-  if (!authorization) return;
-  const token = authorization.replace('Bearer ', '');
-  const user: any = jwtDecode(token);
-  // console.log(uid);
-  return user;
 }

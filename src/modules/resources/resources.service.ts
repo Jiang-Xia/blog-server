@@ -70,7 +70,7 @@ export class ResourcesService {
    * 上传文件
    * @param file
    */
-  async uploadFile(files: Express.Multer.File[]): Promise<File[]> {
+  async uploadFile(files: Express.Multer.File[], pid: string): Promise<File[]> {
     const newFiles = [];
     files.forEach((file: Express.Multer.File) => {
       const { originalname, destination, mimetype, size, filename } = file;
@@ -81,6 +81,10 @@ export class ResourcesService {
         size,
         url: destination.replace('./public/', '/static/') + '/' + filename,
       };
+      // 文件夹内部上传时直接复制pid
+      if (pid) {
+        item.pid = pid;
+      }
       // 组装多个实例
       newFiles.push(this.fileRepository.create(item));
     });
@@ -98,9 +102,10 @@ export class ResourcesService {
       .orderBy('file.createAt', 'DESC');
 
     if (typeof queryParams === 'object') {
-      const { page = 1, pageSize = 12, ...otherParams } = queryParams;
+      const { page = 1, pageSize = 12, pid, ...otherParams } = queryParams;
       query.skip((+page - 1) * +pageSize);
       query.take(+pageSize);
+      query.andWhere(`file.pid = :pid`, { pid }); // 0为根目录，其他值为文件夹id
 
       if (otherParams) {
         Object.keys(otherParams).forEach((key) => {
@@ -134,11 +139,29 @@ export class ResourcesService {
    * 删除文件
    * @param id
    */
-  async deleteById(id) {
-    const target = await this.fileRepository.findOne(id);
+  async deleteById(id: string) {
+    const target: File = await this.fileRepository.findOne(id);
     // await this.oss.deleteFile(target.filename);
     const path: string = target.url.replace('/static/', './public/');
     delPath(path);
+
+    // 递归删除
+    const delCb = async (_target: File) => {
+      // 是文件夹时
+      if (_target.isFolder) {
+        const targets = await this.fileRepository.find({ pid: id });
+        // console.log(targets);
+        targets.forEach((v: File) => {
+          const p = v.url.replace('/static/', './public/');
+          console.log(p);
+          delPath(p);
+          delCb(v);
+        });
+        this.fileRepository.remove(targets);
+      }
+    };
+    delCb(target);
+
     return this.fileRepository.remove(target);
   }
 

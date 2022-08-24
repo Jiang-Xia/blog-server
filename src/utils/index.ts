@@ -2,6 +2,7 @@ import './test';
 // 需要全部导入
 import * as os from 'os';
 import jwtDecode from 'jwt-decode';
+import { User } from 'src/modules/user/entity/user.entity';
 
 export default class utils {
   getPagination;
@@ -60,17 +61,17 @@ export function getLocalIP() {
   const netInfo = os.networkInterfaces(); //网络信息
   let ip = '';
   if (osType === 'Windows_NT') {
-    console.log(netInfo);
     for (const dev in netInfo) {
       //win7的网络信息中显示为本地连接，win10显示为以太网
-      // dev === '本地连接' || dev === '以太网'
-      for (let j = 0; j < netInfo[dev].length; j++) {
-        if (netInfo[dev][j].family === 'IPv4') {
-          // 找到IPv4 跳出
-          ip = netInfo[dev][j].address;
-          break;
+      if (dev === '本地连接' || dev === '以太网') {
+        for (let j = 0; j < netInfo[dev].length; j++) {
+          if (netInfo[dev][j].family === 'IPv4') {
+            ip = netInfo[dev][j].address;
+            break;
+          }
         }
       }
+    }
   } else if (osType === 'Linux') {
     ip = netInfo.eth0[0].address;
   }

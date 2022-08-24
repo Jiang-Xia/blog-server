@@ -24,24 +24,31 @@ export class MenuController {
   // https://www.cnblogs.com/xiaoyantongxue/p/15758271.html
 
   @Get('menu')
-  findAllMenu(@Body() MenuDTO: Menu) {
-    return this.menuService.findAll();
+  findAll(@Query('role') role: string) {
+    return this.menuService.findAll(role);
   }
 
   @Post('menu')
-  create(@Body() Link) {
-    return this.menuService.create(Link);
+  create(@Body() menu) {
+    // console.log({ menu });
+    return this.menuService.create(menu);
   }
 
-  @Patch('menu:id')
-  updateById(@Param('id') id, @Body() Link) {
-    return this.menuService.updateById(id, Link);
+  @Patch('menu')
+  updateById(@Body() menu) {
+    return this.menuService.updateField(menu);
   }
 
-  @Delete('menu:id')
+  @Get('menu/detail')
+  findById(@Query('id') id) {
+    // console.log({ id });
+    return this.menuService.findById(id);
+  }
+
+  @Delete('menu')
   @Roles(['super'])
   @UseGuards(JwtAuthGuard)
-  deleteById(@Param('id') id) {
+  deleteById(@Query('id') id) {
     return this.menuService.deleteById(id);
   }
 }
@@ -69,10 +76,10 @@ export class LinkController {
     return this.linkService.updateById(Link.id, Link);
   }
 
-  @Delete(':id')
-  @Roles(['admin', 'super'])
+  @Delete()
+  @Roles(['super'])
   @UseGuards(JwtAuthGuard)
-  deleteById(@Param('id') id) {
+  deleteById(@Query('id') id) {
     return this.linkService.deleteById(id);
   }
 }

@@ -71,7 +71,6 @@ export function getLocalIP() {
           break;
         }
       }
-    }
   } else if (osType === 'Linux') {
     ip = netInfo.eth0[0].address;
   }
@@ -86,4 +85,12 @@ export function getUid(authorization = '') {
   const uid = user.id;
   // console.log(uid);
   return uid;
+}
+
+export function getUserInfo(authorization = ''): User {
+  if (!authorization) return;
+  const token = authorization.replace('Bearer ', '');
+  const user: any = jwtDecode(token);
+  // console.log(uid);
+  return user;
 }

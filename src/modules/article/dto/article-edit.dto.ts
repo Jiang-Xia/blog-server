@@ -52,6 +52,13 @@ export class ArticleEditDTO {
   id: number;
 
   @IsNotEmpty({ message: '封面 不能为空' })
-  // 文章id
+  // 文章封面
   cover: string;
+
+  @ApiProperty({
+    description: '禁用或者启用',
+    example: 'false/true',
+    required: false,
+  })
+  isDelete?: false;
 }

@@ -51,7 +51,7 @@ export class CategoryService {
     // } else {
     //   qb.leftJoinAndSelect('category.articles', 'articles');
     // }
-    qb.leftJoinAndSelect('category.articles', 'articles');
+    qb.leftJoinAndSelect('category.articles', 'articles').printSql();
     const data = await qb.getMany();
 
     data.forEach((d) => {

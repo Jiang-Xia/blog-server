@@ -12,6 +12,7 @@ import {
   HttpStatus,
   Param,
   Headers,
+  Patch,
 } from '@nestjs/common';
 import { ArticleService } from './article.service';
 import { ArticleCreateDTO } from './dto/article-create.dto';
@@ -28,7 +29,8 @@ import { ArticleListResponse, ArticleListVO } from './vo/article-list.vo';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard, Roles } from '../auth/roles.guard';
 import { Article } from './entity/article.entity';
-import { getUid } from 'src/utils';
+import { getUserInfo, getUid } from 'src/utils';
+import { IpAddress } from 'src/utils/common';
 // import { XMLParser, XMLValidator } from 'fast-xml-parser';
 
 @ApiTags('文章模块')
@@ -42,6 +44,7 @@ export class ArticleController {
   async getMore(
     @Body() listDTO: any,
     @Headers() headers,
+    @IpAddress() ip: string,
   ): Promise<ArticleListVO> {
     // console.log('listDTO', listDTO);
 
@@ -51,19 +54,17 @@ export class ArticleController {
 
     return await this.articleService.getMore(
       listDTO,
-      getUid(headers.authorization),
+      getUserInfo(headers.authorization),
+      ip,
     );
   }
   @Get('info')
   @ApiOkResponse({ description: '文章详情', type: ArticleInfoResponse })
   async getOne(
     @Query() idDto: IdDTO,
-    @Headers() headers,
+    @IpAddress() ip: string,
   ): Promise<ArticleInfoVO> {
-    return await this.articleService.findById(
-      idDto,
-      getUid(headers.authorization),
-    );
+    return await this.articleService.findById(idDto, ip);
   }
 
   @Post('create')
@@ -116,12 +117,29 @@ export class ArticleController {
   /**
    * 文章访喜欢量 +1
    */
-  // @Post('likes')
-  // @HttpCode(HttpStatus.OK)
-  // updateLikesById(@Body('id') id, @Body('type') type) {
-  //   return this.articleService.updateLikesById(id, type);
-  // }
+  @Post('likes')
+  @HttpCode(HttpStatus.OK)
+  updateLikesById(@Body('articleId') articleId, @Body('status') status) {
+    return this.articleService.updateLikesById(articleId, status);
+  }
 
+  /**
+   *  禁用
+   */
+  @Patch('disabled')
+  @HttpCode(HttpStatus.OK)
+  updateArticleIsDelete(@Body() field) {
+    return this.articleService.updateArticleField(field);
+  }
+
+  /**
+   * 置顶
+   */
+  @Patch('topping')
+  @HttpCode(HttpStatus.OK)
+  updateArticleTopping(@Body() field) {
+    return this.articleService.updateArticleField(field);
+  }
   /**
    * 获取所有文章归档
    */

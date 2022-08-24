@@ -3,6 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { RolesGuard } from '../auth/roles.guard';
 import { CollectService, LikeService } from './like.service';
 import { Like, Collect } from './like.entity';
+import { IpAddress } from 'src/utils/common';
 // 文档
 @ApiTags('喜欢模块')
 @Controller('like')
@@ -13,8 +14,9 @@ export class LikeController {
 
   // https://www.cnblogs.com/xiaoyantongxue/p/15758271.html
   @Post()
-  updateLikeById(@Body() LikeDTO: Like) {
+  updateLikeById(@IpAddress() ip: string, @Body() LikeDTO: Like) {
     // console.log(LikeDTO);
+    LikeDTO.ip = ip;
     return this.likeService.updateLike(LikeDTO);
   }
 }

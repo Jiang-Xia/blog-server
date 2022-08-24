@@ -18,7 +18,7 @@ import { CategoryService } from '../category/category.service';
 import { LikeService } from '../like/like.service';
 import { CommentService } from '../comment/comment.service';
 
-import * as dayjs from 'dayjs';
+import { User } from '../user/entity/user.entity';
 
 @Injectable()
 export class ArticleService {
@@ -36,7 +36,7 @@ export class ArticleService {
    * @param listDTO
    * @returns
    */
-  async getMore(listDTO: ListDTO, uid: number) {
+  async getMore(listDTO: ListDTO, info: User, ip: string) {
     const {
       page = 1,
       pageSize = 10,
@@ -46,7 +46,10 @@ export class ArticleService {
       description,
       tags,
       sort,
+      client,
+      onlyMy,
     } = listDTO;
+    const uid = info?.id;
     const sql = this.articleRepository.createQueryBuilder('article');
     sql
       .leftJoinAndSelect('article.category', 'category')
@@ -62,6 +65,14 @@ export class ArticleService {
       // 标签之间为in操作类似 or
       sql.andWhere('tags.id IN (:...tags)', { tags });
       // WHERE user.name IN ('Timber', 'Cristal', 'Lina')
+    }
+    // home 请求不返回已软删除的（禁用）
+    if (client) {
+      sql.andWhere('article.isDelete=:isDelete', { isDelete: false });
+    }
+
+    if (onlyMy) {
+      sql.andWhere('article.uid=:uid', { uid });
     }
     // 关键字查询
     sql.andWhere(
@@ -83,16 +94,28 @@ export class ArticleService {
             content: `%${description}%`,
           });
         }
+        // console.log('排序方式:', sort);
+        /* 如果你使用了多个.orderBy，后面的将覆盖所有之前的ORDER BY表达式。 */
         // 排序
         if (sort && sort.toUpperCase() === 'ASC') {
-          // 按最新排
-          sql.addOrderBy('article.createTime', 'ASC');
+          // select * from article a order by a.topping desc,a.uTime asc 先置顶再按时间排序
+          // 改为更新时间排序 置顶排序
+          // 按最旧排 升序 从小到大
+          sql.orderBy({
+            'article.topping': 'DESC',
+            'article.createTime': 'ASC',
+          });
         } else {
-          // 按最旧排
-          sql.addOrderBy('article.createTime', 'DESC');
+          // 按最新排 降序 从大到小
+          sql.orderBy({
+            'article.topping': 'DESC',
+            'article.createTime': 'DESC',
+          });
         }
       }),
     );
+
+    // console.warn('查询文章sql：', sql.getSql());
     // 获取查询结果
     const getList = sql
       .skip((page - 1) * pageSize)
@@ -100,7 +123,7 @@ export class ArticleService {
       .getManyAndCount();
     // let [list, total] = await getList;
     const [list, total] = await getList;
-    const likeCounts = await this.findLike(list, uid);
+    const likeCounts = await this.findLike(list, ip);
     const commentResArr: any = await this.findComment(list);
     // console.log(commentCounts, '文章列表对应评论');
     // console.log(commentResArr, 'commentResArr');
@@ -113,9 +136,12 @@ export class ArticleService {
       v.likes = likeCounts[i].count;
       v.checked = likeCounts[i].checked;
       v.commentCount = commentResArr[i].list.length + commentCount; // 评论和回复数
+      v.contentHtml = ''; // 置空文章内容
       return v;
     });
     // console.log('文章数：', list.length);
+    // console.log({ list });
+
     const pagination = getPagination(total, pageSize, page);
     return {
       list: arr,
@@ -123,11 +149,11 @@ export class ArticleService {
     };
   }
   // 先把文章列表查询出来，再根据列表组装一一根据文章去查询对应点赞数
-  async findLike(list: any, uid: number) {
+  async findLike(list: any, ip: string) {
     const sArr = [];
     // 组装多个异步函数查询
     list.forEach((v: any) => {
-      sArr.push(this.likeService.findLike(v.id, uid));
+      sArr.push(this.likeService.findLike(v.id, ip));
     });
     const res = await Promise.all(sArr);
     // console.log(res);
@@ -138,7 +164,7 @@ export class ArticleService {
    * 获取指定id文章信息
    * @param idDto
    */
-  async findById(idDto: IdDTO, uid: number) {
+  async findById(idDto: IdDTO, ip: string) {
     const { id } = idDto;
     const query = this.articleRepository
       .createQueryBuilder('article')
@@ -147,10 +173,11 @@ export class ArticleService {
       .leftJoinAndSelect('article.tags', 'tags')
       .where('article.id=:id')
       .orWhere('article.title=:title')
+      .printSql()
       .setParameter('id', id)
       .setParameter('title', id);
     const data = await query.getOne();
-    const likeCount = await this.likeService.findLike(id, uid);
+    const likeCount = await this.likeService.findLike(id, ip);
     // const comments = await this.commentService.findAll(id);
     data.likes = likeCount.count;
     // data.comments = comments;
@@ -196,7 +223,7 @@ export class ArticleService {
     // 创建文章
     const newArticle = await this.articleRepository.create({
       ...article,
-      uTime: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+      uTime: new Date(),
       uid,
       category: existCategory,
       tags,
@@ -220,12 +247,16 @@ export class ArticleService {
     articleToUpdate.contentHtml = articleEditDTO.contentHtml;
     articleToUpdate.cover = articleEditDTO.cover;
     articleToUpdate.category = articleEditDTO.category;
+    // 只有admin端才传
+    if (articleToUpdate.isDelete !== undefined) {
+      articleToUpdate.isDelete = articleEditDTO.isDelete;
+    }
     // 需要去数据库找那个查询是否存在，才能赋值更新
     const tags = await this.tagService.findByIds(
       ('' + articleEditDTO.tags).split(','),
     );
     articleToUpdate.tags = tags;
-    articleToUpdate.uTime = dayjs().format('YYYY-MM-DD HH:mm:ss');
+    articleToUpdate.uTime = new Date();
     // console.log({ articleToUpdate });
     const result = await this.articleRepository.save(articleToUpdate);
 
@@ -268,18 +299,33 @@ export class ArticleService {
     return this.articleRepository.save(updatedArticle);
   }
 
+  /**
+   * @description: 更新文章字段  文章 禁用和置顶
+   * @return {*} 设置成功信息
+   */
+  async updateArticleField(field) {
+    const { id } = field;
+    delete field.id;
+    const oldArticle = await this.articleRepository.findOne(id);
+    // merge - 将多个实体合并为一个实体。
+    const updatedArticle = await this.articleRepository.merge(oldArticle, {
+      ...field,
+    });
+    return this.articleRepository.save(updatedArticle);
+  }
+
   // /**
   //  * 更新喜欢数
   //  * @param id
   //  * @returns
   //  */
-  // async updateLikesById(id, type): Promise<Article> {
-  //   const oldArticle = await this.articleRepository.findOne(id);
-  //   const updatedArticle = await this.articleRepository.merge(oldArticle, {
-  //     likes: type === 'like' ? oldArticle.likes + 1 : oldArticle.likes - 1,
-  //   });
-  //   return this.articleRepository.save(updatedArticle);
-  // }
+  async updateLikesById(articleId: number, status: number): Promise<Article> {
+    const oldArticle = await this.articleRepository.findOne(articleId);
+    const updatedArticle = await this.articleRepository.merge(oldArticle, {
+      likes: status === 1 ? oldArticle.likes + 1 : oldArticle.likes - 1,
+    });
+    return this.articleRepository.save(updatedArticle);
+  }
 
   /**
    * 获取文章归档

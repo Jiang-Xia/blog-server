@@ -11,26 +11,30 @@ export class LikeService {
   ) {}
   async updateLike(LikeDTO: Like) {
     // console.log(data);
-    const { articleId, uid } = LikeDTO;
+    const { articleId, ip } = LikeDTO;
     if (LikeDTO.status) {
       const [list, count] = await this.likeRepository.findAndCount({
-        where: { articleId, uid },
+        where: { articleId, ip },
       });
-      if (count) {
-        throw new NotFoundException('该文章您已点赞！');
+      // 同一文章和同一ip点赞数不能超过二十次
+      if (count > 20) {
+        throw new NotFoundException('该文章您点赞太过频繁了！');
+      }
+      if (!LikeDTO.uid) {
+        LikeDTO.id = undefined;
       }
       // 新增
       this.likeRepository.save(LikeDTO);
     } else {
       const list = await this.likeRepository.find({
-        where: { articleId, uid },
+        where: { articleId, ip },
       });
       // 删除
       this.likeRepository.delete(list[0].id);
     }
   }
 
-  async findLike(articleId: number, uid: number) {
+  async findLike(articleId: number, ip: string) {
     const [list, count] = await this.likeRepository.findAndCount({
       where: {
         articleId,
@@ -40,12 +44,12 @@ export class LikeService {
     const [list2, count2] = await this.likeRepository.findAndCount({
       where: {
         articleId,
-        uid,
+        ip,
       },
     });
     return {
       count,
-      checked: count2,
+      checked: !!count2,
     };
   }
 }

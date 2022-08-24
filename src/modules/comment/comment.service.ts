@@ -40,7 +40,7 @@ export class CommentService {
     return list; */
     const qb = this.commentRepository.createQueryBuilder('comment');
     qb.where('comment.articleId = :id', { id });
-    qb.addOrderBy('comment.createTime', 'ASC');
+    qb.addOrderBy('comment.createTime', 'ASC').printSql();
     const page = 1;
     const pageSize = 100; // 写死获取第一页，一页一百条
     const getList = qb

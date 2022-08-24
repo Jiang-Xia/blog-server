@@ -1,12 +1,8 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Link, Menu } from './admin.entity';
+import MenuList = require('./menu.json');
 
 // 接口继承
 interface MenuState extends Menu {
@@ -26,13 +22,38 @@ export class MenuService {
   constructor(
     @InjectRepository(Menu)
     private readonly menuRepository: Repository<Menu>,
-  ) {}
-  async findAll(): Promise<Menu[]> {
+  ) {
+    /* 初始化菜单列表 需要捕获错误防止已存在*/
+    MenuList.forEach(async (v: Menu, index: number) => {
+      await this.create(v)
+        .then(() => {
+          if (MenuList.length === index + 1) {
+            console.log(`默认菜单创建成功，`);
+          }
+        })
+        .catch(() => {
+          // if (MenuList.length === index + 1) {
+          //   console.log(`默认菜单已经存在`);
+          // }
+        });
+    });
+  }
+  async findAll(role: string): Promise<Menu[]> {
     // const { articleStatus } = queryParams;
-    const qb = this.menuRepository
-      .createQueryBuilder('menu')
-      .orderBy('menu.order', 'ASC');
+    const qb = this.menuRepository.createQueryBuilder('menu');
+
+    // 作者权限只返回文章管理
+    if (role === 'author') {
+      qb.andWhere('menu.author=:author', { author: true });
+    } else if (role === 'admin') {
+      // 不返回用户设置
+      qb.andWhere('menu.admin=:admin', { admin: true });
+    } else {
+      qb.andWhere('menu.super=:super', { super: true });
+    }
+    qb.orderBy('menu.order', 'ASC');
     const data = await qb.getMany();
+    // console.log({ role, data });
     const menuTree = [];
     // 设置一下属性和删属性
     const setMenuTree = (item: any) => {
@@ -73,7 +94,7 @@ export class MenuService {
     const exist = await this.menuRepository.findOne({
       where: { id },
     });
-
+    // console.log({ Menu, exist });
     if (exist) {
       throw new HttpException('菜单已存在', HttpStatus.BAD_REQUEST);
     }
@@ -82,10 +103,20 @@ export class MenuService {
     return newItem;
   }
 
-  async updateById(id, item: Partial<Menu>): Promise<Menu> {
+  async updateField(field) {
+    const { id } = field;
+    delete field.id;
     const oldItem = await this.menuRepository.findOne(id);
-    const updatedItem = await this.menuRepository.merge(oldItem, item);
+    // merge - 将多个实体合并为一个实体。
+    const updatedItem = await this.menuRepository.merge(oldItem, {
+      ...field,
+    });
+    // console.log({ field, updatedItem });
     return this.menuRepository.save(updatedItem);
+  }
+
+  async findById(id: number): Promise<Menu> {
+    return await this.menuRepository.findOne(id);
   }
 
   async deleteById(id) {

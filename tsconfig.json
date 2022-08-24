@@ -3,6 +3,7 @@
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
+    "resolveJsonModule":true,// 开启json导入
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
@@ -18,5 +19,5 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.html",  "src/**/*.md","types/*.d.ts"]
+  // "include": ["src/**/*.json","src/**/*.ts", "src/**/*.d.ts", "src/**/*.html",  "src/**/*.md","types/*.d.ts"]
 }

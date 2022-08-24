@@ -35,17 +35,23 @@ export class Article {
 
   // 文章的更新时间
   @Column('text')
-  uTime: string;
+  uTime: Date;
 
   // 用户id
   @Column()
   uid: number;
 
-  // 软删除
+  @ApiProperty({ description: '软删除' })
   @Column({
     default: false,
   })
   isDelete: boolean;
+
+  @ApiProperty({ description: '文章置顶' })
+  @Column({
+    default: false,
+  })
+  topping: boolean;
 
   // 更新次数
   @VersionColumn()

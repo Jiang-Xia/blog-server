@@ -12,8 +12,12 @@ export class Like {
   articleId: number;
 
   @ApiProperty()
-  @Column()
-  uid: number;
+  @Column({ default: -999 }) // 默认-999为游客点赞,登录时可以传uid
+  uid?: number;
+
+  @ApiProperty()
+  @Column({ default: '' })
+  ip: string;
 
   @ApiProperty()
   @Column({

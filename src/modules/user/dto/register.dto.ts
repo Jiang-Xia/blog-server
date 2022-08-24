@@ -34,4 +34,6 @@ export class RegisterDTO {
   })
   @IsNotEmpty({ message: '请再次输入密码' })
   readonly passwordRepeat: string;
+
+  readonly role?: string;
 }

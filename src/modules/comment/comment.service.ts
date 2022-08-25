@@ -64,8 +64,8 @@ export class CommentService {
     const replys = await Promise.all(rArr);
     // console.log('replys', replys);
     const data = list.map((v: any, i: number) => {
-      const { nickname, id } = users[i];
-      v.userInfo = { nickname, id }; // 简洁返回用户信息
+      const { nickname, id, avatar } = users[i];
+      v.userInfo = { nickname, id, avatar }; // 简洁返回用户信息
       v.replys = replys[i].list; // 所有回复列表
       v.allReplyCount = replys[i].total; // 一个父级评论下的所有回复数
       return v;

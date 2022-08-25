@@ -41,9 +41,13 @@ export class ReplyService {
     const uUsers = await Promise.all(uArr); // 对应回复评论用户数据
     const tUsers = await Promise.all(tArr); // 对应回复评论目标用户数据
     const data = list.map((v: any, i: number) => {
-      const { nickname, id } = uUsers[i];
-      v.userInfo = { nickname, id };
-      v.tUserInfo = { nickname: tUsers[i].nickname, id: tUsers[i].id }; // 目标用户
+      const { nickname, id, avatar } = uUsers[i];
+      v.userInfo = { nickname, id, avatar };
+      v.tUserInfo = {
+        nickname: tUsers[i].nickname,
+        id: tUsers[i].id,
+        avatar: tUsers[i].avatar,
+      }; // 目标用户
       return v;
     });
     return {

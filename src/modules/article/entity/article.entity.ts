@@ -15,7 +15,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { Tag } from '../../tag/tag.entity';
 import { Category } from '../../category/category.entity';
-import { Comment } from '../../comment/comment.entity';
+import { User } from '../../user/entity/user.entity';
 
 @Entity()
 // 类名为数据库表名
@@ -40,6 +40,14 @@ export class Article {
   // 用户id
   @Column()
   uid: number;
+
+  @ManyToOne(() => User, (user) => user.articles)
+  /* 
+    name和分类表 一样会造成数据错乱，启动建表报错 
+    不使用 JoinColumn 会自动生成userId 即 user字段 和id字段组成 这里命名为 useArticles
+  */
+  @JoinColumn({ name: 'useArticles' })
+  user: User;
 
   @ApiProperty({ description: '软删除' })
   @Column({

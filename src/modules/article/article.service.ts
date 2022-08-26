@@ -53,7 +53,8 @@ export class ArticleService {
     const sql = this.articleRepository.createQueryBuilder('article');
     sql
       .leftJoinAndSelect('article.category', 'category')
-      .leftJoinAndSelect('article.tags', 'tags');
+      .leftJoinAndSelect('article.tags', 'tags')
+      .leftJoinAndSelect('article.user', 'user');
     // 对应的分类 ok
     if (category) {
       // 分类与其他条件为and
@@ -171,6 +172,7 @@ export class ArticleService {
       // 把关联的表也查出来 https://typeorm.bootcss.com/select-query-builder
       .leftJoinAndSelect('article.category', 'category')
       .leftJoinAndSelect('article.tags', 'tags')
+      .leftJoinAndSelect('article.user', 'user')
       .where('article.id=:id')
       .orWhere('article.title=:title')
       .printSql()

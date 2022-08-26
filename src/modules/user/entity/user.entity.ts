@@ -11,8 +11,7 @@ import {
   VersionColumn,
   OneToMany,
 } from 'typeorm';
-import { Comment } from '../../comment/comment.entity';
-
+import { Article } from '../../article/entity/article.entity';
 @Entity()
 export class User {
   /**
@@ -94,4 +93,8 @@ export class User {
   @ApiProperty({ description: '个人主页' })
   @Column('varchar', { default: '' })
   homepage?: string;
+
+  @ApiProperty({ description: '用户文章数/一个用户多个文章' })
+  @OneToMany(() => Article, (article) => article.user)
+  articles: Array<Article>; // 不能和分类那个名字一样
 }

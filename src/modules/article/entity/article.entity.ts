@@ -11,11 +11,14 @@ import {
   JoinTable,
   JoinColumn,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Tag } from '../../tag/tag.entity';
 import { Category } from '../../category/category.entity';
 import { User } from '../../user/entity/user.entity';
+import { Comment } from '../../comment/comment.entity';
+import { Like } from '../../like/like.entity';
 
 @Entity()
 // 类名为数据库表名
@@ -48,6 +51,14 @@ export class Article {
   */
   @JoinColumn({ name: 'useArticles' })
   user: User;
+
+  @ApiProperty({ description: '一条文章数多个评论' })
+  @OneToMany(() => Comment, (comment) => comment.article)
+  comments: Array<Comment>;
+
+  @ApiProperty({ description: '一条文章数点赞' })
+  @OneToMany(() => Like, (like) => like.article)
+  articleLikes: Array<Like>;
 
   @ApiProperty({ description: '软删除' })
   @Column({

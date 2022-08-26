@@ -12,6 +12,8 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Article } from '../../article/entity/article.entity';
+import { Comment } from '../../comment/comment.entity';
+
 @Entity()
 export class User {
   /**
@@ -97,4 +99,8 @@ export class User {
   @ApiProperty({ description: '用户文章数/一个用户多个文章' })
   @OneToMany(() => Article, (article) => article.user)
   articles: Array<Article>; // 不能和分类那个名字一样
+
+  @ApiProperty({ description: '用户文章数/一个用户多个文章' })
+  @OneToMany(() => Comment, (comment) => comment.user)
+  comments: Array<Comment>;
 }

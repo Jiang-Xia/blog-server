@@ -9,6 +9,7 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import { User } from '../user/entity/user.entity';
+import { Article } from '../article/entity/article.entity';
 
 @Entity()
 export class Comment {
@@ -26,6 +27,12 @@ export class Comment {
   @ApiProperty({ description: '文章id' })
   @Column()
   articleId: number;
+
+  @ManyToOne(() => User, (user) => user.comments)
+  user: User;
+
+  @ManyToOne(() => Article, (article) => article.comments)
+  article: Article;
 
   @ApiProperty({ description: '评论内容' })
   @Column()

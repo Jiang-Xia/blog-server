@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Article } from '../article/entity/article.entity';
 
 /* 点赞表 */
 @Entity()
@@ -18,6 +19,9 @@ export class Like {
   @ApiProperty()
   @Column({ default: '' })
   ip: string;
+
+  @ManyToOne(() => Article, (article) => article.articleLikes)
+  article: Article;
 
   @ApiProperty()
   @Column({

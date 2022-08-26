@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { Repository } from 'typeorm';
 import { File } from './resources.entity';
-import * as dayjs from 'dayjs';
 import { InjectRepository } from '@nestjs/typeorm';
 import fs = require('fs');
 
@@ -81,7 +80,7 @@ export class ResourcesService {
         size,
         url: destination.replace('./public/', '/static/') + '/' + filename,
       };
-      // 文件夹内部上传时直接复制pid
+      // 文件夹内部上传时直接赋值pid
       if (pid) {
         item.pid = pid;
       }
@@ -102,11 +101,22 @@ export class ResourcesService {
       .orderBy('file.createAt', 'DESC');
 
     if (typeof queryParams === 'object') {
-      const { page = 1, pageSize = 12, pid, ...otherParams } = queryParams;
+      const {
+        page = 1,
+        pageSize = 12,
+        pid,
+        isFolder,
+        ...otherParams
+      } = queryParams;
       query.skip((+page - 1) * +pageSize);
       query.take(+pageSize);
-      query.andWhere(`file.pid = :pid`, { pid }); // 0为根目录，其他值为文件夹id
-
+      if (pid) {
+        query.andWhere(`file.pid = :pid`, { pid }); // 0为根目录，其他值为文件夹id
+      }
+      if (isFolder) {
+        // 只返回文件夹
+        query.andWhere(`file.isFolder = :isFolder`, { isFolder: true });
+      }
       if (otherParams) {
         Object.keys(otherParams).forEach((key) => {
           query

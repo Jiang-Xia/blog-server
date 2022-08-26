@@ -66,7 +66,7 @@ export class UserService {
   }
 
   async createUser(registerDTO: RegisterDTO, init?: boolean) {
-    const { nickname, password, mobile, role } = registerDTO;
+    const { nickname, password, mobile, role, avatar } = registerDTO;
     const salt = makeSalt(); // 制作密码盐
     const hashPassword = encryptPassword(password, salt); // 加密密码
 
@@ -75,7 +75,7 @@ export class UserService {
     newUser.mobile = mobile;
     newUser.password = hashPassword;
     newUser.salt = salt;
-
+    newUser.avatar = avatar;
     if (role && init) {
       newUser.role = role;
     }

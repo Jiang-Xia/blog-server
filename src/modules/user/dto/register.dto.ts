@@ -36,4 +36,6 @@ export class RegisterDTO {
   readonly passwordRepeat: string;
 
   readonly role?: string;
+
+  readonly avatar?: string;
 }

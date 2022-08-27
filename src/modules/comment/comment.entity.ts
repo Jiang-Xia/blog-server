@@ -24,15 +24,14 @@ export class Comment {
   @UpdateDateColumn()
   updateTime: Date;
 
-  @ApiProperty({ description: '文章id' })
-  @Column()
-  articleId: number;
-
   @ManyToOne(() => User, (user) => user.comments)
-  user: User;
+  // @JoinColumn({ name: 'userId' })
+  user: number;
 
+  @ApiProperty({ description: '文章id' })
   @ManyToOne(() => Article, (article) => article.comments)
-  article: Article;
+  // @JoinColumn({ name: 'articleId' })
+  article: number;
 
   @ApiProperty({ description: '评论内容' })
   @Column()

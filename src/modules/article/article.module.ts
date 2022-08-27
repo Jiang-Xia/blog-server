@@ -8,6 +8,7 @@ import { CategoryModule } from '../category/category.module';
 import { TagModule } from '../tag/tag.module';
 import { LikeModule } from '../like/like.module';
 import { CommentModule } from '../comment/comment.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
@@ -17,7 +18,9 @@ import { CommentModule } from '../comment/comment.module';
     LikeModule,
     CommentModule,
     AuthModule,
+    UserModule,
   ],
+  exports: [ArticleService],
   providers: [ArticleService],
   controllers: [ArticleController],
 })

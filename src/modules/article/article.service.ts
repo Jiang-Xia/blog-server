@@ -1,8 +1,10 @@
 // src/modules/article/article.service.ts
 
 import {
+  forwardRef,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -12,14 +14,13 @@ import { ListDTO } from './dto/list.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Brackets, Repository } from 'typeorm';
 import { Article } from './entity/article.entity';
-import { getPagination } from 'src/utils';
+import { getPagination, setUserInfo } from 'src/utils';
 import { TagService } from '../tag/tag.service';
 import { CategoryService } from '../category/category.service';
 import { LikeService } from '../like/like.service';
 import { CommentService } from '../comment/comment.service';
-
+import { UserService } from '../user/user.service';
 import { User } from '../user/entity/user.entity';
-
 @Injectable()
 export class ArticleService {
   constructor(
@@ -29,6 +30,8 @@ export class ArticleService {
     private readonly categoryService: CategoryService,
     private readonly likeService: LikeService,
     private readonly commentService: CommentService,
+    @Inject(forwardRef(() => UserService))
+    private readonly userService: UserService,
   ) {}
 
   /**
@@ -54,7 +57,9 @@ export class ArticleService {
     sql
       .leftJoinAndSelect('article.category', 'category')
       .leftJoinAndSelect('article.tags', 'tags')
-      .leftJoinAndSelect('article.user', 'user');
+      .leftJoinAndSelect('article.user', 'user')
+      .leftJoinAndSelect('article.articleLikes', 'like');
+    // .leftJoinAndSelect('article.comments', 'comment');
     // 对应的分类 ok
     if (category) {
       // 分类与其他条件为and
@@ -115,7 +120,7 @@ export class ArticleService {
         }
       }),
     );
-
+    // 查询点赞和评论
     // console.warn('查询文章sql：', sql.getSql());
     // 获取查询结果
     const getList = sql
@@ -124,7 +129,6 @@ export class ArticleService {
       .getManyAndCount();
     // let [list, total] = await getList;
     const [list, total] = await getList;
-    const likeCounts = await this.findLike(list, ip);
     const commentResArr: any = await this.findComment(list);
     // console.log(commentCounts, '文章列表对应评论');
     // console.log(commentResArr, 'commentResArr');
@@ -134,10 +138,12 @@ export class ArticleService {
       let commentCount = 0;
       commentResArr[i].list.map((v: any) => (commentCount += v.allReplyCount));
       // 点赞统计数
-      v.likes = likeCounts[i].count;
-      v.checked = likeCounts[i].checked;
+      v.likes = v.articleLikes.length;
       v.commentCount = commentResArr[i].list.length + commentCount; // 评论和回复数
       v.contentHtml = ''; // 置空文章内容
+      v.userInfo = setUserInfo(v.user);
+      delete v.user;
+      delete v.articleLikes;
       return v;
     });
     // console.log('文章数：', list.length);
@@ -150,22 +156,22 @@ export class ArticleService {
     };
   }
   // 先把文章列表查询出来，再根据列表组装一一根据文章去查询对应点赞数
-  async findLike(list: any, ip: string) {
-    const sArr = [];
-    // 组装多个异步函数查询
-    list.forEach((v: any) => {
-      sArr.push(this.likeService.findLike(v.id, ip));
-    });
-    const res = await Promise.all(sArr);
-    // console.log(res);
-    return res;
-  }
+  // async findLike(list: any, ip: string) {
+  //   const sArr = [];
+  //   // 组装多个异步函数查询
+  //   list.forEach((v: any) => {
+  //     sArr.push(this.likeService.findLike(v.id, ip));
+  //   });
+  //   const res = await Promise.all(sArr);
+  //   // console.log(res);
+  //   return res;
+  // }
   // 查询当前用户是否点赞该文章
   /**
    * 获取指定id文章信息
    * @param idDto
    */
-  async findById(idDto: IdDTO, ip: string) {
+  async findById(idDto: IdDTO, ip?: string) {
     const { id } = idDto;
     const query = this.articleRepository
       .createQueryBuilder('article')
@@ -173,17 +179,18 @@ export class ArticleService {
       .leftJoinAndSelect('article.category', 'category')
       .leftJoinAndSelect('article.tags', 'tags')
       .leftJoinAndSelect('article.user', 'user')
+      .leftJoinAndSelect('article.articleLikes', 'like')
       .where('article.id=:id')
       .orWhere('article.title=:title')
       .printSql()
       .setParameter('id', id)
       .setParameter('title', id);
     const data = await query.getOne();
-    const likeCount = await this.likeService.findLike(id, ip);
-    // const comments = await this.commentService.findAll(id);
-    data.likes = likeCount.count;
-    // data.comments = comments;
-    data.checked = likeCount.checked;
+    data.likes = data.articleLikes.length;
+    data.userInfo = setUserInfo(data.user);
+    delete data.user;
+    delete data.articleLikes;
+    // 评论已通过单独的接口去查了
     // console.log(data);
     if (!query) {
       throw new NotFoundException('找不到文章');
@@ -191,6 +198,16 @@ export class ArticleService {
     return {
       info: data,
     };
+  }
+
+  // 获取简单信息
+  async findOneById(id: number) {
+    const query = this.articleRepository
+      .createQueryBuilder('article')
+      .where('article.id=:id')
+      .setParameter('id', id);
+    const data = await query.getOne();
+    return data;
   }
 
   // 先把文章列表查询出来，再根据列表组装一一根据文章去查询对应评论数
@@ -222,13 +239,17 @@ export class ArticleService {
     tags = await this.tagService.findByIds(('' + tags).split(','));
     // 查询分类
     const existCategory = await this.categoryService.findById(category);
+    // 查询用户
+    const user = await this.userService.findById(uid);
     // 创建文章
+    // console.log(tags, existCategory);
     const newArticle = await this.articleRepository.create({
       ...article,
       uTime: new Date(),
       uid,
       category: existCategory,
       tags,
+      user: user,
     });
     // console.log(newArticle);
     await this.articleRepository.save(newArticle);

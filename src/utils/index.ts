@@ -88,10 +88,20 @@ export function getUid(authorization = '') {
   return uid;
 }
 
+// 根据token获取yoghurt信息
 export function getUserInfo(authorization = ''): User {
   if (!authorization) return;
   const token = authorization.replace('Bearer ', '');
   const user: any = jwtDecode(token);
   // console.log(uid);
   return user;
+}
+
+// 组装返回用户信息
+export function setUserInfo(user: User, keys = ['nickname', 'id', 'avatar']) {
+  const nUser = {};
+  for (const key of keys) {
+    nUser[key] = user[key];
+  }
+  return nUser;
 }

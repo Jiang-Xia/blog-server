@@ -59,15 +59,37 @@ export class ResourcesService {
     return res.data;
   }
 
+  refresh_token =
+    '122.99f93876aea369e6a87521176b52537c.YH4GCI-jr01jrsJlCMsiSNuXk23VUx90c3XFdSD.5KB7_Q';
+  access_token =
+    '121.61a970a03e677e8937e7538ba3c38dba.YDndQETVpnkUxiWkomfRiiufbMwQ4DPRztCtC8D.gg9B0Q';
   async baiDuTongJi(query) {
-    // console.log(n);
-    const { url, ...otherParams /* 除了url其他组合成一个对象 */ } = query;
-    // /转义有问题
-    otherParams.method = decodeURIComponent(otherParams.method);
-    const res = await axios.get(`https://openapi.baidu.com${url}`, {
-      params: otherParams,
-    });
-    return res.data;
+    const getData = async () => {
+      const { url, ...otherParams /* 除了url其他组合成一个对象 */ } = query;
+      const res = await axios.get(`https://openapi.baidu.com${url}`, {
+        params: {
+          ...otherParams,
+          access_token: this.access_token,
+        },
+      });
+      return res.data;
+    };
+    let data = await getData();
+    // access_token 过期刷新token
+    if (data.error_code === 110) {
+      const res2 = await axios.get(`http://openapi.baidu.com/oauth/2.0/token`, {
+        params: {
+          grant_type: 'refresh_token',
+          refresh_token: this.access_token,
+          client_id: 'q7VG6K18Qk3zAbl4FTqsWFBvo85jPDef', // apikey
+          client_secret: '6axk2HYSYuQde3tVoW0D3SClNbfIaLOi', // SecretKey
+        },
+      });
+      this.access_token = res2.data.access_token;
+      this.refresh_token = res2.data.refresh_token;
+      data = await getData();
+    }
+    return data;
   }
 
   /* 资源上传 开始 */

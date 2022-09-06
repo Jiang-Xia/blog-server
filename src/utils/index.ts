@@ -16,11 +16,7 @@ export default class utils {
  * @param page
  * @returns
  */
-export const getPagination = (
-  total: number,
-  pageSize: number,
-  page: number,
-) => {
+export const getPagination = (total: number, pageSize: number, page: number) => {
   const pages = Math.ceil(total / pageSize);
   return {
     total,

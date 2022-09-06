@@ -10,12 +10,7 @@ import {
   Delete,
   Query,
 } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiBody,
-  ApiOkResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiTags, ApiBody, ApiOkResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { getUid } from 'src/utils';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.guard';

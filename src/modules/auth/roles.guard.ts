@@ -16,10 +16,7 @@ export const Roles = (roles: string[]) => {
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(
-    private readonly reflector: Reflector,
-    private readonly jwtService: JwtService,
-  ) {}
+  constructor(private readonly reflector: Reflector, private readonly jwtService: JwtService) {}
 
   canActivate(context: ExecutionContext): boolean {
     // 取消 SetMetadata 设置的roles

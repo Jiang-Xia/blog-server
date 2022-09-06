@@ -91,10 +91,7 @@ export class CategoryService {
    */
   async updateById(id, category: Partial<Category>): Promise<Category> {
     const oldCategory = await this.categoryRepository.findOne(id);
-    const updatedCategory = await this.categoryRepository.merge(
-      oldCategory,
-      category,
-    );
+    const updatedCategory = await this.categoryRepository.merge(oldCategory, category);
     return this.categoryRepository.save(updatedCategory);
   }
 
@@ -108,10 +105,7 @@ export class CategoryService {
       await this.categoryRepository.remove(category);
       return true;
     } catch (e) {
-      throw new HttpException(
-        '删除失败，可能存在关联文章',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException('删除失败，可能存在关联文章', HttpStatus.BAD_REQUEST);
     }
   }
 }

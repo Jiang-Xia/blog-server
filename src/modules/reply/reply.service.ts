@@ -18,7 +18,9 @@ export class ReplyService {
     await this.replyRepository.delete(id);
   }
   // 删除评论是会把改评论下的所有
-  deleteByParentId(id: string) {}
+  deleteByParentId(id: string) {
+    //
+  }
   // 根据评论id查找所有的回复
   async findAll(id: number) {
     const qb = this.replyRepository.createQueryBuilder('reply');

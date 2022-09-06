@@ -8,12 +8,7 @@
  */
 // src/filters/http-execption.filters.ts
 
-import {
-  ExceptionFilter,
-  Catch,
-  ArgumentsHost,
-  HttpException,
-} from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { execPath } from 'process';
 

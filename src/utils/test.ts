@@ -10,11 +10,7 @@ import * as path from 'path';
  * @param {*} output 输出html文件名
  * @return {*}
  */
-const parseMDToHtml = function (
-  tartgetPath: string,
-  tempPath: string,
-  outputName,
-) {
+const parseMDToHtml = function (tartgetPath: string, tempPath: string, outputName) {
   // /* 方法二 根据html模板生产新的html文件*/
   //读取准备好的html模板文件
   fs.readFile(tempPath, 'utf8', (err, template) => {

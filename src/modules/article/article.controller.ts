@@ -20,11 +20,7 @@ import { ArticleEditDTO } from './dto/article-edit.dto';
 import { IdDTO } from './dto/id.dto';
 import { ListDTO } from './dto/list.dto';
 import { ApiTags, ApiOkResponse, ApiBearerAuth } from '@nestjs/swagger';
-import {
-  ArticleInfoVO,
-  ArticleDeleteVO,
-  ArticleInfoResponse,
-} from './vo/article-info.vo';
+import { ArticleInfoVO, ArticleDeleteVO, ArticleInfoResponse } from './vo/article-info.vo';
 import { ArticleListResponse, ArticleListVO } from './vo/article-list.vo';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard, Roles } from '../auth/roles.guard';
@@ -52,18 +48,11 @@ export class ArticleController {
     // const parser = new XMLParser();
     // console.log('xml', parser.parse(listDTO));
 
-    return await this.articleService.getMore(
-      listDTO,
-      getUserInfo(headers.authorization),
-      ip,
-    );
+    return await this.articleService.getMore(listDTO, getUserInfo(headers.authorization), ip);
   }
   @Get('info')
   @ApiOkResponse({ description: '文章详情', type: ArticleInfoResponse })
-  async getOne(
-    @Query() idDto: IdDTO,
-    @IpAddress() ip: string,
-  ): Promise<ArticleInfoVO> {
+  async getOne(@Query() idDto: IdDTO, @IpAddress() ip: string): Promise<ArticleInfoVO> {
     return await this.articleService.findById(idDto, ip);
   }
 
@@ -78,10 +67,7 @@ export class ArticleController {
     @Headers() headers,
   ): Promise<Article> /* 返回值 */ {
     // console.log(articleCreateDTO, 'articleCreateDTO');
-    return await this.articleService.create(
-      articleCreateDTO,
-      getUid(headers.authorization),
-    );
+    return await this.articleService.create(articleCreateDTO, getUid(headers.authorization));
   }
 
   @Post('edit')
@@ -97,10 +83,7 @@ export class ArticleController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ description: '删除文章', type: ArticleInfoResponse })
-  async delete(
-    @Query() idDto: IdDTO,
-    @Headers() headers,
-  ): Promise<ArticleDeleteVO> {
+  async delete(@Query() idDto: IdDTO, @Headers() headers): Promise<ArticleDeleteVO> {
     idDto.uid = getUid(headers.authorization);
     return await this.articleService.delete(idDto);
   }

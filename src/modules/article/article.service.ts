@@ -275,9 +275,7 @@ export class ArticleService {
       articleToUpdate.isDelete = articleEditDTO.isDelete;
     }
     // 需要去数据库找那个查询是否存在，才能赋值更新
-    const tags = await this.tagService.findByIds(
-      ('' + articleEditDTO.tags).split(','),
-    );
+    const tags = await this.tagService.findByIds(('' + articleEditDTO.tags).split(','));
     articleToUpdate.tags = tags;
     articleToUpdate.uTime = new Date();
     // console.log({ articleToUpdate });

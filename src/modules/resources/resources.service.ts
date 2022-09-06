@@ -49,17 +49,24 @@ async function delPath(path: string) {
 
 @Injectable()
 export class ResourcesService {
-  constructor(
-    @InjectRepository(File) private readonly fileRepository: Repository<File>,
-  ) {}
+  constructor(@InjectRepository(File) private readonly fileRepository: Repository<File>) {}
   // 调用第三方api 默认为一张
   async getImg(n = '1') {
     // console.log(n);
-    const res = await axios.get(
-      'http://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=' + n,
-    );
+    const res = await axios.get('http://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=' + n);
     // data才是返回的数据，res为axios实例
     // console.log(res.data);
+    return res.data;
+  }
+
+  async baiDuTongJi(query) {
+    // console.log(n);
+    const { url, ...otherParams /* 除了url其他组合成一个对象 */ } = query;
+    // /转义有问题
+    otherParams.method = decodeURIComponent(otherParams.method);
+    const res = await axios.get(`https://openapi.baidu.com${url}`, {
+      params: otherParams,
+    });
     return res.data;
   }
 
@@ -96,18 +103,10 @@ export class ResourcesService {
    * 获取所有文件
    */
   async findAll(queryParams): Promise<[File[], number]> {
-    const query = this.fileRepository
-      .createQueryBuilder('file')
-      .orderBy('file.createAt', 'DESC');
+    const query = this.fileRepository.createQueryBuilder('file').orderBy('file.createAt', 'DESC');
 
     if (typeof queryParams === 'object') {
-      const {
-        page = 1,
-        pageSize = 12,
-        pid,
-        isFolder,
-        ...otherParams
-      } = queryParams;
+      const { page = 1, pageSize = 12, pid, isFolder, ...otherParams } = queryParams;
       query.skip((+page - 1) * +pageSize);
       query.take(+pageSize);
       if (pid) {

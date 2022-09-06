@@ -22,9 +22,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 async function bootstrap() {
   console.log(serveConfig.isDev ? '==生产环境==' : '==开发环境==');
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    logger: serveConfig.isDev
-      ? ['log', 'debug', 'error', 'warn']
-      : ['error', 'warn'],
+    logger: serveConfig.isDev ? ['log', 'debug', 'error', 'warn'] : ['error', 'warn'],
   });
   // 配置静态资源目录
   app.useStaticAssets('public');
@@ -51,9 +49,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup(serveConfig.apiPath, app, document);
   await app.listen(5000);
-  Logger.log(
-    `服务已经启动,接口请访问:http://${serveConfig.ip}:${serveConfig.prot}`,
-  );
+  Logger.log(`服务已经启动,接口请访问:http://${serveConfig.ip}:${serveConfig.prot}`);
   Logger.log(
     `服务已经启动,文档请访问:http://${serveConfig.ip}:${serveConfig.prot}/${serveConfig.apiPath}`,
   );

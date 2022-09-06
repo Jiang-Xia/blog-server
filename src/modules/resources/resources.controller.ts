@@ -17,10 +17,7 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles, RolesGuard } from '../auth/roles.guard';
 import { ResourcesService } from './resources.service';
 import { File } from './resources.entity';
-import {
-  FileInterceptor,
-  FileFieldsInterceptor,
-} from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 // 文档
 @ApiTags('资源模块')
 @Controller('resources')
@@ -28,9 +25,15 @@ import {
 export class ResourcesController {
   constructor(private readonly resourcesService: ResourcesService) {}
 
+  // 代理bing壁纸
   @Get('daily-img')
   async getImg(@Query() query: any) {
     return await this.resourcesService.getImg(query.n);
+  }
+  // 代理百度统计
+  @Get('baidutongji')
+  async baiDuTongJi(@Query() query: any) {
+    return await this.resourcesService.baiDuTongJi(query);
   }
 
   /**

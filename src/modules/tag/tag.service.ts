@@ -34,9 +34,7 @@ export class TagService {
    */
   async findAll(queryParams): Promise<Tag[]> {
     // const { articleStatus } = queryParams;
-    const qb = this.tagRepository
-      .createQueryBuilder('tag')
-      .orderBy('tag.createAt', 'ASC');
+    const qb = this.tagRepository.createQueryBuilder('tag').orderBy('tag.createAt', 'ASC');
 
     // if (articleStatus) {
     //   qb.leftJoinAndSelect(
@@ -124,10 +122,7 @@ export class TagService {
       await this.tagRepository.remove(tag);
       return true;
     } catch (e) {
-      throw new HttpException(
-        '删除失败，可能存在关联文章',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException('删除失败，可能存在关联文章', HttpStatus.BAD_REQUEST);
     }
   }
 }

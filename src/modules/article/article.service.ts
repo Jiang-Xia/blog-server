@@ -275,9 +275,7 @@ export class ArticleService {
       articleToUpdate.isDelete = articleEditDTO.isDelete;
     }
     // 需要去数据库找那个查询是否存在，才能赋值更新
-    const tags = await this.tagService.findByIds(
-      ('' + articleEditDTO.tags).split(','),
-    );
+    const tags = await this.tagService.findByIds(('' + articleEditDTO.tags).split(','));
     articleToUpdate.tags = tags;
     articleToUpdate.uTime = new Date();
     // console.log({ articleToUpdate });
@@ -395,5 +393,19 @@ export class ArticleService {
       ret[year][months[month]].push(rep);
     });
     return ret;
+  }
+
+  /*
+   文章统计
+   */
+  getStatistics() {
+    const sql = this.articleRepository.createQueryBuilder('article');
+    sql.leftJoinAndSelect('article.category', 'category');
+    // 按访问量查询
+    sql.orderBy({
+      'article.views': 'DESC',
+    });
+    const getList = sql.skip(0).take(5).getManyAndCount();
+    return getList;
   }
 }

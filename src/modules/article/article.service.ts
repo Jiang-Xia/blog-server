@@ -394,4 +394,18 @@ export class ArticleService {
     });
     return ret;
   }
+
+  /*
+   文章统计
+   */
+  getStatistics() {
+    const sql = this.articleRepository.createQueryBuilder('article');
+    sql.leftJoinAndSelect('article.category', 'category');
+    // 按访问量查询
+    sql.orderBy({
+      'article.views': 'DESC',
+    });
+    const getList = sql.skip(0).take(5).getManyAndCount();
+    return getList;
+  }
 }

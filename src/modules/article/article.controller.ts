@@ -131,4 +131,13 @@ export class ArticleController {
   getArchives(): Promise<{ [key: string]: Article[] }> {
     return this.articleService.getArchives();
   }
+
+  /**
+   * 文章统计
+   */
+  @Get('statistics')
+  @HttpCode(HttpStatus.OK)
+  getStatistics(): Promise<object> {
+    return this.articleService.getStatistics();
+  }
 }

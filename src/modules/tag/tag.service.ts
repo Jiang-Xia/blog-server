@@ -33,29 +33,25 @@ export class TagService {
    * 获取所有标签
    */
   async findAll(queryParams): Promise<Tag[]> {
-    // const { articleStatus } = queryParams;
+    const { isDelete = false } = queryParams;
     const qb = this.tagRepository.createQueryBuilder('tag').orderBy('tag.createAt', 'ASC');
 
-    // if (articleStatus) {
-    //   qb.leftJoinAndSelect(
-    //     'tag.articles',
-    //     'articles',
-    //     'articles.status=:status',
-    //     {
-    //       status: articleStatus,
-    //     },
-    //   );
-    // } else {
-    //   qb.leftJoinAndSelect('tag.articles', 'articles');
-    // }
-    qb.leftJoinAndSelect('tag.articles', 'articles');
+    if (isDelete) {
+      qb.leftJoinAndSelect('tag.articles', 'articles', 'articles.isDelete=:isDelete', {
+        isDelete,
+      });
+    } else {
+      qb.leftJoinAndSelect('tag.articles', 'articles');
+    }
     const data = await qb.getMany();
 
     data.forEach((d) => {
       Object.assign(d, { articleCount: d.articles.length });
       delete d.articles;
     });
-
+    data.sort(function (a: any, b: any) {
+      return b.articleCount - a.articleCount;
+    });
     return data;
   }
 

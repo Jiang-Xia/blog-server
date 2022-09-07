@@ -34,29 +34,23 @@ export class CategoryService {
    * 获取所有分类
    */
   async findAll(queryParams): Promise<Category[]> {
-    // const { articleStatus } = queryParams;
+    const { isDelete = false } = queryParams;
     const qb = this.categoryRepository
       .createQueryBuilder('category')
       .orderBy('category.createAt', 'ASC');
     //增加是否发布字段
-    // if (articleStatus) {
-    //   qb.leftJoinAndSelect(
-    //     'category.articles',
-    //     'articles',
-    //     'articles.status=:status',
-    //     {
-    //       status: articleStatus,
-    //     },
-    //   );
-    // } else {
-    //   qb.leftJoinAndSelect('category.articles', 'articles');
-    // }
-    qb.leftJoinAndSelect('category.articles', 'articles').printSql();
+    if (isDelete) {
+      qb.leftJoinAndSelect('category.articles', 'articles', 'articles.isDelete=:isDelete', {
+        isDelete,
+      });
+    } else {
+      qb.leftJoinAndSelect('category.articles', 'articles');
+    }
     const data = await qb.getMany();
 
     data.forEach((d) => {
       // 启用的才合计
-      Object.assign(d, { articleCount: d.articles.filter((v: any) => !v.isDelete).length });
+      Object.assign(d, { articleCount: d.articles.length });
       delete d.articles;
     });
     data.sort(function (a: any, b: any) {

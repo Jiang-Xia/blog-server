@@ -55,7 +55,7 @@ export class CategoryService {
     const data = await qb.getMany();
 
     data.forEach((d) => {
-      Object.assign(d, { articleCount: d.articles.length });
+      Object.assign(d, { articleCount: d.articles.filter((v: any) => !v.isDelete) });
       delete d.articles;
     });
 

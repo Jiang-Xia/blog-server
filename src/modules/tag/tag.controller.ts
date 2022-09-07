@@ -27,7 +27,7 @@ export class TagController {
    */
   @ApiResponse({ status: 200, description: '创建标签', type: [Tag] })
   @Post()
-  @Roles(['admin'])
+  @Roles(['admin', 'super'])
   @UseGuards(JwtAuthGuard)
   create(@Body() tag) {
     return this.tagService.create(tag);

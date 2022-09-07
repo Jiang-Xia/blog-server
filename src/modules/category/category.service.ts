@@ -55,10 +55,13 @@ export class CategoryService {
     const data = await qb.getMany();
 
     data.forEach((d) => {
-      Object.assign(d, { articleCount: d.articles.filter((v: any) => !v.isDelete) });
+      // 启用的才合计
+      Object.assign(d, { articleCount: d.articles.filter((v: any) => !v.isDelete).length });
       delete d.articles;
     });
-
+    data.sort(function (a: any, b: any) {
+      return b.articleCount - a.articleCount;
+    });
     return data;
 
     // return this.categoryRepository.find({ order: { createAt: 'ASC' } });

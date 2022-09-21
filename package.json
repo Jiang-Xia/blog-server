@@ -40,6 +40,7 @@
     "jwt-decode": "^3.1.2",
     "marked": "^4.0.9",
     "mysql2": "^2.3.3",
+    "node-jsencrypt": "^1.0.0",
     "nuid": "^1.1.6",
     "passport": "^0.5.0",
     "passport-jwt": "^4.0.0",

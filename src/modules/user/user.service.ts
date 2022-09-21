@@ -14,7 +14,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { encryptPassword, makeSalt } from 'src/utils/cryptogram.util';
+import { encryptPassword, makeSalt, rsaDecrypt } from 'src/utils/cryptogram.util';
 import { Repository } from 'typeorm';
 import { RegisterDTO } from './dto/register.dto';
 import { LoginDTO } from './dto/login.dto';
@@ -83,7 +83,9 @@ export class UserService {
   }
   // 校验登录用户
   async checkLoginForm(loginDTO: LoginDTO): Promise<any> {
-    const { mobile, password } = loginDTO;
+    const { mobile } = loginDTO;
+    // 解密密码
+    const password = rsaDecrypt(loginDTO.password);
     const user = await this.userRepository
       .createQueryBuilder('user')
       .addSelect('user.salt')

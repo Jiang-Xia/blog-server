@@ -1,7 +1,9 @@
 // src/utils/cryptogram.util.ts
 
 import * as crypto from 'crypto';
+import * as JSEncrypt from 'node-jsencrypt';
 import { enc, mode, AES, pad } from 'crypto-js';
+import { publicKey, privateKey } from '../config/ssh';
 
 // 随机盐
 export function makeSalt(): string {
@@ -80,3 +82,48 @@ export function aesDecrypt(encryptedWord: any, key = secretKey, offset = iv) {
 
   return bytes.toString(enc.Utf8);
 }
+
+/* 
+  非对称加解密 rsa算法 和home端对应非对称加解密
+*/
+
+/**
+ * RSA加密
+ * @description 使用公钥加密，私钥解密
+ * @param {string} word - 需要加密的参数
+ * @param {string} pubKey - 加密公钥
+ * @return 16进制字符串
+ */
+export function rsaEncrypt(word = '非对称加解密', pubKey = publicKey) {
+  const encrypt = new JSEncrypt();
+  /* 公钥加密 */
+  encrypt.setPublicKey(pubKey); // base64编码字符串
+  const encrypted = encrypt.encrypt(word) as string; // 返回结果可能是false
+  // 转为 16进制字符串
+  const hex = enc.Hex.stringify(enc.Base64.parse(encrypted)).toUpperCase();
+  return hex;
+}
+
+/**
+ * RSA解密
+ * @description 使用公钥加密，私钥解密
+ * @param {string} encryptedWord - 需要解密的参数
+ * @param {string} priKey - 加密密钥（长度必须是 16 的整数倍）
+ * @param {string} offset - 偏移量
+ * @return utf8 字符串 (解密不出来返回原本字符串)
+ */
+export function rsaDecrypt(encryptedWord: any, priKey = privateKey, offset = iv) {
+  const decrypt = new JSEncrypt();
+  /* 私钥解密 */
+  decrypt.setPrivateKey(priKey);
+  // 转为 base64字符串
+  const base64 = enc.Base64.stringify(enc.Hex.parse(encryptedWord));
+  const uncrypted = decrypt.decrypt(base64);
+  return uncrypted || encryptedWord;
+}
+
+// console.log(
+//   rsaDecrypt(
+//     'B293FD85FE71EC8006DBC9E0EB1D76E1216AA6959257F96903F1FA737EF99F18C787101D62C1FB19CB9B7B2BD206BEB116E1C33E28D71B5FA7B9D47F60BB5838',
+//   ),
+// );

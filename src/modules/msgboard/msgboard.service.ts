@@ -14,10 +14,10 @@ export class MsgboardService {
     private readonly msgboardRepository: Repository<Msgboard>,
   ) {}
   async create(Msgboard: Partial<Msgboard>): Promise<Msgboard> {
-    console.log('https://v1.alapi.cn/api/avatar', {
-      email: Msgboard.eamil,
-      size: 100,
-    });
+    // console.log('https://v1.alapi.cn/api/avatar', {
+    //   email: Msgboard.eamil,
+    //   size: 100,
+    // });
     const avatar = `https://v1.alapi.cn/api/avatar?email=${Msgboard.eamil}&size=100`;
     Msgboard.avatar = avatar;
     const newCategory = await this.msgboardRepository.create(Msgboard);

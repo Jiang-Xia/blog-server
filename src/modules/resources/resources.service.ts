@@ -52,11 +52,13 @@ export class ResourcesService {
   constructor(@InjectRepository(File) private readonly fileRepository: Repository<File>) {}
   // 调用第三方api 默认为一张
   async getImg(n = '1') {
-    // console.log(n);
-    const res = await axios.get('http://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=' + n);
-    // data才是返回的数据，res为axios实例
-    // console.log(res.data);
-    return res.data;
+    try {
+      const res = await axios.get('http://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=' + n);
+      // data才是返回的数据，res为axios实例
+      return res.data;
+    } catch (error) {
+      return { images: [] };
+    }
   }
 
   refresh_token =

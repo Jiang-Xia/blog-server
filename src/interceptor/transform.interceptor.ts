@@ -8,11 +8,20 @@ import { map } from 'rxjs/operators';
 export class TransformInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
-      map((data) => ({
-        code: 200,
-        data,
-        message: 'success',
-      })),
+      map((data) => {
+        let message = 'success';
+        if (data.message) {
+          message = data.message;
+          delete data.message;
+        }
+        // data为空对象时返回Boolean true
+        data = !!!Object.keys(data).length ? true : data;
+        return {
+          code: 200,
+          data,
+          message,
+        };
+      }),
     );
   }
 }

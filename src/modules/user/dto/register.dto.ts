@@ -2,9 +2,9 @@
 
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, Matches } from 'class-validator';
+import { extend } from 'dayjs';
 import { regMobileCN } from 'src/utils/regex.util';
-
-export class RegisterDTO {
+export class resetPassword {
   @ApiProperty({
     description: '手机号，唯一',
     example: '13049153466',
@@ -20,7 +20,8 @@ export class RegisterDTO {
   @IsNotEmpty({ message: '请输入用户昵称' })
   @IsString({ message: '名字必须是 String 类型' })
   readonly nickname: string;
-
+}
+export class RegisterDTO extends resetPassword {
   @ApiProperty({
     description: '用户密码',
     example: '123456',

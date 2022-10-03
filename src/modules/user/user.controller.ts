@@ -5,22 +5,20 @@ import {
   Post,
   Headers,
   UseGuards,
-  Param,
   Patch,
   Delete,
   Query,
 } from '@nestjs/common';
-import { ApiTags, ApiBody, ApiOkResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiBody, ApiOkResponse, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { getUid } from 'src/utils';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.guard';
 import { LoginDTO } from './dto/login.dto';
-import { RegisterDTO } from './dto/register.dto';
+import { RegisterDTO, resetPassword } from './dto/register.dto';
 import { UserService } from './user.service';
 import { TokenResponse } from './vo/token.vo';
 import { UserInfoResponse } from './vo/user-info.vo';
 import { userListVO } from './vo/user-list.vo';
-import { User } from './entity/user.entity';
 
 @ApiTags('用户模块')
 @Controller('user')
@@ -29,6 +27,7 @@ export class UserController {
 
   @ApiBody({ type: RegisterDTO })
   @ApiOkResponse({ description: '注册', type: UserInfoResponse })
+  @ApiOperation({ summary: '账号注册', description: '注册' })
   @Post('register')
   async register(@Body() registerDTO: RegisterDTO): Promise<UserInfoResponse> {
     return this.userService.register(registerDTO);
@@ -36,6 +35,7 @@ export class UserController {
 
   @ApiBody({ type: LoginDTO })
   @ApiOkResponse({ description: '登陆', type: TokenResponse })
+  @ApiOperation({ summary: '账号登录', description: '注册' })
   @Post('login')
   async login(@Body() loginDTO: LoginDTO): Promise<any> {
     return this.userService.login(loginDTO);
@@ -73,6 +73,13 @@ export class UserController {
   @Patch('password')
   updatePassword(@Body() user) {
     return this.userService.updatePassword(user);
+  }
+
+  @ApiBody({ type: resetPassword })
+  @ApiOkResponse({ description: '重置密码', type: () => Boolean })
+  @Post('resetPassword')
+  resetPassword(@Body() user) {
+    return this.userService.resetPassword(user);
   }
 
   @Roles(['super'])

@@ -181,6 +181,7 @@ export class UserService {
     return this.userRepository.save(updatedItem);
   }
 
+  // 修改密码
   async updatePassword(field) {
     const { password, passwordRepeat, passwordOld, id } = field;
     if (password !== passwordRepeat) {
@@ -206,6 +207,30 @@ export class UserService {
       id,
     });
     return true;
+  }
+
+  // 重置密码
+  async resetPassword(field) {
+    const { mobile, nickname } = field;
+    // console.log({ password, passwordRepeat, passwordOld, id });
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .where('user.mobile = :mobile', { mobile })
+      .where('user.nickname = :nickname', { nickname })
+      .getOne();
+    if (mobile !== user.mobile) {
+      throw new NotFoundException('此用户不存在！');
+    }
+    const newSalt = makeSalt(); // 制作新密码盐
+    const hashPassword = encryptPassword('123456', newSalt); // 加密密码
+    await this.updateField({
+      password: hashPassword,
+      salt: newSalt,
+      id: user.id,
+    });
+    return {
+      message: '重置密码成功，默认密码为：123456',
+    };
   }
 
   async deleteById(id) {

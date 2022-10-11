@@ -64,7 +64,7 @@ export class ResourcesService {
   refresh_token =
     '122.99f93876aea369e6a87521176b52537c.YH4GCI-jr01jrsJlCMsiSNuXk23VUx90c3XFdSD.5KB7_Q';
   access_token =
-    '121.61a970a03e677e8937e7538ba3c38dba.YDndQETVpnkUxiWkomfRiiufbMwQ4DPRztCtC8D.gg9B0Q';
+    '121.316374f417b9d466bf0879e19214ec80.YmGWuMyPrGqqJdMoW11NcqX1C0BEgHMYsglXGJY.fR9hdA';
   async baiDuTongJi(query) {
     const getData = async () => {
       const { url, ...otherParams /* 除了url其他组合成一个对象 */ } = query;
@@ -78,11 +78,11 @@ export class ResourcesService {
     };
     let data = await getData();
     // access_token 过期刷新token
-    if (data.error_code === 110) {
+    if (data.error_code === 110 || data.error_code === 111) {
       const res2 = await axios.get(`http://openapi.baidu.com/oauth/2.0/token`, {
         params: {
           grant_type: 'refresh_token',
-          refresh_token: this.access_token,
+          refresh_token: this.refresh_token,
           client_id: 'q7VG6K18Qk3zAbl4FTqsWFBvo85jPDef', // apikey
           client_secret: '6axk2HYSYuQde3tVoW0D3SClNbfIaLOi', // SecretKey
         },

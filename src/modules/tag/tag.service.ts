@@ -103,7 +103,7 @@ export class TagService {
    * @param tag
    */
   async updateById(id, tag: Partial<Tag>): Promise<Tag> {
-    const oldTag = await this.tagRepository.findOne(id);
+    const oldTag = await this.tagRepository.findOne({ where: { id } });
     const updatedTag = await this.tagRepository.merge(oldTag, tag);
     return this.tagRepository.save(updatedTag);
   }
@@ -114,7 +114,7 @@ export class TagService {
    */
   async deleteById(id) {
     try {
-      const tag = await this.tagRepository.findOne(id);
+      const tag = await this.tagRepository.findOne({ where: { id } });
       await this.tagRepository.remove(tag);
       return true;
     } catch (e) {

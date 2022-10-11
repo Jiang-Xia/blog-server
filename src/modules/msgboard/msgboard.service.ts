@@ -3,8 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as dayjs from 'dayjs';
 import { Repository } from 'typeorm';
 import { Msgboard } from './msgboard.entity';
-import axios from 'axios';
-import { MD5 } from 'crypto-js';
+// import axios from '@nestjs/axios';
+// import { MD5 } from 'crypto-js';
 
 // 后端还是一个个模块分开写比较清晰，集合再一起久了，不清晰功能下载哪里了！
 @Injectable()

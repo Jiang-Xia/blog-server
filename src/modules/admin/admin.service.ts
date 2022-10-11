@@ -106,7 +106,7 @@ export class MenuService {
   async updateField(field) {
     const { id } = field;
     delete field.id;
-    const oldItem = await this.menuRepository.findOne(id);
+    const oldItem = await this.menuRepository.findOne({ where: { id } });
     // merge - 将多个实体合并为一个实体。
     const updatedItem = await this.menuRepository.merge(oldItem, {
       ...field,
@@ -115,13 +115,13 @@ export class MenuService {
     return this.menuRepository.save(updatedItem);
   }
 
-  async findById(id: number): Promise<Menu> {
-    return await this.menuRepository.findOne(id);
+  async findById(id): Promise<Menu> {
+    return await this.menuRepository.findOne({ where: { id } });
   }
 
   async deleteById(id) {
     try {
-      const menu = await this.menuRepository.findOne(id);
+      const menu = await this.menuRepository.findOne({ where: { id } });
       await this.menuRepository.remove(menu);
       return true;
     } catch (e) {
@@ -167,14 +167,14 @@ export class LinkService {
   }
 
   async updateById(id, item: Partial<Link>): Promise<Link> {
-    const oldItem = await this.linkRepository.findOne(id);
+    const oldItem = await this.linkRepository.findOne({ where: { id } });
     const updatedItem = await this.linkRepository.merge(oldItem, item);
     return this.linkRepository.save(updatedItem);
   }
 
   async deleteById(id) {
     try {
-      const link = await this.linkRepository.findOne(id);
+      const link = await this.linkRepository.findOne({ where: { id } });
       await this.linkRepository.remove(link);
       return true;
     } catch (e) {

@@ -18,7 +18,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
    * @return {User}
    */
   handleRequest<T extends User>(err: UnauthorizedException, user: T): T {
-    // console.log('handleRequest-user', user);
+    // console.log('handleRequest-user', user, err);
     if (err || !user) {
       throw new UnauthorizedException('身份验证失败');
     } else if (user.status === 'locked') {

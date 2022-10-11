@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import axios from 'axios';
+import { HttpService } from '@nestjs/axios';
 import { Repository } from 'typeorm';
 import { File } from './resources.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import fs = require('fs');
-
+import { AxiosResponse } from 'axios';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 async function delPath(path: string) {
   // console.log('start');
   try {
@@ -47,51 +49,66 @@ async function delPath(path: string) {
   }
 }
 
+interface IReturn {
+  data: any;
+}
 @Injectable()
 export class ResourcesService {
-  constructor(@InjectRepository(File) private readonly fileRepository: Repository<File>) {}
-  // 调用第三方api 默认为一张
-  async getImg(n = '1') {
-    try {
-      const res = await axios.get('http://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=' + n);
-      // data才是返回的数据，res为axios实例
-      return res.data;
-    } catch (error) {
-      return { images: [] };
-    }
+  constructor(
+    @InjectRepository(File) private readonly fileRepository: Repository<File>,
+    private readonly httpService: HttpService,
+  ) {}
+  getImg(n = '1') {
+    const res: any = this.httpService
+      .get('http://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=' + n)
+      .pipe(map((res) => res.data));
+    // console.log(res); // 这里直接打印不出来数据格式的，都是映射函数,需要用subscribe观察
+    // res.subscribe((val) => console.log(val));// 订阅观察了，就可以打印出来
+    return res;
   }
-
   refresh_token =
     '122.99f93876aea369e6a87521176b52537c.YH4GCI-jr01jrsJlCMsiSNuXk23VUx90c3XFdSD.5KB7_Q';
   access_token =
     '121.316374f417b9d466bf0879e19214ec80.YmGWuMyPrGqqJdMoW11NcqX1C0BEgHMYsglXGJY.fR9hdA';
   async baiDuTongJi(query) {
-    const getData = async () => {
-      const { url, ...otherParams /* 除了url其他组合成一个对象 */ } = query;
-      const res = await axios.get(`https://openapi.baidu.com${url}`, {
+    const { url, ...otherParams /* 除了url其他组合成一个对象 */ } = query;
+    this.httpService
+      .get(`https://openapi.baidu.com${url}`, {
         params: {
           ...otherParams,
           access_token: this.access_token,
         },
+      })
+      .pipe(map((res) => res.data))
+      .subscribe((res) => {
+        const data = res.data;
+        console.log(data);
+        // access_token 过期刷新token
+        if (data.error_code === 110 || data.error_code === 111) {
+          this.httpService
+            .get(`http://openapi.baidu.com/oauth/2.0/token`, {
+              params: {
+                grant_type: 'refresh_token',
+                refresh_token: this.refresh_token,
+                client_id: 'q7VG6K18Qk3zAbl4FTqsWFBvo85jPDef', // apikey
+                client_secret: '6axk2HYSYuQde3tVoW0D3SClNbfIaLOi', // SecretKey
+              },
+            })
+            .pipe(map((res) => res.data))
+            .subscribe(async (res2: any) => {
+              this.access_token = res2.data.access_token;
+              this.refresh_token = res2.data.refresh_token;
+              res2
+                .get(`https://openapi.baidu.com${url}`, {
+                  params: {
+                    ...otherParams,
+                    access_token: this.access_token,
+                  },
+                })
+                .pipe(map((res: any) => res.data));
+            });
+        }
       });
-      return res.data;
-    };
-    let data = await getData();
-    // access_token 过期刷新token
-    if (data.error_code === 110 || data.error_code === 111) {
-      const res2 = await axios.get(`http://openapi.baidu.com/oauth/2.0/token`, {
-        params: {
-          grant_type: 'refresh_token',
-          refresh_token: this.refresh_token,
-          client_id: 'q7VG6K18Qk3zAbl4FTqsWFBvo85jPDef', // apikey
-          client_secret: '6axk2HYSYuQde3tVoW0D3SClNbfIaLOi', // SecretKey
-        },
-      });
-      this.access_token = res2.data.access_token;
-      this.refresh_token = res2.data.refresh_token;
-      data = await getData();
-    }
-    return data;
   }
 
   /* 资源上传 开始 */
@@ -161,7 +178,7 @@ export class ResourcesService {
    * @param id
    */
   async findById(id): Promise<File> {
-    return this.fileRepository.findOne(id);
+    return this.fileRepository.findOne({ where: { id } });
   }
 
   async findByIds(ids): Promise<Array<File>> {
@@ -173,7 +190,7 @@ export class ResourcesService {
    * @param id
    */
   async deleteById(id: string) {
-    const target: File = await this.fileRepository.findOne(id);
+    const target: File = await this.fileRepository.findOne({ where: { id } });
     // await this.oss.deleteFile(target.filename);
     const path: string = target.url.replace('/static/', './public/');
     delPath(path);
@@ -182,7 +199,7 @@ export class ResourcesService {
     const delCb = async (_target: File) => {
       // 是文件夹时
       if (_target.isFolder) {
-        const targets = await this.fileRepository.find({ pid: id });
+        const targets = await this.fileRepository.find({ where: { pid: id } });
         // console.log(targets);
         targets.forEach((v: File) => {
           const p = v.url.replace('/static/', './public/');
@@ -216,7 +233,7 @@ export class ResourcesService {
   async updateField(field) {
     const { id } = field;
     delete field.id;
-    const oldItem = await this.fileRepository.findOne(id);
+    const oldItem = await this.fileRepository.findOne({ where: { id } });
     // merge - 将多个实体合并为一个实体。
     const updatedItem = await this.fileRepository.merge(oldItem, {
       ...field,

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { Repository } from 'typeorm';
 import { File } from './resources.entity';
@@ -6,7 +6,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import fs = require('fs');
 import { AxiosResponse } from 'axios';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { catchError, map, mergeMap } from 'rxjs/operators';
+import { rejects } from 'assert';
 async function delPath(path: string) {
   // console.log('start');
   try {
@@ -70,45 +71,59 @@ export class ResourcesService {
     '122.99f93876aea369e6a87521176b52537c.YH4GCI-jr01jrsJlCMsiSNuXk23VUx90c3XFdSD.5KB7_Q';
   access_token =
     '121.316374f417b9d466bf0879e19214ec80.YmGWuMyPrGqqJdMoW11NcqX1C0BEgHMYsglXGJY.fR9hdA';
+
   async baiDuTongJi(query) {
-    const { url, ...otherParams /* 除了url其他组合成一个对象 */ } = query;
-    this.httpService
-      .get(`https://openapi.baidu.com${url}`, {
-        params: {
-          ...otherParams,
-          access_token: this.access_token,
-        },
-      })
-      .pipe(map((res) => res.data))
-      .subscribe((res) => {
-        const data = res.data;
-        console.log(data);
-        // access_token 过期刷新token
-        if (data.error_code === 110 || data.error_code === 111) {
-          this.httpService
-            .get(`http://openapi.baidu.com/oauth/2.0/token`, {
-              params: {
-                grant_type: 'refresh_token',
-                refresh_token: this.refresh_token,
-                client_id: 'q7VG6K18Qk3zAbl4FTqsWFBvo85jPDef', // apikey
-                client_secret: '6axk2HYSYuQde3tVoW0D3SClNbfIaLOi', // SecretKey
-              },
-            })
-            .pipe(map((res) => res.data))
-            .subscribe(async (res2: any) => {
-              this.access_token = res2.data.access_token;
-              this.refresh_token = res2.data.refresh_token;
-              res2
-                .get(`https://openapi.baidu.com${url}`, {
-                  params: {
-                    ...otherParams,
-                    access_token: this.access_token,
-                  },
-                })
-                .pipe(map((res: any) => res.data));
-            });
-        }
-      });
+    // 请求数据
+    let data: any = await this.getDaiDuTongJiData(query);
+    // console.log('data1', data);
+    // token 过期 刷新token
+    if (data.error_code === 110 || data.error_code === 111) {
+      await this.refreshAccessToken();
+      // 重新请求数据
+      data = await this.getDaiDuTongJiData(query);
+      // console.log('data2', data);
+    }
+    return data;
+  }
+  // 刷新 统计 access_token
+  refreshAccessToken() {
+    return new Promise((resolve) => {
+      this.httpService
+        .get(`http://openapi.baidu.com/oauth/2.0/token`, {
+          params: {
+            grant_type: 'refresh_token',
+            refresh_token: this.refresh_token,
+            client_id: 'q7VG6K18Qk3zAbl4FTqsWFBvo85jPDef', // apikey
+            client_secret: '6axk2HYSYuQde3tVoW0D3SClNbfIaLOi', // SecretKey
+          },
+        })
+        .pipe(
+          map((res) => res.data),
+          catchError((e) => {
+            throw new HttpException(`刷新access_token错误`, 400);
+          }),
+        )
+        .subscribe((data) => {
+          this.access_token = data.access_token;
+          this.refresh_token = data.refresh_token;
+          resolve(data);
+        });
+    });
+  }
+  // 获取统计数据
+  getDaiDuTongJiData(query) {
+    return new Promise((resolve) => {
+      const { url, ...otherParams /* 除了url其他组合成一个对象 */ } = query;
+      this.httpService
+        .get(`https://openapi.baidu.com${url}`, {
+          params: {
+            ...otherParams,
+            access_token: this.access_token,
+          },
+        })
+        .pipe(map((res) => res.data))
+        .subscribe((data) => resolve(data));
+    });
   }
 
   /* 资源上传 开始 */

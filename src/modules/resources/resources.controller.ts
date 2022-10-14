@@ -7,7 +7,6 @@ import {
   Patch,
   Post,
   Query,
-  UploadedFile,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -27,8 +26,8 @@ export class ResourcesController {
 
   // 代理bing壁纸
   @Get('daily-img')
-  async getImg(@Query() query: any) {
-    return await this.resourcesService.getImg(query.n);
+  getImg(@Query() query: any) {
+    return this.resourcesService.getImg(query.n);
   }
   // 代理百度统计
   @Get('baidutongji')

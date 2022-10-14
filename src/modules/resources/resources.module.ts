@@ -9,9 +9,17 @@ import { diskStorage } from 'multer';
 import * as dayjs from 'dayjs';
 import * as nuid from 'nuid';
 import { fileConfig } from '../../config';
+import { HttpModule } from '@nestjs/axios';
 @Module({
   imports: [
     TypeOrmModule.forFeature([File]),
+    // HttpModule.registerAsync({
+    //   useFactory: () => ({
+    //     timeout: 5000,
+    //     maxRedirects: 5,
+    //   }),
+    // }),
+    HttpModule,
     AuthModule,
     MulterModule.registerAsync({
       imports: [],

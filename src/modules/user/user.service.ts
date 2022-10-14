@@ -53,7 +53,7 @@ export class UserService {
       throw new NotFoundException('两次输入的密码不一致，请检查');
     }
     const { mobile } = registerDTO;
-    const hasUser = await this.userRepository.findOne({ mobile });
+    const hasUser = await this.userRepository.findOne({ where: { mobile } });
     if (hasUser) {
       throw new NotFoundException('用户已存在');
     }
@@ -142,8 +142,8 @@ export class UserService {
    * 获取指定用户
    * @param id
    */
-  async findById(id: number): Promise<User> {
-    return await this.userRepository.findOne(id);
+  async findById(id): Promise<User> {
+    return await this.userRepository.findOne({ where: { id } });
   }
 
   async findAll(queryParams): Promise<userListVO> {
@@ -172,7 +172,7 @@ export class UserService {
   async updateField(field) {
     const { id } = field;
     delete field.id;
-    const oldItem = await this.userRepository.findOne(id);
+    const oldItem = await this.userRepository.findOne({ where: { id } });
     // merge - 将多个实体合并为一个实体。
     const updatedItem = await this.userRepository.merge(oldItem, {
       ...field,
@@ -236,7 +236,7 @@ export class UserService {
   async deleteById(id) {
     try {
       /* !!! 注意 如果id为undefined会找到第一个 导致删除数据 */
-      const user = await this.userRepository.findOne(id);
+      const user = await this.userRepository.findOne({ where: { id } });
       // console.log(id, user);
       await this.userRepository.remove(user);
       return true;

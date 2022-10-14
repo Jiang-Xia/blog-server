@@ -87,7 +87,7 @@ export class CategoryService {
    * @param Category
    */
   async updateById(id, category: Partial<Category>): Promise<Category> {
-    const oldCategory = await this.categoryRepository.findOne(id);
+    const oldCategory = await this.categoryRepository.findOne({ where: { id } });
     const updatedCategory = await this.categoryRepository.merge(oldCategory, category);
     return this.categoryRepository.save(updatedCategory);
   }
@@ -98,7 +98,7 @@ export class CategoryService {
    */
   async deleteById(id) {
     try {
-      const category = await this.categoryRepository.findOne(id);
+      const category = await this.categoryRepository.findOne({ where: { id } });
       await this.categoryRepository.remove(category);
       return true;
     } catch (e) {

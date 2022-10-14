@@ -263,7 +263,7 @@ export class ArticleService {
    */
   async update(articleEditDTO: ArticleEditDTO) {
     const { id } = articleEditDTO;
-    const articleToUpdate = await this.articleRepository.findOne({ id });
+    const articleToUpdate = await this.articleRepository.findOne({ where: { id } });
     articleToUpdate.title = articleEditDTO.title;
     articleToUpdate.description = articleEditDTO.description;
     // articleToUpdate.content = articleEditDTO.content;
@@ -293,7 +293,7 @@ export class ArticleService {
    */
   async delete(idDTO: IdDTO) {
     const { id, uid } = idDTO;
-    const articleToUpdate = await this.articleRepository.findOne({ id });
+    const articleToUpdate = await this.articleRepository.findOne({ where: { id } });
     if (articleToUpdate.uid === uid) {
       await this.articleRepository.delete(id);
       return {
@@ -312,7 +312,7 @@ export class ArticleService {
    * @param article
    */
   async updateViewsById(id): Promise<Article> {
-    const oldArticle = await this.articleRepository.findOne(id);
+    const oldArticle = await this.articleRepository.findOne({ where: { id } });
     // merge - 将多个实体合并为一个实体。
     const updatedArticle = await this.articleRepository.merge(oldArticle, {
       views: oldArticle.views + 1,
@@ -327,7 +327,7 @@ export class ArticleService {
   async updateArticleField(field) {
     const { id } = field;
     delete field.id;
-    const oldArticle = await this.articleRepository.findOne(id);
+    const oldArticle = await this.articleRepository.findOne({ where: { id } });
     // merge - 将多个实体合并为一个实体。
     const updatedArticle = await this.articleRepository.merge(oldArticle, {
       ...field,
@@ -341,7 +341,7 @@ export class ArticleService {
   //  * @returns
   //  */
   async updateLikesById(articleId: number, status: number): Promise<Article> {
-    const oldArticle = await this.articleRepository.findOne(articleId);
+    const oldArticle = await this.articleRepository.findOne({ where: { articleId } });
     const updatedArticle = await this.articleRepository.merge(oldArticle, {
       likes: status === 1 ? oldArticle.likes + 1 : oldArticle.likes - 1,
     });

@@ -48,12 +48,12 @@ export class ArticleController {
     // const parser = new XMLParser();
     // console.log('xml', parser.parse(listDTO));
 
-    return await this.articleService.getMore(listDTO, getUserInfo(headers.authorization), ip);
+    return await this.articleService.getMore(listDTO, getUserInfo(headers.authorization));
   }
   @Get('info')
   @ApiOkResponse({ description: '文章详情', type: ArticleInfoResponse })
-  async getOne(@Query() idDto: IdDTO, @IpAddress() ip: string): Promise<ArticleInfoVO> {
-    return await this.articleService.findById(idDto, ip);
+  async getOne(@Query() idDto: IdDTO): Promise<ArticleInfoVO> {
+    return await this.articleService.findById(idDto);
   }
 
   @Post('create')

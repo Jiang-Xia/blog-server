@@ -39,7 +39,7 @@ export class ArticleService {
    * @param listDTO
    * @returns
    */
-  async getMore(listDTO: ListDTO, info: User, ip: string) {
+  async getMore(listDTO: ListDTO, info: User) {
     const {
       page = 1,
       pageSize = 10,
@@ -171,7 +171,7 @@ export class ArticleService {
    * 获取指定id文章信息
    * @param idDto
    */
-  async findById(idDto: IdDTO, ip?: string) {
+  async findById(idDto: IdDTO) {
     const { id } = idDto;
     const query = this.articleRepository
       .createQueryBuilder('article')

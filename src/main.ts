@@ -15,7 +15,7 @@ import { HttpExceptionFilter } from './filters/http-execption.filter';
 // 全局表单类验证器
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { serveConfig } from './config';
+import { databaseConfig, serveConfig } from './config';
 import { json, text } from 'body-parser';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
@@ -46,7 +46,9 @@ async function bootstrap() {
     .setTitle('blog-serve')
     .setDescription('博客接口文档')
     .setVersion('1.0')
-    .addServer(`http://${serveConfig.ip}:${serveConfig.prot}`)
+    .addServer(
+      serveConfig.isDev ? `http://${serveConfig.ip}:${serveConfig.prot}` : '42.192.145.236',
+    )
     // 添加鉴权
     .addBearerAuth()
     .build();

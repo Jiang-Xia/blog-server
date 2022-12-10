@@ -38,20 +38,24 @@ async function bootstrap() {
 
   // 允许跨域
   app.enableCors();
+  // 设置api前缀
+  app.setGlobalPrefix(serveConfig.apiPath);
+
   // 配置swagger
   const options = new DocumentBuilder()
     .setTitle('blog-serve')
-    .setDescription('接口文档')
+    .setDescription('博客接口文档')
     .setVersion('1.0')
+    .addServer(`http://${serveConfig.ip}:${serveConfig.prot}`)
     // 添加鉴权
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup(serveConfig.apiPath, app, document);
+  SwaggerModule.setup(serveConfig.apiPath + '/doc', app, document);
   await app.listen(5000);
-  Logger.log(`服务已经启动,接口请访问:http://${serveConfig.ip}:${serveConfig.prot}`);
+  Logger.log(`服务已经启动,接口请访问:http://${serveConfig.ip}:${serveConfig.prot}/api/v1`);
   Logger.log(
-    `服务已经启动,文档请访问:http://${serveConfig.ip}:${serveConfig.prot}/${serveConfig.apiPath}`,
+    `服务已经启动,文档请访问:http://${serveConfig.ip}:${serveConfig.prot}/${serveConfig.apiPath}/doc`,
   );
 }
 bootstrap();

@@ -19,7 +19,7 @@ export const databaseConfig: TypeOrmModuleOptions = {
 export const serveConfig = {
   ip: getLocalIP(),
   prot: 5000,
-  apiPath: 'api',
+  apiPath: 'api/v1',
   isDev: env !== 'production',
 };
 

@@ -29,7 +29,9 @@ import { HttpModule } from '@nestjs/axios';
           destination: `${fileConfig.filePath}${dayjs().format('YYYY-MM-DD')}`,
           filename: (req, file, cb) => {
             // console.log(req, file);
-            const { originalname } = file;
+            // 解决上传文件名中文乱码问题
+            file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf8');
+            const originalname = file.originalname;
             // 在此处自定义保存后的文件名称
             // const filename = `${nuid.next()}.${file.originalname.split('/')[1]}`;
             const filename = `${nuid.next().toLowerCase()}-${originalname}`;

@@ -87,27 +87,35 @@ export class ResourcesService {
   }
   // 刷新 统计 access_token
   refreshAccessToken() {
-    return new Promise((resolve) => {
-      this.httpService
-        .get(`http://openapi.baidu.com/oauth/2.0/token`, {
-          params: {
-            grant_type: 'refresh_token',
-            refresh_token: this.refresh_token,
-            client_id: 'q7VG6K18Qk3zAbl4FTqsWFBvo85jPDef', // apikey
-            client_secret: '6axk2HYSYuQde3tVoW0D3SClNbfIaLOi', // SecretKey
-          },
-        })
-        .pipe(
-          map((res) => res.data),
-          catchError((e) => {
-            throw new HttpException(`刷新access_token错误`, 400);
-          }),
-        )
-        .subscribe((data) => {
-          this.access_token = data.access_token;
-          this.refresh_token = data.refresh_token;
-          resolve(data);
-        });
+    return new Promise((resolve, reject) => {
+      try {
+        this.httpService
+          .get(`http://openapi.baidu.com/oauth/2.0/token`, {
+            params: {
+              grant_type: 'refresh_token',
+              refresh_token: this.refresh_token,
+              client_id: 'q7VG6K18Qk3zAbl4FTqsWFBvo85jPDef', // apikey
+              client_secret: '6axk2HYSYuQde3tVoW0D3SClNbfIaLOi', // SecretKey
+            },
+          })
+          .pipe(
+            map((res) => res.data),
+            catchError((e) => {
+              reject(e);
+              throw new HttpException(`刷新access_token错误`, 400);
+            }),
+          )
+          .subscribe({
+            next: (data) => {
+              this.access_token = data.access_token;
+              this.refresh_token = data.refresh_token;
+              resolve(data);
+            },
+            error: (err) => {
+              console.log('HTTP Error', err);
+            },
+          });
+      } catch (error) {}
     });
   }
   // 获取统计数据
@@ -122,7 +130,12 @@ export class ResourcesService {
           },
         })
         .pipe(map((res) => res.data))
-        .subscribe((data) => resolve(data));
+        .subscribe({
+          next: (data) => {
+            resolve(data);
+          },
+          error: () => console.log('HTTP Error'),
+        });
     });
   }
 

@@ -3,11 +3,10 @@ import { HttpService } from '@nestjs/axios';
 import { Repository } from 'typeorm';
 import { File } from './resources.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { catchError, map } from 'rxjs/operators';
 import fs = require('fs');
-import { AxiosResponse } from 'axios';
-import { Observable } from 'rxjs';
-import { catchError, map, mergeMap } from 'rxjs/operators';
-import { rejects } from 'assert';
+// promise 文件操作
+import fsPromises = require('fs/promises');
 async function delPath(path: string) {
   // console.log('start');
   try {
@@ -50,9 +49,9 @@ async function delPath(path: string) {
   }
 }
 
-interface IReturn {
-  data: any;
-}
+// interface IReturn {
+//   data: any;
+// }
 @Injectable()
 export class ResourcesService {
   constructor(
@@ -67,11 +66,9 @@ export class ResourcesService {
     // res.subscribe((val) => console.log(val));// 订阅观察了，就可以打印出来
     return res;
   }
+  // const code = 'ac717f026e12c8d4530ed62558379e26';
   refresh_token =
-    '122.99f93876aea369e6a87521176b52537c.YH4GCI-jr01jrsJlCMsiSNuXk23VUx90c3XFdSD.5KB7_Q';
-  access_token =
-    '121.316374f417b9d466bf0879e19214ec80.YmGWuMyPrGqqJdMoW11NcqX1C0BEgHMYsglXGJY.fR9hdA';
-
+    '122.7c2ef8f7760f0488fdb08b38666e8fbe.YCcLE0n8lRajwmuaWPz4mxqCQrzGPlGLf2dTr5D.HiWvdQ';
   async baiDuTongJi(query) {
     // 请求数据
     let data: any = await this.getDaiDuTongJiData(query);
@@ -85,6 +82,8 @@ export class ResourcesService {
     }
     return data;
   }
+  // 重置refresh_token和access_token
+  // http://openapi.baidu.com/oauth/2.0/token?grant_type=authorization_code&code=ac717f026e12c8d4530ed62558379e26&client_id=q7VG6K18Qk3zAbl4FTqsWFBvo85jPDef&client_secret=6axk2HYSYuQde3tVoW0D3SClNbfIaLOi&redirect_uri=oob
   // 刷新 统计 access_token
   refreshAccessToken() {
     return new Promise((resolve, reject) => {
@@ -106,9 +105,14 @@ export class ResourcesService {
             }),
           )
           .subscribe({
-            next: (data) => {
-              this.access_token = data.access_token;
-              this.refresh_token = data.refresh_token;
+            next: async (data) => {
+              try {
+                const access_token = data.access_token || '';
+                const jsonStr = JSON.stringify({ access_token });
+                fs.writeFile('./public/data/tongji.json', jsonStr, 'utf8', (err) => {
+                  console.log('写入成功 access_token');
+                });
+              } catch (error) {}
               resolve(data);
             },
             error: (err) => {
@@ -120,13 +124,21 @@ export class ResourcesService {
   }
   // 获取统计数据
   getDaiDuTongJiData(query) {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
       const { url, ...otherParams /* 除了url其他组合成一个对象 */ } = query;
+      let access_token = '';
+      try {
+        const res = await fsPromises.readFile('./public/data/tongji.json', 'utf8');
+        access_token = JSON.parse(res).access_token;
+      } catch (error) {
+        return;
+      }
+      console.log({ access_token });
       this.httpService
         .get(`https://openapi.baidu.com${url}`, {
           params: {
             ...otherParams,
-            access_token: this.access_token,
+            access_token: access_token,
           },
         })
         .pipe(map((res) => res.data))

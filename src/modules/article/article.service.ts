@@ -351,7 +351,7 @@ export class ArticleService {
   /**
    * 获取文章归档
    */
-  async getArchives(): Promise<{ [key: string]: Article[] }> {
+  async getArchives(): Promise<any[]> {
     const data = await this.articleRepository.find({
       where: { status: 'publish' },
       order: { createTime: 'DESC' },
@@ -392,7 +392,16 @@ export class ArticleService {
       };
       ret[year][months[month]].push(rep);
     });
-    return ret;
+    const list = [];
+    Object.keys(ret)
+      .sort((a: string, b: string) => Number(b) - Number(a))
+      .forEach((k) => {
+        list.push({
+          year: k,
+          data: ret[k],
+        });
+      });
+    return list;
   }
 
   /*

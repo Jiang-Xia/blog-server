@@ -8,8 +8,8 @@ const env = process.env.NODE_ENV;
 
 export const databaseConfig: TypeOrmModuleOptions = {
   type: 'mysql',
-  host: env === 'production' ? '42.192.145.236' : 'localhost',
-  // host: '42.192.145.236',
+  // host: env === 'production' ? '42.192.145.236' : 'localhost',
+  host: '42.192.145.236',
   port: 3306,
   username: 'root',
   password: 'jiang123!!',
@@ -17,7 +17,7 @@ export const databaseConfig: TypeOrmModuleOptions = {
 };
 /* 服务配置 */
 export const serveConfig = {
-  ip: getLocalIP(),
+  ip: getLocalIP() || '127.0.0.1',
   prot: 5000,
   apiPath: 'api/v1',
   isDev: env !== 'production',

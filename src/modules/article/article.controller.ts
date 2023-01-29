@@ -128,7 +128,7 @@ export class ArticleController {
    */
   @Get('archives')
   @HttpCode(HttpStatus.OK)
-  getArchives(): Promise<{ [key: string]: Article[] }> {
+  getArchives(): Promise<any[]> {
     return this.articleService.getArchives();
   }
 

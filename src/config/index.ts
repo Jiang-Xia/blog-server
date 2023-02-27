@@ -15,11 +15,15 @@ export const databaseConfig: TypeOrmModuleOptions = {
   password: 'jiang123!!',
   database: 'myblog',
 };
+const baseUrl =
+  env === 'production'
+    ? 'https://jiang-xia.top/x-blog'
+    : 'http://' + (getLocalIP() || '127.0.0.1') + ':5000';
 /* 服务配置 */
 export const serveConfig = {
-  ip: getLocalIP() || '127.0.0.1',
   prot: 5000,
   apiPath: 'api/v1',
+  baseUrl: baseUrl,
   isDev: env !== 'production',
 };
 

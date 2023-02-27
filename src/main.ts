@@ -1,8 +1,8 @@
 /*
  * @Author: 酱
- * @LastEditors: 酱
+ * @LastEditors: jx
  * @Date: 2021-11-12 17:31:46
- * @LastEditTime: 2022-08-07 18:57:16
+ * @LastEditTime: 2023-02-27 14:57:14
  * @Description:
  * @FilePath: \blog-server\src\main.ts
  */
@@ -43,21 +43,17 @@ async function bootstrap() {
 
   // 配置swagger
   const options = new DocumentBuilder()
-    .setTitle('blog-serve')
-    .setDescription('博客接口文档')
+    .setTitle('Blog-Server-Api')
+    .setDescription('Blog Server 博客接口文档')
     .setVersion('1.0')
-    .addServer(
-      serveConfig.isDev ? `http://${serveConfig.ip}:${serveConfig.prot}` : '42.192.145.236',
-    )
+    .addServer(serveConfig.baseUrl, '描述')
     // 添加鉴权
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup(serveConfig.apiPath + '/doc', app, document);
   await app.listen(5000);
-  Logger.log(`服务已经启动,接口请访问:http://${serveConfig.ip}:${serveConfig.prot}/api/v1`);
-  Logger.log(
-    `服务已经启动,文档请访问:http://${serveConfig.ip}:${serveConfig.prot}/${serveConfig.apiPath}/doc`,
-  );
+  Logger.log(`服务已经启动,接口请访问:${serveConfig.baseUrl}/${serveConfig.apiPath}`);
+  Logger.log(`服务已经启动,文档请访问:${serveConfig.baseUrl}/${serveConfig.apiPath}/doc`);
 }
 bootstrap();

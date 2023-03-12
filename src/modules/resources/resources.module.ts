@@ -26,7 +26,7 @@ import { HttpModule } from '@nestjs/axios';
       useFactory: async () => ({
         storage: diskStorage({
           // 配置文件上传后的文件夹路径
-          destination: `${fileConfig.filePath}${dayjs().format('YYYY-MM-DD')}`,
+          destination: `${fileConfig.filePath}${dayjs().format('YYYY-MM')}`,
           filename: (req, file, cb) => {
             // console.log(req, file);
             // 解决上传文件名中文乱码问题

@@ -8,12 +8,13 @@ const env = process.env.NODE_ENV;
 
 export const databaseConfig: TypeOrmModuleOptions = {
   type: 'mysql',
-  // host: env === 'production' ? '42.192.145.236' : 'localhost',
-  host: '42.192.145.236',
+  host: env === 'production' ? '42.192.145.236' : 'localhost',
+  // host: '42.192.145.236',
   port: 3306,
   username: 'root',
   password: 'jiang123!!',
   database: 'myblog',
+  synchronize: env !== 'production',
 };
 const baseUrl =
   env === 'production'

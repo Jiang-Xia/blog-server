@@ -22,7 +22,6 @@ import { databaseConfig } from './config';
     TypeOrmModule.forRoot({
       ...databaseConfig,
       entities: [__dirname + '/**/*.entity{.ts,.js}'], // 路径不要改
-      synchronize: true,
     }),
     ArticleModule,
     UserModule,

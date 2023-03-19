@@ -96,7 +96,7 @@ export class ArticleService {
         }
         // 内容
         if (content) {
-          qb.orWhere('article.contentHtml like :content', {
+          qb.orWhere('article.content like :content', {
             content: `%${description}%`,
           });
         }
@@ -140,7 +140,8 @@ export class ArticleService {
       // 点赞统计数
       v.likes = v.articleLikes.length;
       v.commentCount = commentResArr[i].list.length + commentCount; // 评论和回复数
-      v.contentHtml = ''; // 置空文章内容
+      v.contentHtml = ''; // 置空文章内容 减少http传输
+      v.content = '';
       v.userInfo = setUserInfo(v.user);
       delete v.user;
       delete v.articleLikes;

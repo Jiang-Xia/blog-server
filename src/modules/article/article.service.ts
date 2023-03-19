@@ -266,7 +266,7 @@ export class ArticleService {
     const articleToUpdate = await this.articleRepository.findOne({ where: { id } });
     articleToUpdate.title = articleEditDTO.title;
     articleToUpdate.description = articleEditDTO.description;
-    // articleToUpdate.content = articleEditDTO.content;
+    articleToUpdate.content = articleEditDTO.content;
     articleToUpdate.contentHtml = articleEditDTO.contentHtml;
     articleToUpdate.cover = articleEditDTO.cover;
     articleToUpdate.category = articleEditDTO.category;

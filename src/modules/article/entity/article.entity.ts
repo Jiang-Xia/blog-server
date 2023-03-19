@@ -112,8 +112,8 @@ export class Article {
   description: string;
 
   // 文章内容
-  // @Column('text')
-  // content: string;
+  @Column('longtext')
+  content: string;
 
   // 文章html
   @Column('longtext')

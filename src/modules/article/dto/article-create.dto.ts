@@ -1,5 +1,5 @@
 // src/modules/article/dto/article-create.dto.ts
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 // swagger生成文档时有请求参数
 import { ApiProperty } from '@nestjs/swagger';
 import { Tag } from '../../tag/tag.entity';
@@ -29,7 +29,15 @@ export class ArticleCreateDTO {
   readonly tags: Array<Tag>;
 
   @ApiProperty({
-    description: '文章描述/简介',
+    description: '文章内容',
+    example: '给你讲述美丽的大海',
+  })
+  @IsOptional()
+  @IsNotEmpty({ message: '请输入文章内容' })
+  readonly content: string;
+
+  @ApiProperty({
+    description: '文章内容html',
     example: '给你讲述美丽的大海',
   })
   @IsNotEmpty({ message: '请输入文章内容' })

@@ -39,9 +39,10 @@ export class ArticleEditDTO {
     example: '啊！美丽的大海，你是如此美丽',
     required: false,
   })
-  // @IsOptional()
-  // @IsNotEmpty({ message: '请输入文章内容' })
-  // readonly content?: string;
+  @IsOptional()
+  @IsNotEmpty({ message: '请输入文章内容' })
+  readonly content: string;
+
   @IsNotEmpty({ message: '文章html内容不能为空' })
   readonly contentHtml: string;
 

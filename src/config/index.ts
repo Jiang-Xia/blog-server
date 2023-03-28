@@ -26,8 +26,7 @@ export const InitConfig = () => {
     password: 'jiang123!!',
     database: 'myblog',
     // 此字段生产不能设置为true否则字段有改变时 影响生产数据或清空。
-    synchronize: env === 'development',
-    entities: [__dirname + '/**/*.entity{.ts,.js}'],
+    synchronize: false, //env === 'development',
   };
   /* 服务配置 */
   const serveConfig = {
@@ -39,7 +38,6 @@ export const InitConfig = () => {
         : 'http://' + (getLocalIP() || '127.0.0.1') + ':5000',
     isDev: env === 'development',
   };
-
   /* 初始化账户 */
   const accountConfig = {
     mobile: '18888888888',
@@ -48,7 +46,6 @@ export const InitConfig = () => {
     nickname: 'super',
     passwordRepeat: 'super',
   };
-
   /* 文件存储位置 */
   const fileConfig = {
     // filePath:env === 'production' ? '/blog/static/uploads/' : './public/uploads/',
@@ -60,6 +57,7 @@ export const InitConfig = () => {
     accountConfig,
     fileConfig,
   };
+  console.warn(Config);
   return Config;
 };
 export default () => {

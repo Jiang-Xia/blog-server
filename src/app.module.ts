@@ -24,8 +24,10 @@ import { Config } from './config';
     // 使用 TypeORM 异步配置数据库
     TypeOrmModule.forRootAsync({
       useFactory: () => {
-        console.warn('数据库配置：', Config.databaseConfig);
-        return Config.databaseConfig;
+        return {
+          ...Config.databaseConfig,
+          entities: [__dirname + '/**/*.entity{.ts,.js}'], // 路径不要改
+        };
       },
     }),
     ArticleModule,

@@ -18,10 +18,10 @@ import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { text } from 'body-parser';
 import { NestExpressApplication } from '@nestjs/platform-express';
-const config = InitConfig();
 async function bootstrap() {
+  const config = InitConfig();
   const serveConfig = config.serveConfig;
-  Logger.warn('初始化配置完成：', config);
+  Logger.warn('初始化配置完成=====>');
   Logger.warn('当前环境:====>', process.env.APP_DESC);
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: serveConfig.isDev ? ['log', 'debug', 'error', 'warn'] : ['error', 'warn'],

@@ -15,12 +15,13 @@ import { HttpExceptionFilter } from './filters/http-execption.filter';
 // 全局表单类验证器
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { databaseConfig, serveConfig } from './config';
-import { json, text } from 'body-parser';
+import { serveConfig } from './config';
+import { text } from 'body-parser';
 import { NestExpressApplication } from '@nestjs/platform-express';
+console.log('当前环境:====>', process.env.NODE_ENV);
 
 async function bootstrap() {
-  console.log(serveConfig.isDev ? '==生产环境==' : '==开发环境==');
+  Logger.log(process.env.APP_DESC);
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: serveConfig.isDev ? ['log', 'debug', 'error', 'warn'] : ['error', 'warn'],
   });

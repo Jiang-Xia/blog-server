@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
+import { ConfigModule } from '@nestjs/config';
 import { ArticleModule } from './modules/article/article.module';
 import { UserModule } from './modules/user/user.module';
 import { CategoryModule } from './modules/category/category.module';
@@ -18,6 +18,7 @@ import { ResourcesModule } from './modules/resources/resources.module';
 import { databaseConfig } from './config';
 @Module({
   imports: [
+    // ConfigModule.forRoot({ isGlobal: true, envFilePath: '.development.env' }),
     // 使用 TypeORM 配置数据库
     TypeOrmModule.forRoot({
       ...databaseConfig,

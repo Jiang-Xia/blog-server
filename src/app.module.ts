@@ -13,16 +13,20 @@ import { ReplyModule } from './modules/reply/reply.module';
 import { LikeModule } from './modules/like/like.module';
 import { MsgboardModule } from './modules/msgboard/msgboard.module';
 import { AdminModule } from './modules/admin/admin.module';
-
 import { ResourcesModule } from './modules/resources/resources.module';
-import { databaseConfig } from './config';
+import { Config } from './config';
 @Module({
   imports: [
-    // ConfigModule.forRoot({ isGlobal: true, envFilePath: '.development.env' }),
-    // 使用 TypeORM 配置数据库
-    TypeOrmModule.forRoot({
-      ...databaseConfig,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'], // 路径不要改
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.development.env',
+    }),
+    // 使用 TypeORM 异步配置数据库
+    TypeOrmModule.forRootAsync({
+      useFactory: () => {
+        console.warn('数据库配置：', Config.databaseConfig);
+        return Config.databaseConfig;
+      },
     }),
     ArticleModule,
     UserModule,

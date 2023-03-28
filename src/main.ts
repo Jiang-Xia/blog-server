@@ -7,6 +7,7 @@
  * @FilePath: \blog-server\src\main.ts
  */
 import { NestFactory } from '@nestjs/core';
+import { InitConfig } from './config/index';
 import { AppModule } from './app.module';
 // 全局Http拦截器
 import { TransformInterceptor } from './interceptor/transform.interceptor';
@@ -15,13 +16,13 @@ import { HttpExceptionFilter } from './filters/http-execption.filter';
 // 全局表单类验证器
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { serveConfig } from './config';
 import { text } from 'body-parser';
 import { NestExpressApplication } from '@nestjs/platform-express';
-console.log('当前环境:====>', process.env.NODE_ENV);
-
+const config = InitConfig();
 async function bootstrap() {
-  Logger.log(process.env.APP_DESC);
+  const serveConfig = config.serveConfig;
+  Logger.warn('初始化配置完成：', config);
+  Logger.warn('当前环境:====>', process.env.APP_DESC);
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: serveConfig.isDev ? ['log', 'debug', 'error', 'warn'] : ['error', 'warn'],
   });

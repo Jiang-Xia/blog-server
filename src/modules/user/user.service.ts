@@ -22,7 +22,7 @@ import { User } from './entity/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { getPagination } from 'src/utils';
 import { userListVO } from './vo/user-list.vo';
-import { accountConfig } from 'src/config';
+import { Config } from 'src/config';
 @Injectable()
 export class UserService {
   constructor(
@@ -32,12 +32,12 @@ export class UserService {
   ) {
     /* class 初始化时会执行 constructor*/
     // 初始化账户
-    const cUser: RegisterDTO = { ...accountConfig };
+    const cUser: RegisterDTO = { ...Config.accountConfig };
 
     this.register(cUser, true)
       .then(() =>
         console.log(
-          `管理员账户创建成功，手机号：${accountConfig.mobile}，密码：${accountConfig.password}，请及时登录系统修改默认密码`,
+          `管理员账户创建成功，手机号：${Config.accountConfig.mobile}，密码：${Config.accountConfig.password}，请及时登录系统修改默认密码`,
         ),
       )
       .catch(() => {

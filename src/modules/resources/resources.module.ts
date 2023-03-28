@@ -8,7 +8,7 @@ import { File } from './resources.entity';
 import { diskStorage } from 'multer';
 import * as dayjs from 'dayjs';
 import * as nuid from 'nuid';
-import { fileConfig } from '../../config';
+import { Config } from '../../config';
 import { HttpModule } from '@nestjs/axios';
 @Module({
   imports: [
@@ -26,7 +26,7 @@ import { HttpModule } from '@nestjs/axios';
       useFactory: async () => ({
         storage: diskStorage({
           // 配置文件上传后的文件夹路径
-          destination: `${fileConfig.filePath}${dayjs().format('YYYY-MM')}`,
+          destination: `${Config.fileConfig.filePath}${dayjs().format('YYYY-MM')}`,
           filename: (req, file, cb) => {
             // console.log(req, file);
             // 解决上传文件名中文乱码问题

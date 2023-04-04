@@ -18,20 +18,25 @@ export class ListDTO {
     example: 10,
     required: false,
   })
-  // @IsOptional()
-  // @Matches(regPositive, { message: 'pageSize 不可小于 0' })
   readonly pageSize?: number;
+  @ApiProperty({ description: '文章分类' })
   readonly category?: string;
+  @ApiProperty({ description: '文章标题' })
   readonly title?: string;
+  @ApiProperty({ description: '文章Md内容' })
   readonly content?: string;
+  @ApiProperty({ description: '文章描述' })
   description?: string;
-  // 时间排序
+  @ApiProperty({ description: '时间排序' })
   sort?: string;
+  @ApiProperty({ description: '标签' })
   readonly tags?: string[];
 
-  readonly client?: boolean; // home端
+  @ApiProperty({ description: 'home端' })
+  readonly client?: boolean;
 
-  readonly admin?: boolean; // admin端
+  @ApiProperty({ description: 'admin端' })
+  readonly admin?: boolean;
 
   @ApiProperty({
     description: '是否只返回自身账号的文章',

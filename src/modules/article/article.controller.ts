@@ -27,6 +27,7 @@ import { RolesGuard, Roles } from '../auth/roles.guard';
 import { Article } from './entity/article.entity';
 import { getUserInfo, getUid } from 'src/utils';
 import { IpAddress } from 'src/utils/common';
+import { ApiBody } from '@nestjs/swagger';
 // import { XMLParser, XMLValidator } from 'fast-xml-parser';
 
 @ApiTags('文章模块')
@@ -36,6 +37,7 @@ export class ArticleController {
   constructor(private articleService: ArticleService) {}
 
   @ApiOkResponse({ description: '文章列表', type: ArticleListResponse })
+  @ApiBody({ type: ListDTO })
   @Post('list')
   async getMore(
     @Body() listDTO: any,

@@ -18,6 +18,8 @@ import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { text } from 'body-parser';
 import { NestExpressApplication } from '@nestjs/platform-express';
+// session
+import * as session from 'express-session';
 async function bootstrap() {
   const config = InitConfig();
   const serveConfig = config.serveConfig;
@@ -37,7 +39,14 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   // app.use(json({ limit: '5mb' })); // 统一配置http传输设置 解析json
   app.use(text({ limit: '5mb', type: 'text/xml' })); // json和xml都可以解析
-
+  // 配置session
+  app.use(
+    session({
+      secret: 'jx123!456jx',
+      resave: false,
+      saveUninitialized: false,
+    }),
+  );
   // 允许跨域
   app.enableCors();
   // 设置api前缀

@@ -8,6 +8,8 @@ import {
   Patch,
   Delete,
   Query,
+  Req,
+  Res,
 } from '@nestjs/common';
 import { ApiTags, ApiBody, ApiOkResponse, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { getUid } from 'src/utils';
@@ -19,11 +21,29 @@ import { UserService } from './user.service';
 import { TokenResponse } from './vo/token.vo';
 import { UserInfoResponse } from './vo/user-info.vo';
 import { userListVO } from './vo/user-list.vo';
+import * as svgCaptcha from 'svg-captcha';
 
 @ApiTags('用户模块')
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
+
+  //利用svg-captcha生成校验码图片并存储在前端session中
+  @ApiOperation({ summary: '验证码生成', description: '验证码' })
+  @Get('code')
+  createCaptcha(@Req() req, @Res() res) {
+    const captcha = svgCaptcha.create({
+      size: 4, //生成几个验证码
+      fontSize: 50, //文字大小
+      ignoreChars: '0o1i', // 忽略字符
+      width: 100, //宽度
+      height: 34, //高度
+      background: '#cc9966', //背景颜色
+    });
+    req.session.code = captcha.text; //存储验证码记录到session
+    res.type('image/svg+xml');
+    res.send(captcha.data);
+  }
 
   @ApiBody({ type: RegisterDTO })
   @ApiOkResponse({ description: '注册', type: UserInfoResponse })

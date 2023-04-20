@@ -66,9 +66,9 @@ export class ResourcesService {
     // res.subscribe((val) => console.log(val));// 订阅观察了，就可以打印出来
     return res;
   }
-  // const code = 'ac717f026e12c8d4530ed62558379e26';
+  // const code = '5f8a8b97c134bcb21ceb113d88d9d43c';// 授权码
   refresh_token =
-    '122.7c2ef8f7760f0488fdb08b38666e8fbe.YCcLE0n8lRajwmuaWPz4mxqCQrzGPlGLf2dTr5D.HiWvdQ';
+    '122.00d4a59f02a5b41e830b1b6b52add272.YsJjZfsHkOxl0ES4UJbiBbWLDCjYihHO5BzF1zA.EAq4LQ';
   async baiDuTongJi(query) {
     // 请求数据
     let data: any = await this.getDaiDuTongJiData(query);
@@ -101,7 +101,7 @@ export class ResourcesService {
             map((res) => res.data),
             catchError((e) => {
               reject(e);
-              throw new HttpException(`刷新access_token错误`, 400);
+              throw new HttpException(`刷新access_token错误`, e);
             }),
           )
           .subscribe({
@@ -111,9 +111,9 @@ export class ResourcesService {
                 const jsonStr = JSON.stringify({ access_token });
                 fs.writeFile('./public/data/tongji.json', jsonStr, 'utf8', (err) => {
                   console.log('写入成功 access_token');
+                  resolve(data);
                 });
               } catch (error) {}
-              resolve(data);
             },
             error: (err) => {
               console.log('HTTP Error', err);
@@ -146,7 +146,7 @@ export class ResourcesService {
           next: (data) => {
             resolve(data);
           },
-          error: () => console.log('HTTP Error'),
+          error: (error) => console.log('HTTP Error', error),
         });
     });
   }

@@ -10,6 +10,7 @@ import {
   Query,
   Req,
   Res,
+  Session,
 } from '@nestjs/common';
 import { ApiTags, ApiBody, ApiOkResponse, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { getUid } from 'src/utils';
@@ -30,18 +31,19 @@ export class UserController {
 
   //利用svg-captcha生成校验码图片并存储在前端session中
   @ApiOperation({ summary: '验证码生成', description: '验证码' })
-  @Get('code')
-  createCaptcha(@Req() req, @Res() res) {
+  @Get('authCode')
+  createCaptcha(@Req() req: any, @Res() res: any) {
     const captcha = svgCaptcha.create({
       size: 4, //生成几个验证码
       fontSize: 50, //文字大小
       ignoreChars: '0o1i', // 忽略字符
+      noise: 3, //干扰线条
       width: 100, //宽度
-      height: 34, //高度
+      height: 48, //高度
       background: '#cc9966', //背景颜色
     });
-    req.session.code = captcha.text; //存储验证码记录到session
-    res.type('image/svg+xml');
+    req.session.authCode = captcha.text; //存储验证码记录到session
+    // res.type('image/svg+xml');
     res.send(captcha.data);
   }
 
@@ -49,16 +51,23 @@ export class UserController {
   @ApiOkResponse({ description: '注册', type: UserInfoResponse })
   @ApiOperation({ summary: '账号注册', description: '注册' })
   @Post('register')
-  async register(@Body() registerDTO: RegisterDTO): Promise<UserInfoResponse> {
-    return this.userService.register(registerDTO);
+  async register(@Session() session: any, @Body() registerDTO: RegisterDTO): Promise<any> {
+    const bool = this.userService.authCodeMatch(session.authCode, registerDTO.authCode);
+    if (bool) {
+      this.userService.register(registerDTO);
+    }
   }
 
   @ApiBody({ type: LoginDTO })
   @ApiOkResponse({ description: '登陆', type: TokenResponse })
-  @ApiOperation({ summary: '账号登录', description: '注册' })
+  @ApiOperation({ summary: '账号登陆', description: '登陆' })
   @Post('login')
-  async login(@Body() loginDTO: LoginDTO): Promise<any> {
-    return this.userService.login(loginDTO);
+  async login(@Req() req: any, @Body() loginDTO: LoginDTO): Promise<any> {
+    console.log(req.session);
+    const bool = this.userService.authCodeMatch(req.session?.authCode, loginDTO.authCode);
+    if (bool) {
+      this.userService.login(loginDTO);
+    }
   }
 
   // 获取用户信息需要鉴权

@@ -20,6 +20,9 @@ export class resetPassword {
   @IsNotEmpty({ message: '请输入用户昵称' })
   @IsString({ message: '名字必须是 String 类型' })
   readonly nickname: string;
+
+  @IsNotEmpty({ message: '请输入验证码' })
+  readonly authCode?: string;
 }
 export class RegisterDTO extends resetPassword {
   @ApiProperty({

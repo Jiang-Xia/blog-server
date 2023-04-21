@@ -28,6 +28,11 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: serveConfig.isDev ? ['log', 'debug', 'error', 'warn'] : ['error', 'warn'],
   });
+  // 允许跨域
+  app.enableCors({
+    credentials: true,
+    origin: true,
+  });
   // 配置静态资源目录
   app.useStaticAssets('public');
   // 3.1 设置虚拟路径
@@ -40,15 +45,22 @@ async function bootstrap() {
   // app.use(json({ limit: '5mb' })); // 统一配置http传输设置 解析json
   app.use(text({ limit: '5mb', type: 'text/xml' })); // json和xml都可以解析
   // 配置session
-  app.use(
-    session({
-      secret: 'jx123!456jx',
-      resave: false,
-      saveUninitialized: false,
-    }),
-  );
-  // 允许跨域
-  app.enableCors();
+  const sess: any = {
+    secret: 'jx123!456jx', // 密钥
+    name: 'blog.connect.sid', //返回客户端(cookie里面)的 key 的名称 默认为connect.sid
+    // resave: false, //强制保存
+    saveUninitialized: false,
+    rolling: true, //每次请求重新设置cookie 过期时间
+    cookie: {
+      // 5分钟
+      maxAge: 300000,
+    },
+  };
+  console.log(process.env.NODE_ENV);
+  if (process.env.NODE_ENV === 'production') {
+    sess.cookie.secure = true; // serve secure cookies
+  }
+  app.use(session(sess));
   // 设置api前缀
   app.setGlobalPrefix(serveConfig.apiPath);
 

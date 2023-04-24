@@ -96,7 +96,7 @@ export class MenuService {
     });
     // console.log({ Menu, exist });
     if (exist) {
-      throw new HttpException('菜单已存在', HttpStatus.BAD_REQUEST);
+      throw new HttpException('菜单已存在', HttpStatus.INTERNAL_SERVER_ERROR);
     }
     const newItem = await this.menuRepository.create(Menu);
     await this.menuRepository.save(newItem);
@@ -125,7 +125,7 @@ export class MenuService {
       await this.menuRepository.remove(menu);
       return true;
     } catch (e) {
-      throw new HttpException('删除失败', HttpStatus.BAD_REQUEST);
+      throw new HttpException('删除失败', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
@@ -145,7 +145,7 @@ export class LinkService {
     });
 
     if (existCategory) {
-      throw new HttpException('外链已存在', HttpStatus.BAD_REQUEST);
+      throw new HttpException('外链已存在', HttpStatus.INTERNAL_SERVER_ERROR);
     }
     const newCategory = await this.linkRepository.create(Link);
     await this.linkRepository.save(newCategory);
@@ -178,7 +178,7 @@ export class LinkService {
       await this.linkRepository.remove(link);
       return true;
     } catch (e) {
-      throw new HttpException('删除失败', HttpStatus.BAD_REQUEST);
+      throw new HttpException('删除失败', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

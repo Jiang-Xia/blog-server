@@ -242,14 +242,14 @@ export class UserService {
       await this.userRepository.remove(user);
       return true;
     } catch (e) {
-      throw new HttpException('删除失败', HttpStatus.BAD_REQUEST);
+      throw new HttpException('删除失败', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   // 校验验证码是否一致
   authCodeMatch(sesssionCode: string, bodyCode: string) {
     const bool = bodyCode?.toLocaleUpperCase() === sesssionCode?.toLocaleUpperCase();
-    console.log({ sesssionCode, bodyCode, bool });
+    // console.log({ sesssionCode, bodyCode, bool });
     if (bool) {
       return bool;
     } else {

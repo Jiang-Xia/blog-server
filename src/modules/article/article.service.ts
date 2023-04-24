@@ -233,7 +233,7 @@ export class ArticleService {
     // 查询文章标题是否已经存在
     const exist = await this.articleRepository.findOne({ where: { title } });
     if (exist) {
-      throw new HttpException('文章标题已存在', HttpStatus.BAD_REQUEST);
+      throw new HttpException('文章标题已存在', HttpStatus.INTERNAL_SERVER_ERROR);
     }
     // console.log('创建文章', article);
     // 查询标签

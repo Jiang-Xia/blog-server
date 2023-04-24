@@ -40,7 +40,7 @@ export class MsgboardService {
       await this.msgboardRepository.delete(ids);
       return true;
     } catch (e) {
-      throw new HttpException('删除失败', HttpStatus.BAD_REQUEST);
+      throw new HttpException('删除失败', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

@@ -20,7 +20,7 @@ export class TagService {
     const existTag = await this.tagRepository.findOne({ where: { label } });
 
     if (existTag) {
-      throw new HttpException('标签已存在', HttpStatus.BAD_REQUEST);
+      throw new HttpException('标签已存在', HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     const newTag = await this.tagRepository.create(tag);
@@ -118,7 +118,7 @@ export class TagService {
       await this.tagRepository.remove(tag);
       return true;
     } catch (e) {
-      throw new HttpException('删除失败，可能存在关联文章', HttpStatus.BAD_REQUEST);
+      throw new HttpException('删除失败，可能存在关联文章', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

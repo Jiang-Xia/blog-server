@@ -43,7 +43,7 @@ export class UserController {
       background: '#cc9966', //背景颜色
     });
     req.session.authCode = captcha.text; //存储验证码记录到session
-    // res.type('image/svg+xml');
+    res.type('image/svg+xml');
     res.send(captcha.data);
   }
 
@@ -54,7 +54,7 @@ export class UserController {
   async register(@Session() session: any, @Body() registerDTO: RegisterDTO): Promise<any> {
     const bool = this.userService.authCodeMatch(session.authCode, registerDTO.authCode);
     if (bool) {
-      this.userService.register(registerDTO);
+      return this.userService.register(registerDTO);
     }
   }
 
@@ -63,10 +63,10 @@ export class UserController {
   @ApiOperation({ summary: '账号登陆', description: '登陆' })
   @Post('login')
   async login(@Req() req: any, @Body() loginDTO: LoginDTO): Promise<any> {
-    console.log(req.session);
+    // console.log(req.session);
     const bool = this.userService.authCodeMatch(req.session?.authCode, loginDTO.authCode);
     if (bool) {
-      this.userService.login(loginDTO);
+      return this.userService.login(loginDTO);
     }
   }
 

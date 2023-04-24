@@ -21,7 +21,7 @@ export class CategoryService {
     });
 
     if (existCategory) {
-      throw new HttpException('分类已存在', HttpStatus.BAD_REQUEST);
+      throw new HttpException('分类已存在', HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     const newCategory = await this.categoryRepository.create(Category);
@@ -102,7 +102,7 @@ export class CategoryService {
       await this.categoryRepository.remove(category);
       return true;
     } catch (e) {
-      throw new HttpException('删除失败，可能存在关联文章', HttpStatus.BAD_REQUEST);
+      throw new HttpException('删除失败，可能存在关联文章', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

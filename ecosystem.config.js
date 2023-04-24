@@ -2,7 +2,7 @@ module.exports = {
   // pm2 配置
   apps: [
     {
-      name: 'blog-serve', // 项目名字,启动后的名字
+      name: 'blog-server', // 项目名字,启动后的名字
       script: './dist/main.js', // 执行的文件
       cwd: './', // 根目录
       args: '', // 传递给脚本的参数
@@ -19,18 +19,19 @@ module.exports = {
       min_uptime: '60s', // 应用运行少于时间被认为是异常启动
       max_restarts: 30, // 最大异常重启次数
       restart_delay: 60, // 异常重启情况下，延时重启时间
-      env: {
-        // 环境参数，当前指定为开发环境
-        NODE_ENV: 'development',
-      },
-      env_production: {
-        // 环境参数,当前指定为生产环境
-        NODE_ENV: 'production', //使用production模式 pm2 start ecosystem.config.js --env production
-      },
-      env_test: {
-        // 环境参数,当前为测试环境
-        NODE_ENV: 'test',
-      },
+      // 环境配置不对可能会导致cookie传输不了
+      // env: {
+      //   // 环境参数，当前指定为开发环境
+      //   NODE_ENV: 'development',
+      // },
+      // env_production: {
+      //   // 环境参数,当前指定为生产环境
+      //   NODE_ENV: 'production', //使用production模式 pm2 start ecosystem.config.js --env production
+      // },
+      // env_test: {
+      //   // 环境参数,当前为测试环境
+      //   NODE_ENV: 'test',
+      // },
     },
   ],
 

@@ -18,13 +18,16 @@ import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { text } from 'body-parser';
 import { NestExpressApplication } from '@nestjs/platform-express';
-// session
 import * as session from 'express-session';
+
 async function bootstrap() {
   const config = InitConfig();
   const serveConfig = config.serveConfig;
   Logger.warn('初始化配置完成=====>');
-  Logger.warn('当前环境:====>', process.env.APP_DESC);
+  Logger.warn({
+    当前环境: process.env.APP_DESC,
+    NODE_ENV: process.env.NODE_ENV,
+  });
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: serveConfig.isDev ? ['log', 'debug', 'error', 'warn'] : ['error', 'warn'],
   });
@@ -48,7 +51,7 @@ async function bootstrap() {
   const sess: any = {
     secret: 'jx123!456jx', // 密钥
     name: 'blog.connect.sid', //返回客户端(cookie里面)的 key 的名称 默认为connect.sid
-    // resave: false, //强制保存
+    resave: false, //强制保存
     saveUninitialized: false,
     rolling: true, //每次请求重新设置cookie 过期时间
     cookie: {
@@ -56,7 +59,6 @@ async function bootstrap() {
       maxAge: 300000,
     },
   };
-  console.log(process.env.NODE_ENV);
   if (process.env.NODE_ENV === 'production') {
     sess.cookie.secure = true; // serve secure cookies
   }

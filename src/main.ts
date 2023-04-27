@@ -19,6 +19,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { text } from 'body-parser';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as session from 'express-session';
+import { SessionOptions } from 'express-session';
 
 async function bootstrap() {
   const config = InitConfig();
@@ -48,7 +49,7 @@ async function bootstrap() {
   // app.use(json({ limit: '5mb' })); // 统一配置http传输设置 解析json
   app.use(text({ limit: '5mb', type: 'text/xml' })); // json和xml都可以解析
   // 配置session
-  const sess: any = {
+  const sess: SessionOptions = {
     secret: 'jx123!456jx', // 密钥
     name: 'blog.connect.sid', //返回客户端(cookie里面)的 key 的名称 默认为connect.sid
     resave: false, //强制保存
@@ -60,6 +61,7 @@ async function bootstrap() {
     },
   };
   if (process.env.NODE_ENV === 'production') {
+    sess.cookie.sameSite = 'none';
     sess.cookie.secure = true; // serve secure cookies
   }
   app.use(session(sess));

@@ -40,7 +40,7 @@ export class UserController {
       noise: 3, //干扰线条
       width: 100, //宽度
       height: 48, //高度
-      background: '#cc9966', //背景颜色
+      background: '#ee3f4d', //背景颜色 #cc9966
     });
     req.session.authCode = captcha.text; //存储验证码记录到session
     res.type('image/svg+xml');

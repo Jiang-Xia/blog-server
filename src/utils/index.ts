@@ -25,8 +25,16 @@ export const getPagination = (total: number, pageSize: number, page: number) => 
     pages,
   };
 };
-
+// 用的echart主题配色
 const colors: string[] = [
+  // westeros
+  '#516b91',
+  '#59c4e6',
+  '#edafda',
+  '#93b7e3',
+  '#a5e7f0',
+  '#cbb0e3',
+  // wonderland
   '#4ea397',
   '#22c3aa',
   '#7bd9a5',
@@ -44,6 +52,31 @@ const colors: string[] = [
   '#7289ab',
   '#91ca8c',
   '#f49f42',
+  // chalk
+  '#fc97af',
+  '#87f7cf',
+  '#f7f494',
+  '#72ccff',
+  '#f7c5a0',
+  '#d4a4eb',
+  '#d2f5a6',
+  '#76f2f2',
+  // infographic
+  '#c1232b',
+  '#27727b',
+  '#fcce10',
+  '#e87c25',
+  '#b5c334',
+  '#fe8463',
+  '#9bca63',
+  '#fad860',
+  '#f3a43b',
+  '#60c0dd',
+  '#d7504b',
+  '#c6e579',
+  '#f4e001',
+  '#f0805a',
+  '#26c0c0',
 ];
 // 随机获取一种颜色
 export const getRandomClor = () => {

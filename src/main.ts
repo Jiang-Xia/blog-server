@@ -30,7 +30,9 @@ async function bootstrap() {
     NODE_ENV: process.env.NODE_ENV,
   });
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    logger: serveConfig.isDev ? ['log', 'debug', 'error', 'warn'] : ['error', 'warn'],
+    logger: serveConfig.isDev
+      ? ['log', 'debug', 'error', 'warn']
+      : ['log', 'debug', 'error', 'warn'],
   });
   // 允许跨域
   app.enableCors({

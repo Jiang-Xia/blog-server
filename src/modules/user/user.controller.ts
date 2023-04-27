@@ -63,7 +63,7 @@ export class UserController {
   @ApiOperation({ summary: '账号登陆', description: '登陆' })
   @Post('login')
   async login(@Req() req: any, @Body() loginDTO: LoginDTO): Promise<any> {
-    // console.log(req.session);
+    console.log(req.session);
     const bool = this.userService.authCodeMatch(req.session?.authCode, loginDTO.authCode);
     if (bool) {
       return this.userService.login(loginDTO);

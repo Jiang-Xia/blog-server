@@ -56,17 +56,24 @@ async function bootstrap() {
     name: 'blog.connect.sid', //返回客户端(cookie里面)的 key 的名称 默认为connect.sid
     resave: false, //强制保存
     saveUninitialized: true,
-    rolling: true, //每次请求重新设置cookie 过期时间
+    rolling: false, //每次请求重新设置cookie 过期时间
     cookie: {
       // 5分钟
       maxAge: 300000,
     },
   };
-  if (process.env.NODE_ENV === 'production') {
-    sess.cookie.sameSite = 'none';
-    sess.cookie.secure = true; // serve secure cookies
-  }
+  // if (process.env.NODE_ENV === 'production') {
+  //   sess.cookie.sameSite = 'none';
+  //   sess.cookie.secure = true; // serve secure cookies
+  // }
   app.use(session(sess));
+  // 自定义插件
+  app.use(function (req: any, res: any, next: any) {
+    if (!req.session.authCodeCount) {
+      req.session.authCodeCount = 0;
+    }
+    next();
+  });
   // 设置api前缀
   app.setGlobalPrefix(serveConfig.apiPath);
 

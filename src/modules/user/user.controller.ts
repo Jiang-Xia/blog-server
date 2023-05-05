@@ -12,6 +12,7 @@ import {
   Res,
   Session,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { ApiTags, ApiBody, ApiOkResponse, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { getUid } from 'src/utils';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -24,6 +25,9 @@ import { UserInfoResponse } from './vo/user-info.vo';
 import { userListVO } from './vo/user-list.vo';
 import * as svgCaptcha from 'svg-captcha';
 
+interface SessionReq extends Request {
+  session: Record<string, any>;
+}
 @ApiTags('用户模块')
 @Controller('user')
 export class UserController {
@@ -32,7 +36,7 @@ export class UserController {
   //利用svg-captcha生成校验码图片并存储在前端session中
   @ApiOperation({ summary: '验证码生成', description: '验证码' })
   @Get('authCode')
-  createCaptcha(@Req() req: any, @Res() res: any) {
+  createCaptcha(@Req() req: SessionReq, @Res() res: Response) {
     const captcha = svgCaptcha.create({
       size: 4, //生成几个验证码
       fontSize: 50, //文字大小
@@ -42,16 +46,23 @@ export class UserController {
       height: 48, //高度
       background: '#ee3f4d', //背景颜色 #cc9966
     });
+    req.session.authCodeCount++;
+    console.log(req.session.authCodeCount);
     req.session.authCode = captcha.text; //存储验证码记录到session
     res.type('image/svg+xml');
-    res.send(captcha.data);
+    // res.send();
+    res.end(captcha.data);
   }
 
   @ApiBody({ type: RegisterDTO })
   @ApiOkResponse({ description: '注册', type: UserInfoResponse })
   @ApiOperation({ summary: '账号注册', description: '注册' })
   @Post('register')
-  async register(@Session() session: any, @Body() registerDTO: RegisterDTO): Promise<any> {
+  async register(
+    @Session() session: Record<string, any>,
+    @Body() registerDTO: RegisterDTO,
+  ): Promise<any> {
+    console.log(session, { loginAuthCode: registerDTO.authCode });
     const bool = this.userService.authCodeMatch(session.authCode, registerDTO.authCode);
     if (bool) {
       return this.userService.register(registerDTO);
@@ -62,8 +73,9 @@ export class UserController {
   @ApiOkResponse({ description: '登陆', type: TokenResponse })
   @ApiOperation({ summary: '账号登陆', description: '登陆' })
   @Post('login')
-  async login(@Req() req: any, @Body() loginDTO: LoginDTO): Promise<any> {
-    console.log(req.session);
+  async login(@Req() req: SessionReq, @Body() loginDTO: LoginDTO): Promise<any> {
+    // console.log(req.headers.cookie);
+    console.log(req.session, { loginAuthCode: loginDTO.authCode });
     const bool = this.userService.authCodeMatch(req.session?.authCode, loginDTO.authCode);
     if (bool) {
       return this.userService.login(loginDTO);

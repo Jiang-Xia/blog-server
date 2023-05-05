@@ -55,7 +55,7 @@ async function bootstrap() {
     secret: 'jx123!456jx', // 密钥
     name: 'blog.connect.sid', //返回客户端(cookie里面)的 key 的名称 默认为connect.sid
     resave: false, //强制保存
-    saveUninitialized: false,
+    saveUninitialized: true,
     rolling: true, //每次请求重新设置cookie 过期时间
     cookie: {
       // 5分钟

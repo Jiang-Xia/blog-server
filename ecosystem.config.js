@@ -9,7 +9,12 @@ module.exports = {
       watch: true, // 开启监听文件变动重启
       ignore_watch: ['node_modules', 'public', 'logs'], // 不用监听的文件
       exec_mode: 'cluster_mode',
-      instances: '2', // max表示最大的 应用启动实例个数，仅在 cluster 模式有效 默认为 fork
+      instances: '1',
+      /* 
+      多核部署会有session重写问题 // max表示最大的 应用启动实例个数，仅在 cluster 模式有效 默认为 fork
+      node 中express session用pm2多核部署时，并发大时会造成session被重写。
+      https://cnodejs.org/topic/53683f214f5bf53561006824 
+      */
       autorestart: true, // 默认为 true, 发生异常的情况下自动重启
       max_memory_restart: '500M',
       error_file: './logs/app-err.log', // 错误日志文件

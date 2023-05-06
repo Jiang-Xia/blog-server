@@ -62,10 +62,6 @@ async function bootstrap() {
       maxAge: 300000,
     },
   };
-  // if (process.env.NODE_ENV === 'production') {
-  //   sess.cookie.sameSite = 'none';
-  //   sess.cookie.secure = true; // serve secure cookies
-  // }
   app.use(session(sess));
   // 自定义插件
   app.use(function (req: any, res: any, next: any) {

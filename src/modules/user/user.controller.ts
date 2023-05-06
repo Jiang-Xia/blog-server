@@ -62,7 +62,6 @@ export class UserController {
     @Session() session: Record<string, any>,
     @Body() registerDTO: RegisterDTO,
   ): Promise<any> {
-    console.log(session, { loginAuthCode: registerDTO.authCode });
     const bool = this.userService.authCodeMatch(session.authCode, registerDTO.authCode);
     if (bool) {
       return this.userService.register(registerDTO);
@@ -74,8 +73,7 @@ export class UserController {
   @ApiOperation({ summary: '账号登陆', description: '登陆' })
   @Post('login')
   async login(@Req() req: SessionReq, @Body() loginDTO: LoginDTO): Promise<any> {
-    // console.log(req.headers.cookie);
-    console.log(req.session, { loginAuthCode: loginDTO.authCode });
+    // console.log(req.session, { loginAuthCode: loginDTO.authCode });
     const bool = this.userService.authCodeMatch(req.session?.authCode, loginDTO.authCode);
     if (bool) {
       return this.userService.login(loginDTO);

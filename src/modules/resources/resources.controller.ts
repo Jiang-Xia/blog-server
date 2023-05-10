@@ -17,6 +17,7 @@ import { Roles, RolesGuard } from '../auth/roles.guard';
 import { ResourcesService } from './resources.service';
 import { File } from './resources.entity';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { IpAddress } from 'src/utils/common';
 // 文档
 @ApiTags('资源模块')
 @Controller('resources')
@@ -35,8 +36,8 @@ export class ResourcesController {
     return await this.resourcesService.baiDuTongJi(query);
   }
   @Get('weather')
-  async weather() {
-    return await this.resourcesService.getWeather();
+  async weather(@IpAddress() ip: string) {
+    return await this.resourcesService.getWeather(ip);
   }
 
   /**

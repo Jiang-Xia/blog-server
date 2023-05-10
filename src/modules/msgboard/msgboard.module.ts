@@ -4,9 +4,9 @@ import { MsgboardService } from './msgboard.service';
 import { MsgboardController } from './msgboard.controller';
 import { Msgboard } from './msgboard.entity';
 import { AuthModule } from '../auth/auth.module';
-
+import { HttpModule } from '@nestjs/axios';
 @Module({
-  imports: [TypeOrmModule.forFeature([Msgboard]), AuthModule],
+  imports: [TypeOrmModule.forFeature([Msgboard]), AuthModule, HttpModule],
   exports: [MsgboardService, MsgboardService],
   providers: [MsgboardService, MsgboardService],
   controllers: [MsgboardController],

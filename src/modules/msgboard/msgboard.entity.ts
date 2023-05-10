@@ -38,10 +38,6 @@ export class Msgboard {
   @Column()
   comment: string;
 
-  @ApiProperty({ description: '验证码' })
-  @Column()
-  code: string;
-
   @ApiProperty({ description: '头像' })
   @Column()
   avatar: string;

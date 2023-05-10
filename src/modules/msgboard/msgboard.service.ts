@@ -15,28 +15,27 @@ export class MsgboardService {
     @InjectRepository(Msgboard)
     private readonly msgboardRepository: Repository<Msgboard>,
   ) {}
-  async create(Msgboard: Partial<Msgboard>, req: Request): Promise<Msgboard> {
+  async create(msgboard: Partial<Msgboard>, req: Request, ip: string): Promise<Msgboard> {
     // console.log('https://v1.alapi.cn/api/avatar', {
     //   email: Msgboard.eamil,
     //   size: 100,
     // });
-    const avatar = `https://v1.alapi.cn/api/avatar?email=${Msgboard.eamil}&size=100`;
+    const avatar = `https://v1.alapi.cn/api/avatar?email=${msgboard.eamil}&size=100`;
     const parser = new UAParser(req.headers['user-agent']); // you need to pass the user-agent for nodejs
     const parserResults = parser.getResult();
-    const ip = req.headers['x-forwarded-for'];
-    console.log(parserResults, req.headers, ip);
     const geo = lookup(ip);
-    Msgboard.avatar = avatar;
-    Msgboard.location = geo.city;
-    Msgboard.browser = parserResults.browser.name + parserResults.browser.version;
-    Msgboard.system = parserResults.os.name;
+    // console.log(parserResults, geo, ip);
+    msgboard.avatar = avatar;
+    msgboard.location = geo?.city || '未知';
+    msgboard.browser = parserResults.browser.name + parserResults.browser.version;
+    msgboard.system = parserResults.os.name;
     // uaParser
-    const newCategory = await this.msgboardRepository.create(Msgboard);
+    const newCategory = await this.msgboardRepository.create(msgboard);
     await this.msgboardRepository.save(newCategory);
     return newCategory;
   }
 
-  async findAll(queryParams): Promise<Msgboard[]> {
+  async findAll(): Promise<Msgboard[]> {
     const sql = this.msgboardRepository.createQueryBuilder('msgboard');
     sql.orderBy('msgboard.createTime', 'DESC');
     const data = await sql.getMany();

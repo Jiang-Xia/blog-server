@@ -7,7 +7,7 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 
-/* 点赞表 */
+/* 留言板表 */
 @Entity()
 export class Msgboard {
   // 数据库 创建时间
@@ -45,4 +45,16 @@ export class Msgboard {
   @ApiProperty({ description: '头像' })
   @Column()
   avatar: string;
+
+  @ApiProperty({ description: '位置' })
+  @Column()
+  location: string;
+
+  @ApiProperty({ description: '系统' })
+  @Column()
+  system: string;
+
+  @ApiProperty({ description: '浏览器版本' })
+  @Column()
+  browser: string;
 }

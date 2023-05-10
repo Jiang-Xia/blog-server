@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as dayjs from 'dayjs';
 import { Repository } from 'typeorm';
 import { Msgboard } from './msgboard.entity';
+import { lookup } from 'geoip-lite';
+import { UAParser } from 'ua-parser-js';
 // import axios from '@nestjs/axios';
 // import { MD5 } from 'crypto-js';
 
@@ -13,13 +15,22 @@ export class MsgboardService {
     @InjectRepository(Msgboard)
     private readonly msgboardRepository: Repository<Msgboard>,
   ) {}
-  async create(Msgboard: Partial<Msgboard>): Promise<Msgboard> {
+  async create(Msgboard: Partial<Msgboard>, req: Request): Promise<Msgboard> {
     // console.log('https://v1.alapi.cn/api/avatar', {
     //   email: Msgboard.eamil,
     //   size: 100,
     // });
     const avatar = `https://v1.alapi.cn/api/avatar?email=${Msgboard.eamil}&size=100`;
+    const parser = new UAParser(req.headers['user-agent']); // you need to pass the user-agent for nodejs
+    const parserResults = parser.getResult();
+    const ip = req.headers['x-forwarded-for'];
+    console.log(parserResults, req.headers, ip);
+    const geo = lookup(ip);
     Msgboard.avatar = avatar;
+    Msgboard.location = geo.city;
+    Msgboard.browser = parserResults.browser.name + parserResults.browser.version;
+    Msgboard.system = parserResults.os.name;
+    // uaParser
     const newCategory = await this.msgboardRepository.create(Msgboard);
     await this.msgboardRepository.save(newCategory);
     return newCategory;

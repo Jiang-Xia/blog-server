@@ -281,4 +281,12 @@ export class ResourcesService {
     // console.log({ field, updatedItem });
     return this.fileRepository.save(updatedItem);
   }
+
+  // 获取天气
+  async getWeather() {
+    const res: any = this.httpService
+      .get('https://api.vvhan.com/api/weather')
+      .pipe(map((res) => res.data));
+    return res;
+  }
 }

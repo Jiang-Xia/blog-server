@@ -34,6 +34,10 @@ export class ResourcesController {
   async baiDuTongJi(@Query() query: any) {
     return await this.resourcesService.baiDuTongJi(query);
   }
+  @Get('weather')
+  async weather() {
+    return await this.resourcesService.getWeather();
+  }
 
   /**
    * 上传文件

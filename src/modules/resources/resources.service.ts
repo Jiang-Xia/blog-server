@@ -284,9 +284,9 @@ export class ResourcesService {
 
   // 获取天气
   async getWeather(ip: string) {
-    console.log({ 获取天气的ip: ip });
+    // console.log({ 获取天气的ip: ip });
     const res: any = this.httpService
-      .get('https://api.vvhan.com/api/weather?ip=' + ip)
+      .get('https://api.vvhan.com/api/weather')
       .pipe(map((res) => res.data));
     return res;
   }

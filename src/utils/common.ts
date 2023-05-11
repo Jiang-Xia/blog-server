@@ -5,7 +5,7 @@ import * as requestIp from 'request-ip';
 export const IpAddress = createParamDecorator((data: unknown, ctx: ExecutionContext) => {
   const req = ctx.switchToHttp().getRequest();
   console.log({
-    req: req.headers,
+    // req: req.headers,
     'req.clientIp': req.clientIp,
     'requestIp.getClientIp(req)': requestIp.getClientIp(req),
   });

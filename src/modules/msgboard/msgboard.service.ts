@@ -4,7 +4,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import * as dayjs from 'dayjs';
 import { Repository } from 'typeorm';
 import { Msgboard } from './msgboard.entity';
-import { lookup } from 'geoip-lite';
 import { UAParser } from 'ua-parser-js';
 import { MD5 } from 'crypto-js';
 import { map } from 'rxjs/operators';
@@ -27,10 +26,7 @@ export class MsgboardService {
       ip = ip.substring(7);
     }
     const info: any = await this.getIPInfo(ip);
-    const lookupInfo = lookup(ip);
     console.log({
-      reqIP: req.ip,
-      lookupInfo,
       info,
       ip,
     });

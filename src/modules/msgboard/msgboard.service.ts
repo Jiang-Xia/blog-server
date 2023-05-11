@@ -8,6 +8,7 @@ import { UAParser } from 'ua-parser-js';
 import { MD5 } from 'crypto-js';
 import { map } from 'rxjs/operators';
 import { lastValueFrom } from 'rxjs';
+import { isIPv4 } from 'node:net';
 
 // 后端还是一个个模块分开写比较清晰，集合再一起久了，不清晰功能下载哪里了！
 @Injectable()
@@ -29,12 +30,18 @@ export class MsgboardService {
     console.log({
       info,
       ip,
+      parserResults,
     });
     msgboard.avatar = avatar;
-    const { prov = '', city = '' } = info?.info || {};
-    msgboard.location = prov ? prov + '-' + city : '未知';
-    msgboard.browser = parserResults.browser.name + parserResults.browser.version;
-    msgboard.system = parserResults.os.name;
+    const { os, browser } = parserResults;
+    const { country = '', prov = '', city = '' } = info?.info || {};
+    if (prov === '-') {
+      msgboard.location = country || '位置';
+    } else {
+      msgboard.location = prov + '-' + city || '未知';
+    }
+    msgboard.browser = browser.name + browser.major;
+    msgboard.system = os.name + os.version;
     // uaParser
     const newCategory = await this.msgboardRepository.create(msgboard);
     await this.msgboardRepository.save(newCategory);
@@ -52,9 +59,13 @@ export class MsgboardService {
   }
   // 获取IP信息
   async getIPInfo(ip: string) {
+    if (!isIPv4(ip)) {
+      // 判断是不是ip4
+      ip = '';
+    }
     // lastValueFrom可以获取到请求到的接口数据
     const checkResultObservable: any = this.httpService
-      .get('  https://api.vvhan.com/api/getIpInfo?ip=' + ip)
+      .get('https://api.vvhan.com/api/getIpInfo?ip=' + ip)
       .pipe(map((res) => res.data));
     const checkResult = await lastValueFrom(checkResultObservable);
     return checkResult;

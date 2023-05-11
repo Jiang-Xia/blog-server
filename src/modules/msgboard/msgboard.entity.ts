@@ -53,4 +53,16 @@ export class Msgboard {
   @ApiProperty({ description: '浏览器版本' })
   @Column()
   browser: string;
+
+  @ApiProperty({ description: '父级id 0为一级评论' })
+  @Column({ default: '0' })
+  pId: string;
+
+  @ApiProperty({ description: '回复的评论的id' })
+  @Column({ default: null })
+  replyId: string;
+
+  @ApiProperty({ description: '回复人名称' })
+  @Column({ default: null })
+  respondent: string;
 }

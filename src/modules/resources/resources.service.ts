@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { File } from './resources.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { catchError, map } from 'rxjs/operators';
+import { isIPv4 } from 'net';
 import fs = require('fs');
 // promise 文件操作
 import fsPromises = require('fs/promises');
@@ -284,6 +285,10 @@ export class ResourcesService {
 
   // 获取天气
   async getWeather(ip: string) {
+    if (!isIPv4(ip)) {
+      // 判断是不是ip4
+      ip = '';
+    }
     const res: any = this.httpService
       .get('https://api.vvhan.com/api/weather?ip=' + ip)
       .pipe(map((res) => res.data));

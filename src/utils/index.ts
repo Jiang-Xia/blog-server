@@ -3,6 +3,7 @@ import './test';
 import * as os from 'os';
 import jwtDecode from 'jwt-decode';
 import { User } from 'src/modules/user/entity/user.entity';
+import console from 'console';
 
 export default class utils {
   getPagination;

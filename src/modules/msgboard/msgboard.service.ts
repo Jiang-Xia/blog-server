@@ -19,8 +19,6 @@ export class MsgboardService {
     private readonly httpService: HttpService,
   ) {}
   async create(msgboard: Partial<Msgboard>, req: any, ip: string): Promise<Msgboard> {
-    const hash = MD5(msgboard.eamil);
-    const avatar = `https://cravatar.cn/avatar/${hash}?s=100`;
     const parser = new UAParser(req.headers['user-agent']); // you need to pass the user-agent for nodejs
     const parserResults = parser.getResult();
     if (ip.indexOf('::ffff:') !== -1) {
@@ -32,7 +30,11 @@ export class MsgboardService {
       ip,
       parserResults,
     });
-    msgboard.avatar = avatar;
+    if (!msgboard.avatar) {
+      const hash = MD5(msgboard.eamil);
+      const avatar = `https://cravatar.cn/avatar/${hash}?s=100`;
+      msgboard.avatar = avatar;
+    }
     const { os, browser } = parserResults;
     const { country = '', prov = '', city = '' } = info?.info || {};
     if (prov === '-') {

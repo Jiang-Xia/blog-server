@@ -20,7 +20,7 @@ export class Msgboard {
 
   @ApiProperty({ description: '自身id' })
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   @ApiProperty({ description: '昵称' })
   @Column()
@@ -55,14 +55,22 @@ export class Msgboard {
   browser: string;
 
   @ApiProperty({ description: '父级id 0为一级评论' })
-  @Column({ default: '0' })
-  pId: string;
+  @Column({ default: 0 })
+  pId: number;
 
   @ApiProperty({ description: '回复的评论的id' })
   @Column({ default: null })
-  replyId: string;
+  replyId: number;
 
   @ApiProperty({ description: '回复人名称' })
   @Column({ default: null })
   respondent: string;
+
+  @ApiProperty({ description: '图片地址' })
+  @Column({ default: null })
+  imgUrl: string;
+
+  @ApiProperty({ description: 'ip地址' })
+  @Column({ default: null })
+  ip: string;
 }

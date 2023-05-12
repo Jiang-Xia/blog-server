@@ -42,10 +42,11 @@ export class MsgboardService {
     }
     msgboard.browser = browser.name + browser.major;
     msgboard.system = os.name + os.version;
+    msgboard.ip = ip;
     // uaParser
-    const newCategory = await this.msgboardRepository.create(msgboard);
-    await this.msgboardRepository.save(newCategory);
-    return newCategory;
+    const newMsgboard = this.msgboardRepository.create(msgboard);
+    await this.msgboardRepository.save(newMsgboard);
+    return newMsgboard;
   }
 
   async findAll(): Promise<Msgboard[]> {

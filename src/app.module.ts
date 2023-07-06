@@ -15,6 +15,7 @@ import { MsgboardModule } from './modules/msgboard/msgboard.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { ResourcesModule } from './modules/resources/resources.module';
 import { Config } from './config';
+
 @Module({
   imports: [
     ConfigModule.forRoot({

@@ -20,7 +20,7 @@ export const InitConfig = () => {
   const env = process.env.NODE_ENV;
   const databaseConfig: TypeOrmModuleOptions = {
     type: 'mysql',
-    host: env === 'production' ? '42.192.145.236' : 'localhost',
+    host: env === 'production' ? '127.0.0.1' : 'localhost',
     port: 3306,
     username: 'root',
     password: 'jiang123!!',

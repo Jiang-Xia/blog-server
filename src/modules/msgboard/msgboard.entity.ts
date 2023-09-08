@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
   CreateDateColumn,
 } from 'typeorm';
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 /* 留言板表 */
 @Entity()
 export class Msgboard {
@@ -28,7 +28,7 @@ export class Msgboard {
 
   @ApiProperty({ description: '邮箱' })
   @Column()
-  @IsEmail()
+  // @IsEmail()
   eamil: string;
 
   @ApiProperty({ description: '个人主页地址' })

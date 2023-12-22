@@ -68,14 +68,15 @@ export class ResourcesService {
     return res;
   }
   // const code = '5f8a8b97c134bcb21ceb113d88d9d43c';// 授权码
+  // refresh_token 有效期为十年
   refresh_token =
-    '122.00d4a59f02a5b41e830b1b6b52add272.YsJjZfsHkOxl0ES4UJbiBbWLDCjYihHO5BzF1zA.EAq4LQ';
+    '122.03b3f1352cb6cc332eeed7d0b8bc5d71.YHruAHnpaEn4zzg4y6HLR0rTcL6XjIbUvFDVkMp.v6BL8A';
   async baiDuTongJi(query) {
     // 请求数据
     let data: any = await this.getDaiDuTongJiData(query);
-    // console.log('data1', data);
     // token 过期 刷新token
     if (data.error_code === 110 || data.error_code === 111) {
+      console.log('data1', data);
       await this.refreshAccessToken();
       // 重新请求数据
       data = await this.getDaiDuTongJiData(query);
@@ -89,6 +90,7 @@ export class ResourcesService {
   refreshAccessToken() {
     return new Promise((resolve, reject) => {
       try {
+        // 121.bccb64029d73681aa7925f835c627d32.YmW85P2Wm79ZVQprBAQXokycI7Kgnx0jnmhbiYw.XsXpsw
         this.httpService
           .get(`http://openapi.baidu.com/oauth/2.0/token`, {
             params: {
@@ -117,7 +119,18 @@ export class ResourcesService {
               } catch (error) {}
             },
             error: (err) => {
-              console.log('HTTP Error', err);
+              // {
+              //   key: Object.keys(err),
+              //   response: err.response,
+              //   // 请求百度接口400时 response.data给的文本提示
+              //   data: err.status.response.data,
+              //   options: err.options,
+              //   message: err.message,
+              //   name: err.name,
+              //   err: err,
+              // }
+              console.log('刷新token失败百度响应信息: ', err.status.response.data);
+              // console.log('HTTP Error', err);
             },
           });
       } catch (error) {}

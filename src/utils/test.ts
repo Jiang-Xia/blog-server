@@ -22,7 +22,7 @@ const parseMDToHtml = function (tartgetPath: string, tempPath: string, outputNam
           throw err;
         } else {
           //转化好的html字符串
-          const htmlStr = marked(markContent.toString());
+          const htmlStr: any = marked(markContent.toString());
           // console.log(htmlStr);
           //将html模板文件中的'@markdown' 替换为 html字符串
           template = template.replace('@markdown', htmlStr);

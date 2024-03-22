@@ -14,6 +14,8 @@ import { LikeModule } from './modules/like/like.module';
 import { MsgboardModule } from './modules/msgboard/msgboard.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { ResourcesModule } from './modules/resources/resources.module';
+import { FileModule } from './modules/file/file.module';
+
 import { Config } from './config';
 
 @Module({
@@ -42,6 +44,7 @@ import { Config } from './config';
     ResourcesModule,
     MsgboardModule,
     AdminModule,
+    FileModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -6,10 +6,10 @@ import { AuthModule } from '../auth/auth.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { MyFile } from './file.entity';
 import { diskStorage } from 'multer';
-import * as dayjs from 'dayjs';
-import * as nuid from 'nuid';
 import { Config } from '../../config';
 import { HttpModule } from '@nestjs/axios';
+import * as fs from 'fs';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([MyFile]),
@@ -26,7 +26,18 @@ import { HttpModule } from '@nestjs/axios';
       useFactory: async () => ({
         storage: diskStorage({
           // 配置文件上传后的文件夹路径
-          destination: `${Config.fileConfig.filePath}${'tempFolder'}`,
+          destination: (req, file, callback) => {
+            const { hash } = req.query;
+            const path = `${Config.fileConfig.filePath}tempFolder/${hash}`;
+            // 创建文件夹
+            fs.mkdir(path, { recursive: true }, (err) => {
+              if (err) {
+                console.log('创建文件夹失败', err);
+                return;
+              }
+            });
+            callback(null, path);
+          },
           filename: (req, file, cb) => {
             // console.log(req, file);
             const { hash, index } = req.query;

@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Controller, Post, Body, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FileService } from './file.service';
 import { MyFile } from './file.entity';
@@ -28,5 +28,11 @@ export class FileController {
   ) {
     // ! 这里的 file 已经是保存后的文件信息了，在此处做数据库处理，或者直接返回保存后的文件信息
     return this.fileService.uploadBigFile(files.fileContents);
+  }
+
+  @ApiResponse({ status: 200, description: '合并文件', type: MyFile })
+  @Post('uploadBigFile/merge')
+  mergeFile(@Body() body: any) {
+    return this.fileService.mergeFile(body);
   }
 }

@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { ArticleModule } from './modules/article/article.module';
 import { UserModule } from './modules/user/user.module';
 import { CategoryModule } from './modules/category/category.module';
@@ -33,6 +34,7 @@ import { Config } from './config';
         };
       },
     }),
+    ScheduleModule.forRoot(),
     ArticleModule,
     UserModule,
     CategoryModule,

@@ -13,21 +13,3 @@ export const IpAddress = createParamDecorator((data: unknown, ctx: ExecutionCont
   if (req.clientIp) return req.clientIp;
   return requestIp.getClientIp(req) as string;
 });
-
-// 设置缓存限制接口请求次数
-// export const CacheLimit = createParamDecorator(async (data: unknown, ctx: ExecutionContext) => {
-//   const maxCount = 3;
-//   let count: number = await this.cacheManager.get(ip);
-//   console.log({ [ip]: count });
-//   if (!count) {
-//     this.cacheManager.set(ip, 1, 1000 * 10);
-//     const count2: number = await this.cacheManager.get(ip);
-//     console.log({ [ip]: count2 });
-//   } else if (count < maxCount) {
-//     count += 1;
-//     this.cacheManager.set(ip, count);
-//     return this.msgboardService.findAll();
-//   } else {
-//     return [];
-//   }
-// });

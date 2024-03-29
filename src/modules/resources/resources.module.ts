@@ -7,9 +7,10 @@ import { MulterModule } from '@nestjs/platform-express';
 import { File } from './resources.entity';
 import { diskStorage } from 'multer';
 import * as dayjs from 'dayjs';
-import * as nuid from 'nuid';
 import { Config } from '../../config';
 import { HttpModule } from '@nestjs/axios';
+import { v4 as uuidv4 } from 'uuid';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([File]),
@@ -33,8 +34,8 @@ import { HttpModule } from '@nestjs/axios';
             file.originalname = Buffer.from(file.originalname, 'latin1').toString('utf8');
             const originalname = file.originalname;
             // 在此处自定义保存后的文件名称
-            // const filename = `${nuid.next()}.${file.originalname.split('/')[1]}`;
-            const filename = `${nuid.next().toLowerCase()}-${originalname}`;
+            const uuId = uuidv4().replace(/-/g, '');
+            const filename = `${uuId}-${originalname}`;
 
             return cb(null, filename);
           },

@@ -1,7 +1,8 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { MyFile } from './file.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Cron } from '@nestjs/schedule';
 import { Config } from '../../config';
 import { getFolderSizeBin } from 'go-get-folder-size';
 import * as dayjs from 'dayjs';
@@ -33,9 +34,11 @@ function deleteFolderRecursive(folderPath: string) {
     fs.rmdirSync(folderPath); // 删除空文件夹
   }
 }
+
 @Injectable()
 export class FileService {
   constructor(@InjectRepository(MyFile) private readonly fileRepository: Repository<MyFile>) {}
+  private readonly logger = new Logger(FileService.name);
   /* 大文件切片上传 开始 */
 
   /**
@@ -63,12 +66,17 @@ export class FileService {
     return await sleep(500);
   }
 
+  /**
+   * 合并切片文件
+   * @param body object
+   */
   async mergeFile(body: any) {
     return await new Promise(async (resolve, reject) => {
       const { hash, fileName } = body;
       const basePath = `${Config.fileConfig.filePath}tempFolder`;
       const slicePath = `${basePath}/${hash}`;
-
+      reject(new HttpException('内存不足，禁止上传', HttpStatus.INTERNAL_SERVER_ERROR));
+      return;
       const folderSize = await getFolderSizeBin(basePath);
       // console.log('folderSize=============>', folderSize);
       // 4194304 4M 524288000 500M 2147483648 2G
@@ -102,5 +110,13 @@ export class FileService {
       });
     });
   }
+  /**
+   * 定时任务 定时删除切片临时文件
+   * @param body object
+   */
+  // @Cron('5 * * * * *')
+  // handleCron() {
+  //   this.logger.debug('Called when the current second is 45');
+  // }
   /* 大文件切片上传 结束 */
 }

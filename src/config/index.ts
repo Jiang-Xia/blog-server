@@ -1,4 +1,5 @@
 import { ConfigService } from '@nestjs/config';
+import { Logger } from '@nestjs/common';
 /*
  * mysql8修改密码  alter user  user() identified by 'jiang123!!';
  * https://blog.csdn.net/qq_42618394/article/details/103181778
@@ -18,7 +19,7 @@ export let Config: ConfigInterface = {
 };
 export const InitConfig = () => {
   const conf = new ConfigService();
-  console.log(conf.get('db_port'));
+  Logger.warn(`当前环境： ${process.env.NODE_ENV} ${conf.get('app_desc')}`);
   const databaseConfig: any = {
     type: conf.get('db_type'),
     host: conf.get('db_host'),

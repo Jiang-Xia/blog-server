@@ -19,11 +19,15 @@ import { FileModule } from './modules/file/file.module';
 
 import { Config } from './config';
 
+// 如果 NODE_ENV 未设置，则默认为 development
+const environment = process.env.NODE_ENV || 'development';
+const envFilePath = `.env.${environment}`;
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.development.env',
+      // 自动读取本地.env文件
+      envFilePath: envFilePath,
     }),
     // 使用 TypeORM 异步配置数据库
     TypeOrmModule.forRootAsync({

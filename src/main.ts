@@ -2,7 +2,7 @@
  * @Author: 酱
  * @LastEditors: jx
  * @Date: 2021-11-12 17:31:46
- * @LastEditTime: 2023-02-27 14:57:14
+ * @LastEditTime: 2024-03-29 17:09:28
  * @Description:
  * @FilePath: \blog-server\src\main.ts
  */
@@ -22,13 +22,10 @@ import * as session from 'express-session';
 import { SessionOptions } from 'express-session';
 
 async function bootstrap() {
+  Logger.warn('开始初始化配置==================>');
   const config = InitConfig();
   const serveConfig = config.serveConfig;
-  Logger.warn('初始化配置完成=====>');
-  Logger.warn({
-    当前环境: process.env.APP_DESC,
-    NODE_ENV: process.env.NODE_ENV,
-  });
+  Logger.warn('完成初始化配置==================>');
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: serveConfig.isDev
       ? ['log', 'debug', 'error', 'warn']

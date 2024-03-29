@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
-
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AppService {
+  private config = ConfigService;
   getHello(): string {
+    console.log(this.config);
     return 'Hello World!';
   }
   // 重定向测试

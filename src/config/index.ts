@@ -1,9 +1,9 @@
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { getLocalIP } from 'src/utils';
+import { ConfigService } from '@nestjs/config';
 /*
  * mysql8修改密码  alter user  user() identified by 'jiang123!!';
  * https://blog.csdn.net/qq_42618394/article/details/103181778
  */
+
 type ConfigInterface = {
   databaseConfig: any;
   serveConfig: any;
@@ -17,39 +17,36 @@ export let Config: ConfigInterface = {
   fileConfig: {},
 };
 export const InitConfig = () => {
-  const env = process.env.NODE_ENV;
-  const databaseConfig: TypeOrmModuleOptions = {
-    type: 'mysql',
-    host: env === 'production' ? '127.0.0.1' : '127.0.0.1',
-    port: 3306,
-    username: 'root',
-    password: 'jiang123!!',
-    database: 'myblog',
+  const conf = new ConfigService();
+  console.log(conf.get('db_port'));
+  const databaseConfig: any = {
+    type: conf.get('db_type'),
+    host: conf.get('db_host'),
+    port: parseInt(conf.get('db_port')),
+    username: conf.get('db_username'),
+    password: conf.get('db_password') as string,
+    database: conf.get('db_database'),
     // 此字段生产不能设置为true否则字段有改变时 影响生产数据或清空。
-    synchronize: true, //env === 'development',
+    synchronize: false,
   };
   /* 服务配置 */
   const serveConfig = {
-    prot: 5000,
-    apiPath: 'api/v1',
-    baseUrl:
-      env === 'production'
-        ? 'https://jiang-xia.top/x-blog'
-        : 'http://' + (getLocalIP() || '127.0.0.1') + ':5000',
-    isDev: env === 'development',
+    port: parseInt(conf.get('serve_port')),
+    apiPath: conf.get('serve_apiPath'),
+    baseUrl: conf.get('serve_baseUrl'),
+    isDev: conf.get('node_env') === 'development',
   };
   /* 初始化账户 */
   const accountConfig = {
-    mobile: '18888888888',
-    password: 'super',
-    role: 'super',
-    nickname: 'super',
-    passwordRepeat: 'super',
+    mobile: conf.get('account_mobile'),
+    password: conf.get('account_password'),
+    role: conf.get('account_role'),
+    nickname: conf.get('account_nickname'),
+    passwordRepeat: conf.get('account_passwordRepeat'),
   };
   /* 文件存储位置 */
   const fileConfig = {
-    // filePath:env === 'production' ? '/blog/static/uploads/' : './public/uploads/',
-    filePath: './public/uploads/', // 直接使用本nestjs服务做静态资源服务
+    filePath: conf.get('file_filePath'), // 直接使用本nestjs服务做静态资源服务
   };
   Config = {
     databaseConfig,

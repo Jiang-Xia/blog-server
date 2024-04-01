@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Controller, Post, Get, Body, UploadedFiles, UseInterceptors, Query } from '@nestjs/common';
 import { ApiResponse, ApiBody, ApiTags } from '@nestjs/swagger';
 import { FileService } from './file.service';
 import { FileStore } from './file.entity';
@@ -36,5 +36,12 @@ export class FileController {
   @Post('uploadBigFile/merge')
   mergeFile(@Body() body: any) {
     return this.fileService.mergeFile(body);
+  }
+
+  @ApiResponse({ status: 200, description: '检查已上传的切片', type: FileStore })
+  @ApiBody({ type: Object })
+  @Get('uploadBigFile/checkFile')
+  checkFile(@Query() query: any) {
+    return this.fileService.checkFile(query);
   }
 }

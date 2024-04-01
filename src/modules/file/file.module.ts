@@ -30,7 +30,7 @@ import * as fs from 'fs';
         storage: diskStorage({
           // 配置文件上传后的文件夹路径
           destination: (req, file, callback) => {
-            const { hash } = req.query;
+            const { hash, index } = req.query;
             const path = `${Config.fileConfig.filePath}tempFolder/${hash}`;
             // 创建文件夹
             fs.mkdir(path, { recursive: true }, (err) => {

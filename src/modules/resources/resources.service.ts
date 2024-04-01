@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { Repository } from 'typeorm';
-import { File } from './resources.entity';
+import { FileStore } from '../file/file.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { catchError, map } from 'rxjs/operators';
 import { isIPv4 } from 'net';
@@ -56,7 +56,7 @@ async function delPath(path: string) {
 @Injectable()
 export class ResourcesService {
   constructor(
-    @InjectRepository(File) private readonly fileRepository: Repository<File>,
+    @InjectRepository(FileStore) private readonly fileRepository: Repository<FileStore>,
     private readonly httpService: HttpService,
   ) {}
   getImg(n = '1') {
@@ -171,11 +171,11 @@ export class ResourcesService {
    * 上传文件
    * @param file
    */
-  async uploadFile(files: Express.Multer.File[], pid: string): Promise<File[]> {
+  async uploadFile(files: Partial<Express.Multer.File>[], pid: string): Promise<FileStore[]> {
     const newFiles = [];
     files.forEach((file: Express.Multer.File) => {
       const { originalname, destination, mimetype, size, filename } = file;
-      const item: Partial<File> = {
+      const item: Partial<FileStore> = {
         originalname,
         filename,
         type: mimetype,
@@ -197,7 +197,7 @@ export class ResourcesService {
   /**
    * 获取所有文件
    */
-  async findAll(queryParams): Promise<[File[], number]> {
+  async findAll(queryParams): Promise<[FileStore[], number]> {
     const query = this.fileRepository.createQueryBuilder('file').orderBy('file.createAt', 'DESC');
 
     if (typeof queryParams === 'object') {
@@ -231,11 +231,11 @@ export class ResourcesService {
    * 获取指定文件
    * @param id
    */
-  async findById(id): Promise<File> {
+  async findById(id): Promise<FileStore> {
     return this.fileRepository.findOne({ where: { id } });
   }
 
-  async findByIds(ids): Promise<Array<File>> {
+  async findByIds(ids): Promise<Array<FileStore>> {
     return this.fileRepository.findByIds(ids);
   }
 
@@ -244,18 +244,18 @@ export class ResourcesService {
    * @param id
    */
   async deleteById(id: string) {
-    const target: File = await this.fileRepository.findOne({ where: { id } });
+    const target: FileStore = await this.fileRepository.findOne({ where: { id } });
     // await this.oss.deleteFile(target.filename);
     const path: string = target.url.replace('/static/', './public/');
     delPath(path);
 
     // 递归删除
-    const delCb = async (_target: File) => {
+    const delCb = async (_target: FileStore) => {
       // 是文件夹时
       if (_target.isFolder) {
         const targets = await this.fileRepository.find({ where: { pid: id } });
         // console.log(targets);
-        targets.forEach((v: File) => {
+        targets.forEach((v: FileStore) => {
           const p = v.url.replace('/static/', './public/');
           console.log(p);
           delPath(p);
@@ -271,7 +271,7 @@ export class ResourcesService {
 
   // 增加文件夹
   async addFolder(name: string) {
-    const item: Partial<File> = {
+    const item: Partial<FileStore> = {
       originalname: name,
       filename: name,
       type: '',

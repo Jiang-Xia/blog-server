@@ -15,7 +15,7 @@ import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles, RolesGuard } from '../auth/roles.guard';
 import { ResourcesService } from './resources.service';
-import { File } from './resources.entity';
+import { FileStore } from '../file/file.entity';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { IpAddress } from 'src/utils/common';
 // 文档
@@ -44,7 +44,7 @@ export class ResourcesController {
    * 上传文件
    * @param file
    */
-  @ApiResponse({ status: 200, description: '上传文件', type: [File] })
+  @ApiResponse({ status: 200, description: '上传文件', type: [FileStore] })
   @Post('uploadFile')
   // {
   //   limits: {

@@ -4,7 +4,7 @@ import { ResourcesService } from './resources.service';
 import { ResourcesController } from './resources.controller';
 import { AuthModule } from '../auth/auth.module';
 import { MulterModule } from '@nestjs/platform-express';
-import { File } from './resources.entity';
+import { FileStore } from '../file/file.entity';
 import { diskStorage } from 'multer';
 import * as dayjs from 'dayjs';
 import { Config } from '../../config';
@@ -13,7 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([File]),
+    TypeOrmModule.forFeature([FileStore]),
     // HttpModule.registerAsync({
     //   useFactory: () => ({
     //     timeout: 5000,

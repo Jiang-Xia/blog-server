@@ -1,7 +1,8 @@
 import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { MyFile } from './file.entity';
+import { FileStore } from './file.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ResourcesService } from '../resources/resources.service';
 import { Cron } from '@nestjs/schedule';
 import { Config } from '../../config';
 import { getFolderSizeBin } from 'go-get-folder-size';
@@ -31,13 +32,20 @@ function deleteFolderRecursive(folderPath: string) {
         fs.unlinkSync(curPath);
       }
     });
-    fs.rmdirSync(folderPath); // 删除空文件夹
+    fs.unlink(folderPath, (err) => {
+      // console.log(fs.readdirSync(folderPath));
+      if (err) throw err;
+      console.log('成功删除' + folderPath);
+    });
   }
 }
 
 @Injectable()
 export class FileService {
-  constructor(@InjectRepository(MyFile) private readonly fileRepository: Repository<MyFile>) {}
+  constructor(
+    private readonly resourcesService: ResourcesService,
+    @InjectRepository(FileStore) private readonly fileRepository: Repository<FileStore>,
+  ) {}
   private readonly logger = new Logger(FileService.name);
   /* 大文件切片上传 开始 */
 
@@ -45,25 +53,24 @@ export class FileService {
    * 上传文件
    * @param file
    */
-  async uploadBigFile(files: Express.Multer.File[]): Promise<MyFile[]> {
+  async uploadBigFile(files: Express.Multer.File[]): Promise<Express.Multer.File[]> {
     // console.log('=============>', files);
-    const newFiles = [];
+    // const newFiles = [];
     // files.forEach((file: Express.Multer.File) => {
     //   const { originalname, destination, mimetype, size, filename } = file;
-    //   const item: Partial<File> = {
+    //   const item: Partial<FileStore> = {
     //     originalname,
     //     filename,
     //     type: mimetype,
     //     size,
     //     url: destination.replace('./public/', '/static/') + '/' + filename,
     //   };
-    //   // 组装多个实例
-    //   newFiles.push(this.fileRepository.create(item));
     // });
-    // console.log({ newFiles });
+    // console.log({ files });
     // 批量保存文件信息
     // return await this.fileRepository.save(newFiles);
-    return await sleep(500);
+    await sleep(500);
+    return files;
   }
 
   /**
@@ -75,9 +82,8 @@ export class FileService {
       const { hash, fileName } = body;
       const basePath = `${Config.fileConfig.filePath}tempFolder`;
       const slicePath = `${basePath}/${hash}`;
-      reject(new HttpException('内存不足，禁止上传', HttpStatus.INTERNAL_SERVER_ERROR));
-      return;
       const folderSize = await getFolderSizeBin(basePath);
+      const sliceSize = await getFolderSizeBin(basePath);
       // console.log('folderSize=============>', folderSize);
       // 4194304 4M 524288000 500M 2147483648 2G
       if (folderSize > 524288000) {
@@ -91,22 +97,44 @@ export class FileService {
       });
       // console.log('sortedFiles=============>', sortedFiles, fileName);
       // 保存合成文件路径
-      const fileNameTargetPath = `${Config.fileConfig.filePath}${dayjs().format('YYYY-MM')}/${fileName}`;
+      const datePath = `${Config.fileConfig.filePath}${dayjs().format('YYYY-MM')}`;
+      const fileNameTargetPath = `${datePath}/${hash}-${fileName}`;
       const writeStream = fs.createWriteStream(fileNameTargetPath);
-
+      let allSliceNum = 0;
       sortedFiles.forEach((file, index) => {
         const filePath = path.join(slicePath, file);
         const readStream = fs.createReadStream(filePath);
+        // https://www.nodeapp.cn/stream.html#stream_class_stream_readable
         readStream.pipe(writeStream, { end: false });
         readStream.on('end', () => {
           // 删除已合并的切片文件(单个删除) 每个事件独立的
           fs.unlinkSync(filePath);
+          // console.log('读取切片完成：', filePath);
+          allSliceNum++;
+          if (allSliceNum === sortedFiles.length) {
+            // 全部读取完写入
+            // 完结束写入执行end()才会触发finish时间
+            writeStream.end();
+          }
         });
       });
-      resolve(writeStream.path);
+      // 写入完成事件
       writeStream.on('finish', () => {
         console.log('Merge complete');
-        // todo 进行数据库存储操作
+        const list: Partial<Express.Multer.File>[] = [];
+        const fName = `${hash}-${fileName}`;
+        const saveFile = {
+          originalname: fileName,
+          filename: fName,
+          destination: datePath,
+          mimetype: fileName.split('.').slice(-1)[0],
+          size: sliceSize,
+        };
+        list.push(saveFile);
+        this.resourcesService.uploadFile(list, '19f66b84-8841-4cf5-8932-d11b95947d2d');
+        resolve(saveFile);
+        // 移除切片文件夹
+        deleteFolderRecursive(slicePath);
       });
     });
   }

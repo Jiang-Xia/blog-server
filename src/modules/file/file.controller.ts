@@ -1,7 +1,7 @@
 import { Controller, Post, Body, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { ApiResponse, ApiBody, ApiTags } from '@nestjs/swagger';
 import { FileService } from './file.service';
-import { MyFile } from './file.entity';
+import { FileStore } from './file.entity';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 // 文档
 @ApiTags('文件模块')
@@ -12,8 +12,8 @@ export class FileController {
    * 上传大文件
    * @param file
    */
-  @ApiResponse({ status: 200, description: '上传大文件', type: [MyFile] })
-  @ApiBody({ type: MyFile })
+  @ApiResponse({ status: 200, description: '上传大文件', type: [FileStore] })
+  @ApiBody({ type: FileStore })
   @Post('uploadBigFile')
   @UseInterceptors(
     /* 一个fileContents里面可以有多个文件对象，前端使用formData同一个fileContents传多个值 */
@@ -31,7 +31,7 @@ export class FileController {
     return this.fileService.uploadBigFile(files.fileContents);
   }
 
-  @ApiResponse({ status: 200, description: '合并文件', type: MyFile })
+  @ApiResponse({ status: 200, description: '合并文件', type: FileStore })
   @ApiBody({ type: Object })
   @Post('uploadBigFile/merge')
   mergeFile(@Body() body: any) {

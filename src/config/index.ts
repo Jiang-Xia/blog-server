@@ -19,7 +19,8 @@ export let Config: ConfigInterface = {
 };
 export const InitConfig = () => {
   const conf = new ConfigService();
-  Logger.warn(`当前环境： ${process.env.NODE_ENV} ${conf.get('app_desc')}`);
+  const env = process.env.NODE_ENV;
+  Logger.warn(`当前环境： ${env} ${conf.get('app_desc')}`);
   const databaseConfig: any = {
     type: conf.get('db_type'),
     host: conf.get('db_host'),
@@ -35,7 +36,7 @@ export const InitConfig = () => {
     port: parseInt(conf.get('serve_port')),
     apiPath: conf.get('serve_apiPath'),
     baseUrl: conf.get('serve_baseUrl'),
-    isDev: conf.get('node_env') === 'development',
+    isDev: env !== 'production',
   };
   /* 初始化账户 */
   const accountConfig = {

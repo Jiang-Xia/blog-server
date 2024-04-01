@@ -4,15 +4,17 @@ import { FileService } from './file.service';
 import { FileController } from './file.controller';
 import { AuthModule } from '../auth/auth.module';
 import { MulterModule } from '@nestjs/platform-express';
-import { MyFile } from './file.entity';
+// import { ResourcesModule } from '../resources/resources.service';
+import { ResourcesService } from '../resources/resources.service';
+
+import { FileStore } from './file.entity';
 import { diskStorage } from 'multer';
 import { Config } from '../../config';
 import { HttpModule } from '@nestjs/axios';
 import * as fs from 'fs';
-
 @Module({
   imports: [
-    TypeOrmModule.forFeature([MyFile]),
+    TypeOrmModule.forFeature([FileStore]),
     // HttpModule.registerAsync({
     //   useFactory: () => ({
     //     timeout: 5000,
@@ -21,6 +23,7 @@ import * as fs from 'fs';
     // }),
     HttpModule,
     AuthModule,
+    // ResourcesModule,
     MulterModule.registerAsync({
       imports: [],
       useFactory: async () => ({
@@ -55,7 +58,7 @@ import * as fs from 'fs';
     }),
   ],
   exports: [FileService],
-  providers: [FileService],
+  providers: [FileService, ResourcesService],
   controllers: [FileController],
 })
 export class FileModule {}

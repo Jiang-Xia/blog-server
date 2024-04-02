@@ -55,7 +55,8 @@ export class FileService {
    * @param file
    */
   async uploadBigFile(files: Express.Multer.File[]): Promise<Express.Multer.File[]> {
-    // await sleep(500);
+    // const times = (Math.floor(Math.random() * 4) + 3) * 1000;
+    // await sleep(times);
     return files;
   }
 

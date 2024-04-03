@@ -10,12 +10,14 @@ type ConfigInterface = {
   serveConfig: any;
   accountConfig: any;
   fileConfig: any;
+  appConfig: any;
 };
 export let Config: ConfigInterface = {
   databaseConfig: {},
   serveConfig: {},
   accountConfig: {},
   fileConfig: {},
+  appConfig: {},
 };
 export const InitConfig = () => {
   const conf = new ConfigService();
@@ -50,11 +52,17 @@ export const InitConfig = () => {
   const fileConfig = {
     filePath: conf.get('file_filePath'), // 直接使用本nestjs服务做静态资源服务
   };
+  // 应用全局配置
+  const appConfig = {
+    openMsgLog: conf.get('app_openMsgLog') === 'true',
+    closeMsgBodyLog: conf.get('app_closeMsgBodyLog') === 'true',
+  };
   Config = {
     databaseConfig,
     serveConfig,
     accountConfig,
     fileConfig,
+    appConfig,
   };
   console.warn(Config);
   return Config;

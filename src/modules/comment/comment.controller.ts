@@ -13,6 +13,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { RolesGuard } from '../auth/roles.guard';
 import { CommentService } from './comment.service';
 import { Comment } from './comment.entity';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 // 文档
 @ApiTags('评论模块')
@@ -24,15 +25,17 @@ export class CommentController {
 
   // 创建评论
   @Post('create')
+  @UseGuards(JwtAuthGuard)
   async create(@Body() comment: Comment) {
-    if (!comment.uid) {
-      throw new HttpException('请先登录！', HttpStatus.UNAUTHORIZED);
-    }
+    // if (!comment.uid) {
+    //   throw new HttpException('请先登录！', HttpStatus.UNAUTHORIZED);
+    // }
     return await this.commentService.create(comment);
   }
 
   // 刪除评论
   @Delete('delete')
+  @UseGuards(JwtAuthGuard)
   async delete(@Query('id') id) {
     return await this.commentService.delete(id);
   }

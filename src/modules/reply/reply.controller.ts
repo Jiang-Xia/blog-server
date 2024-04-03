@@ -3,6 +3,8 @@ import { ApiTags } from '@nestjs/swagger';
 import { RolesGuard } from '../auth/roles.guard';
 import { ReplyService } from './reply.service';
 import { Reply } from './reply.entity';
+import { Roles } from '../auth/roles.guard';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 // 文档
 @ApiTags('回复模块')
@@ -14,6 +16,8 @@ export class ReplyController {
 
   // 创建评论
   @Post('create')
+  @Roles(['super'])
+  @UseGuards(JwtAuthGuard)
   async create(@Body() reply: Reply) {
     return await this.replyService.create(reply);
   }

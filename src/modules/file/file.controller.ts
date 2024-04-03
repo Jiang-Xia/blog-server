@@ -1,11 +1,23 @@
-import { Controller, Post, Get, Body, UploadedFiles, UseInterceptors, Query } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Get,
+  Body,
+  Query,
+  UploadedFiles,
+  UseInterceptors,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiResponse, ApiBody, ApiTags } from '@nestjs/swagger';
 import { FileService } from './file.service';
 import { FileStore } from './file.entity';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { RolesGuard } from '../auth/roles.guard';
+
 // 文档
 @ApiTags('文件模块')
 @Controller('file')
+@UseGuards(RolesGuard)
 export class FileController {
   constructor(private readonly fileService: FileService) {}
   /**

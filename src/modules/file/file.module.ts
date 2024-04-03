@@ -4,7 +4,6 @@ import { FileService } from './file.service';
 import { FileController } from './file.controller';
 import { AuthModule } from '../auth/auth.module';
 import { MulterModule } from '@nestjs/platform-express';
-// import { ResourcesModule } from '../resources/resources.service';
 import { ResourcesService } from '../resources/resources.service';
 
 import { FileStore } from './file.entity';
@@ -15,12 +14,6 @@ import * as fs from 'fs';
 @Module({
   imports: [
     TypeOrmModule.forFeature([FileStore]),
-    // HttpModule.registerAsync({
-    //   useFactory: () => ({
-    //     timeout: 5000,
-    //     maxRedirects: 5,
-    //   }),
-    // }),
     HttpModule,
     AuthModule,
     // ResourcesModule,

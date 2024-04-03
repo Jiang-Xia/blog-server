@@ -10,8 +10,9 @@ import { v4 as uuidv4 } from 'uuid';
 export class TransformInterceptor implements NestInterceptor {
   private reqLogger = new Logger('HTTP Request');
   private resLogger = new Logger('HTTP Response');
-  openMsglog = Config.serveConfig.isDev;
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    const openMsgLog = Config.appConfig.openMsgLog;
+    const closeMsgBodyLog = Config.appConfig.closeMsgBodyLog;
     const requestId = uuidv4().replace(/-/g, '');
     const ctx = context.switchToHttp();
     const req = ctx.getRequest();
@@ -21,7 +22,7 @@ export class TransformInterceptor implements NestInterceptor {
     return next.handle().pipe(
       tap(() => {
         // tab 副作用函数不改变数据流
-        if (!this.openMsglog) {
+        if (!openMsgLog) {
           return;
         }
         const endTime = Date.now();
@@ -51,10 +52,12 @@ export class TransformInterceptor implements NestInterceptor {
         };
       }),
       tap((data) => {
-        if (!this.openMsglog) {
+        if (!openMsgLog) {
           return;
         }
-        this.resLogger.debug(`Response body: ${JSON.stringify(data)}`);
+        if (!closeMsgBodyLog) {
+          this.resLogger.debug(`Response body: ${JSON.stringify(data)}`);
+        }
         const endTime = Date.now();
         const { statusCode } = res;
         const contentLength = res.get('content-length');

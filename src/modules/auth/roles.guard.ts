@@ -16,12 +16,15 @@ export const Roles = (roles: string[]) => {
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor(private readonly reflector: Reflector, private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly reflector: Reflector,
+    private readonly jwtService: JwtService,
+  ) {}
 
   canActivate(context: ExecutionContext): boolean {
     // 取消 SetMetadata 设置的roles
     const roles = this.reflector.get<string[]>('roles', context.getHandler());
-    // console.log('roles', roles);
+    console.log('roles', roles);
     if (!roles) {
       return true;
     }
@@ -31,9 +34,9 @@ export class RolesGuard implements CanActivate {
       // 不需要 Bearer，否则验证失败
       token = token.split(' ').pop();
     }
-    // console.log('token', token);
+    console.log('token', token);
     const user = this.jwtService.decode(token) as User;
-    // console.log('user', user);
+    console.log('user', user);
     if (!user) {
       return false;
     }

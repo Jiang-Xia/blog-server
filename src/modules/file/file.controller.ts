@@ -12,12 +12,11 @@ import { ApiResponse, ApiBody, ApiTags } from '@nestjs/swagger';
 import { FileService } from './file.service';
 import { FileStore } from './file.entity';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { RolesGuard } from '../auth/roles.guard';
-
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 // 文档
 @ApiTags('文件模块')
 @Controller('file')
-@UseGuards(RolesGuard)
+@UseGuards(JwtAuthGuard)
 export class FileController {
   constructor(private readonly fileService: FileService) {}
   /**

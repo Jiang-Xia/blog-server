@@ -10,7 +10,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { RolesGuard } from '../auth/roles.guard';
 import { CommentService } from './comment.service';
 import { Comment } from './comment.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -19,7 +18,6 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 @ApiTags('评论模块')
 @Controller('comment')
 // 权限
-@UseGuards(RolesGuard)
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
@@ -27,9 +25,9 @@ export class CommentController {
   @Post('create')
   @UseGuards(JwtAuthGuard)
   async create(@Body() comment: Comment) {
-    // if (!comment.uid) {
-    //   throw new HttpException('请先登录！', HttpStatus.UNAUTHORIZED);
-    // }
+    if (!comment.uid) {
+      throw new HttpException('请先登录！', HttpStatus.UNAUTHORIZED);
+    }
     return await this.commentService.create(comment);
   }
 

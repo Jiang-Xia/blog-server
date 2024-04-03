@@ -1,6 +1,14 @@
-import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  ExecutionContext,
+  UnauthorizedException,
+  applyDecorators,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { User } from '../user/entity/user.entity';
+import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { RolesGuard, Roles } from '../auth/roles.guard';
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
@@ -26,4 +34,15 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     }
     return user;
   }
+}
+
+// 鉴权装饰器聚合
+export function Auth(roles?: string[]) {
+  return applyDecorators(
+    // 登录角色鉴权
+    UseGuards(RolesGuard, JwtAuthGuard),
+    Roles(roles),
+    ApiBearerAuth(),
+    ApiUnauthorizedResponse({ description: 'Unauthorized"' }),
+  );
 }

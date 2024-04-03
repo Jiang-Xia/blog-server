@@ -1,19 +1,19 @@
 import {
   CanActivate,
   ExecutionContext,
+  HttpStatus,
   Injectable,
   SetMetadata,
-  UnauthorizedException,
+  HttpException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
 import { User } from '../user/entity/user.entity';
 
-export const Roles = (roles: string[]) => {
+export const Roles = (roles?: string[]) => {
   // console.log('SetMetadata', roles);
   return SetMetadata('roles', roles);
 };
-
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(
@@ -24,7 +24,7 @@ export class RolesGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean {
     // 取消 SetMetadata 设置的roles
     const roles = this.reflector.get<string[]>('roles', context.getHandler());
-    console.log('roles', roles);
+    // console.log('roles', roles);
     if (!roles) {
       return true;
     }
@@ -34,9 +34,9 @@ export class RolesGuard implements CanActivate {
       // 不需要 Bearer，否则验证失败
       token = token.split(' ').pop();
     }
-    console.log('token', token);
+    // console.log('token', token);
     const user = this.jwtService.decode(token) as User;
-    console.log('user', user);
+    // console.log('user', user);
     if (!user) {
       return false;
     }
@@ -46,7 +46,7 @@ export class RolesGuard implements CanActivate {
       return true;
     } else {
       // 主动抛异常
-      throw new UnauthorizedException('权限不足！');
+      throw new HttpException('权限不足！', HttpStatus.FORBIDDEN);
     }
   }
 }

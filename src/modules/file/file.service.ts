@@ -54,10 +54,15 @@ export class FileService {
    * 上传文件
    * @param file
    */
-  async uploadBigFile(files: Express.Multer.File[]): Promise<Express.Multer.File[]> {
+  async uploadBigFile(files: Express.Multer.File[], query: any): Promise<Express.Multer.File[]> {
     // const arr = [2, 3, 4, 5, 6];
-    // const times = arr[Math.floor(Math.random() * arr.length)] * 1000;
-    // await sleep(times);
+    const arr = [1, 2, 3];
+    const times = arr[Math.floor(Math.random() * arr.length)] * 1000;
+    await sleep(times);
+    // if (query.index === '3') {
+    //   throw new HttpException('上传失败！', 500);
+    // }
+    // test
     return files;
   }
 
@@ -67,16 +72,17 @@ export class FileService {
    */
   async mergeFile(body: any) {
     return await new Promise(async (resolve, reject) => {
-      const { hash, fileName } = body;
+      const { hash, fileName, chunks } = body;
       const basePath = `${Config.fileConfig.filePath}tempFolder`;
       const slicePath = `${basePath}/${hash}`;
       const folderSize = await getFolderSizeBin(basePath);
       const sliceSize = await getFolderSizeBin(basePath);
+      const status = HttpStatus.INTERNAL_SERVER_ERROR;
       // console.log('folderSize=============>', folderSize);
       // 4194304 4M 524288000 500M 2147483648 2G
       if (folderSize > 2147483648) {
         // promise 响应错误
-        reject(new HttpException('内存不足，禁止上传', HttpStatus.INTERNAL_SERVER_ERROR));
+        reject(new HttpException('硬盘内存不足了~', status));
         return;
       }
       let files = [];
@@ -84,7 +90,12 @@ export class FileService {
         // 文件夹不存在会报错
         files = fs.readdirSync(slicePath);
       } catch (error) {
-        reject(new HttpException('文件不存在！', HttpStatus.INTERNAL_SERVER_ERROR));
+        reject(new HttpException('文件不存在！', status));
+        return;
+      }
+
+      if (chunks !== files.length) {
+        reject(new HttpException('前后切片数量不一致，禁止合并', status));
         return;
       }
       const sortedFiles = files.sort((a, b) => {

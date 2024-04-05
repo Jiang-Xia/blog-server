@@ -1,8 +1,8 @@
 /*
  * @Author: 酱
- * @LastEditors: 酱
+ * @LastEditors: jx
  * @Date: 2021-11-16 16:52:15
- * @LastEditTime: 2022-08-05 22:51:02
+ * @LastEditTime: 2024-04-05 17:19:28
  * @Description:
  * @FilePath: \blog-server\src\modules\user\user.service.ts
  */
@@ -120,8 +120,16 @@ export class UserService {
       mobile: user.mobile,
       role: user.role,
     };
+    // console.log(payload);
+    // 兼容老登录token
     const token = this.jwtService.sign(payload);
-    return token;
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '10s' });
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+    return {
+      token,
+      accessToken,
+      refreshToken,
+    };
   }
 
   async login(loginDTO: LoginDTO): Promise<any> {
@@ -130,13 +138,29 @@ export class UserService {
     // 密码和加盐不返回
     delete user.password;
     delete user.salt;
-    const token = await this.certificate(user);
+    const data = await this.certificate(user);
     return {
       info: {
-        token,
+        ...data,
         user,
       },
     };
+  }
+  /**
+   * 根据refreshToken刷新accessToken
+   * @param accessToken
+   */
+  async refresh(token: string) {
+    try {
+      const user = this.jwtService.verify(token);
+      const data = await this.certificate(user);
+      return {
+        ...data,
+        message: '刷新token成功',
+      };
+    } catch (e) {
+      throw new UnauthorizedException('token 失效，请重新登录');
+    }
   }
 
   /**

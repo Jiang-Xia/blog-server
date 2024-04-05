@@ -10,15 +10,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: 'xia',
+      secretOrKey: 'xia-007',
     });
   }
 
   // 需要权限校验时才会触发这个函数
   async validate(payload: User) {
-    // console.log(payload, 'payload');
+    console.log(payload, 'payload');
     const user = await this.authService.validateUser(payload);
-    // console.log('validate-user', user);
+    console.log('validate-user', user);
     if (!user) {
       throw new UnauthorizedException('身份验证失败');
     }

@@ -13,7 +13,14 @@ import {
   Session,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { ApiTags, ApiBody, ApiOkResponse, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBody,
+  ApiOkResponse,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { getUid } from 'src/utils';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { Roles } from '../auth/roles.guard';
@@ -80,6 +87,13 @@ export class UserController {
     }
   }
 
+  @ApiQuery({ name: 'token', type: String })
+  @ApiOkResponse({ description: '刷新token', type: Object })
+  @ApiOperation({ summary: '刷新token', description: '刷新token' })
+  @Get('refresh')
+  async refresh(@Query('token') token: string): Promise<any> {
+    return this.userService.refresh(token);
+  }
   // 获取用户信息需要鉴权
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

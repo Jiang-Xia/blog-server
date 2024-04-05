@@ -17,7 +17,9 @@ export class TransformInterceptor implements NestInterceptor {
     const ctx = context.switchToHttp();
     const req = ctx.getRequest();
     const res = ctx.getResponse();
-    const { method, originalUrl, body, params, query } = req;
+    const { method, url, body, header, params, query } = req;
+    const parsedUrl = new URL(url, `http://${header.host}`);
+    const pathname = parsedUrl.pathname;
     const startTime = Date.now();
     return next.handle().pipe(
       tap(() => {
@@ -30,7 +32,7 @@ export class TransformInterceptor implements NestInterceptor {
         const contentLength = res.get('content-length');
         const duration = endTime - startTime;
         this.reqLogger.log(
-          `[${requestId}] ${method} ${originalUrl} ${statusCode} ${duration}ms - ${contentLength || 0}b Start`,
+          `[${requestId}] ${method} ${pathname} ${statusCode} ${duration}ms - ${contentLength || 0}b Start`,
         );
         this.reqLogger.debug(`Request body: ${JSON.stringify(body)}`);
         this.reqLogger.debug(`Request params: ${JSON.stringify(params)}`);
@@ -63,7 +65,7 @@ export class TransformInterceptor implements NestInterceptor {
         const contentLength = res.get('content-length');
         const duration = endTime - startTime;
         this.resLogger.log(
-          `[${requestId}] ${method} ${originalUrl} ${statusCode} ${duration}ms - ${contentLength || 0}b End`,
+          `[${requestId}] ${method} ${pathname} ${statusCode} ${duration}ms - ${contentLength || 0}b End`,
         );
       }),
     );

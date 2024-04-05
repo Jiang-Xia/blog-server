@@ -7,7 +7,7 @@ import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 const passModule = PassportModule.register({ defaultStrategy: 'jwt' });
 const jwtModule = JwtModule.register({
-  secret: 'xia',
+  secret: 'xia-007',
   signOptions: { expiresIn: '8h' },
 });
 

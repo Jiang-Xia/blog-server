@@ -2,7 +2,7 @@
  * @Author: 酱
  * @LastEditors: jx
  * @Date: 2021-11-16 16:52:15
- * @LastEditTime: 2024-04-05 17:19:28
+ * @LastEditTime: 2024-04-05 23:17:08
  * @Description:
  * @FilePath: \blog-server\src\modules\user\user.service.ts
  */
@@ -123,7 +123,7 @@ export class UserService {
     // console.log(payload);
     // 兼容老登录token
     const token = this.jwtService.sign(payload);
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '10s' });
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '0.5h' });
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
     return {
       token,
@@ -152,10 +152,12 @@ export class UserService {
    */
   async refresh(token: string) {
     try {
-      const user = this.jwtService.verify(token);
+      let user = this.jwtService.verify(token);
       const data = await this.certificate(user);
+      user = await this.findById(user.id);
       return {
         ...data,
+        user,
         message: '刷新token成功',
       };
     } catch (e) {

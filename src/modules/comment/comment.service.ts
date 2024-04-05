@@ -26,7 +26,7 @@ export class CommentService {
     });
     // console.log(user, article, newComment);
     newComment = await this.commentRepository.save(newComment);
-    return newComment;
+    return newComment.id;
   }
   async delete(id: string) {
     await this.commentRepository.delete(id);

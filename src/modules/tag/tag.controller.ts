@@ -29,7 +29,7 @@ export class TagController {
   @Post()
   @Roles(['admin', 'super'])
   @UseGuards(JwtAuthGuard)
-  create(@Body() tag) {
+  create(@Body() tag: Tag) {
     return this.tagService.create(tag);
   }
 
@@ -37,8 +37,8 @@ export class TagController {
    * 获取所有标签
    */
   @Get()
-  findAll(@Query() queryParams): Promise<Tag[]> {
-    return this.tagService.findAll(queryParams);
+  findAll(@Query('isDelete') isDelete: string): Promise<Tag[]> {
+    return this.tagService.findAll({ isDelete });
   }
 
   /**
@@ -46,7 +46,7 @@ export class TagController {
    * @param id
    */
   @Get(':id')
-  findById(@Param('id') id) {
+  findById(@Param('id') id: string) {
     return this.tagService.findById(id);
   }
 
@@ -55,7 +55,7 @@ export class TagController {
    * @param id
    */
   @Get(':id/article')
-  getArticleById(@Param('id') id, @Query('status') status) {
+  getArticleById(@Param('id') id: string, @Query('status') status: string) {
     return this.tagService.getArticleById(id, status);
   }
 
@@ -67,7 +67,7 @@ export class TagController {
   @Patch(':id')
   @Roles(['admin'])
   @UseGuards(JwtAuthGuard)
-  updateById(@Param('id') id, @Body() tag) {
+  updateById(@Param('id') id: string, @Body() tag: Tag) {
     return this.tagService.updateById(id, tag);
   }
 
@@ -78,7 +78,7 @@ export class TagController {
   @Delete(':id')
   @Roles(['admin'])
   @UseGuards(JwtAuthGuard)
-  deleteById(@Param('id') id) {
+  deleteById(@Param('id') id: string) {
     return this.tagService.deleteById(id);
   }
 }

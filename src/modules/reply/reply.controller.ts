@@ -21,13 +21,13 @@ export class ReplyController {
   // 刪除评论
   @Delete('delete')
   @UseGuards(JwtAuthGuard)
-  async delete(@Query('id') id) {
+  async delete(@Query('id') id: string) {
     return await this.replyService.delete(id);
   }
 
   // 获取对应文章所有评论
   @Get('findAll')
-  async getArticleReplys(@Query('articleId') id) {
+  async getArticleReplys(@Query('articleId') id: string) {
     return await this.replyService.findAll(id);
   }
 }

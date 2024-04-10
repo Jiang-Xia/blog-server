@@ -95,7 +95,7 @@ export class ArticleController {
    */
   @Post('views')
   @HttpCode(HttpStatus.OK)
-  updateViewsById(@Body('id') id) {
+  updateViewsById(@Body('id') id: string) {
     return this.articleService.updateViewsById(id);
   }
 
@@ -104,7 +104,7 @@ export class ArticleController {
    */
   @Post('likes')
   @HttpCode(HttpStatus.OK)
-  updateLikesById(@Body('articleId') articleId, @Body('status') status) {
+  updateLikesById(@Body('articleId') articleId: string, @Body('status') status: number) {
     return this.articleService.updateLikesById(articleId, status);
   }
 
@@ -113,7 +113,7 @@ export class ArticleController {
    */
   @Patch('disabled')
   @HttpCode(HttpStatus.OK)
-  updateArticleIsDelete(@Body() field) {
+  updateArticleIsDelete(@Body() field: ArticleEditDTO) {
     return this.articleService.updateArticleField(field);
   }
 
@@ -122,7 +122,7 @@ export class ArticleController {
    */
   @Patch('topping')
   @HttpCode(HttpStatus.OK)
-  updateArticleTopping(@Body() field) {
+  updateArticleTopping(@Body() field: ArticleEditDTO) {
     return this.articleService.updateArticleField(field);
   }
   /**

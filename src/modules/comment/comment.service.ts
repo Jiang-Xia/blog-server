@@ -90,7 +90,7 @@ export class CommentService {
   // }
 
   // 左联查询
-  async findAll(id: number) {
+  async findAll(id: string) {
     const qb = this.commentRepository.createQueryBuilder('comment');
     // 联表查询（会自动把关联的字段筛选出来）
     qb.leftJoinAndSelect('comment.user', 'user');

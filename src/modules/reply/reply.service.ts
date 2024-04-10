@@ -22,7 +22,7 @@ export class ReplyService {
     //
   }
   // 根据评论id查找所有的回复
-  async findAll(id: number) {
+  async findAll(id: string) {
     const qb = this.replyRepository.createQueryBuilder('reply');
     qb.where('reply.parentId = :id', { id });
     const getList = qb.getManyAndCount();

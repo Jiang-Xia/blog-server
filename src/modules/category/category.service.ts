@@ -86,7 +86,7 @@ export class CategoryService {
    * @param id
    * @param Category
    */
-  async updateById(id, category: Partial<Category>): Promise<Category> {
+  async updateById(id: string, category: Partial<Category>): Promise<Category> {
     const oldCategory = await this.categoryRepository.findOne({ where: { id } });
     const updatedCategory = await this.categoryRepository.merge(oldCategory, category);
     return this.categoryRepository.save(updatedCategory);

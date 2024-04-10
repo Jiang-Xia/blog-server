@@ -74,7 +74,7 @@ export class ResourcesController {
    * 获取所有文件
    */
   @Get('files')
-  findAll(@Query() queryParam) {
+  findAll(@Query() queryParam: any) {
     return this.resourcesService.findAll(queryParam);
   }
 
@@ -83,7 +83,7 @@ export class ResourcesController {
    * @param id
    */
   @Get('file:id')
-  findById(@Param('id') id) {
+  findById(@Param('id') id: string) {
     return this.resourcesService.findById(id);
   }
 
@@ -94,7 +94,7 @@ export class ResourcesController {
   @Delete('file')
   @Roles(['super', 'admin'])
   @UseGuards(JwtAuthGuard)
-  deleteById(@Query('id') id) {
+  deleteById(@Query('id') id: string) {
     return this.resourcesService.deleteById(id);
   }
 

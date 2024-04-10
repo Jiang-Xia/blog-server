@@ -59,7 +59,7 @@ export class TagService {
    * 获取指定标签
    * @param id
    */
-  async findById(id): Promise<Tag> {
+  async findById(id: string): Promise<Tag> {
     const data = await this.tagRepository
       .createQueryBuilder('tag')
       .where('tag.id=:id')
@@ -75,7 +75,7 @@ export class TagService {
    * 获取指定标签信息，包含相关文章
    * @param id
    */
-  async getArticleById(id, status = null): Promise<Tag> {
+  async getArticleById(id: string, status = null): Promise<Tag> {
     const data = await this.tagRepository
       .createQueryBuilder('tag')
       .leftJoinAndSelect('tag.articles', 'articles')

@@ -8,7 +8,6 @@ import {
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Article } from '../article/entity/article.entity';
-
 @Entity()
 export class Category {
   @ApiProperty()
@@ -22,6 +21,15 @@ export class Category {
   @ApiProperty()
   @Column()
   label: string;
+
+  // @Column({
+  //   type: 'text', // 使用 text 类型
+  //   transformer: {
+  //     to: (value: string[]) => JSON.stringify(value), // 转换为 JSON 字符串
+  //     from: (value: string) => JSON.parse(value), // 从 JSON 字符串转换回数组
+  //   },
+  // })
+  // testNums: string[];
 
   @ApiProperty()
   @Column()

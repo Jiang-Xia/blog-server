@@ -29,7 +29,7 @@ export class CategoryController {
   @Post()
   @Roles(['admin', 'super'])
   @UseGuards(JwtAuthGuard)
-  create(@Body() category) {
+  create(@Body() category: Category) {
     return this.categoryService.create(category);
   }
 
@@ -37,8 +37,8 @@ export class CategoryController {
    * 获取所有分类
    */
   @Get()
-  findAll(@Query() queryParams): Promise<Category[]> {
-    return this.categoryService.findAll(queryParams);
+  findAll(@Query('isDelete') isDelete: string): Promise<Category[]> {
+    return this.categoryService.findAll({ isDelete });
   }
 
   /**
@@ -46,7 +46,7 @@ export class CategoryController {
    * @param id
    */
   @Get(':id')
-  findById(@Param('id') id) {
+  findById(@Param('id') id: string) {
     return this.categoryService.findById(id);
   }
 
@@ -58,7 +58,7 @@ export class CategoryController {
   @Patch(':id')
   @Roles(['admin'])
   @UseGuards(JwtAuthGuard)
-  updateById(@Param('id') id, @Body() category) {
+  updateById(@Param('id') id: string, @Body() category: Category) {
     return this.categoryService.updateById(id, category);
   }
 
@@ -69,7 +69,7 @@ export class CategoryController {
   @Delete(':id')
   @Roles(['admin', 'super'])
   @UseGuards(JwtAuthGuard)
-  deleteById(@Param('id') id) {
+  deleteById(@Param('id') id: string) {
     return this.categoryService.deleteById(id);
   }
 }

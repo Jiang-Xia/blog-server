@@ -56,7 +56,7 @@ export class MsgboardController {
   @Post('/delete')
   @Roles(['admin', 'super'])
   @UseGuards(JwtAuthGuard)
-  deleteById(@Body() ids) {
+  deleteById(@Body() ids: string[]) {
     // console.log(ids);
     return this.msgboardService.deleteByIds(ids);
   }

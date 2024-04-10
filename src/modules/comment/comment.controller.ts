@@ -34,13 +34,13 @@ export class CommentController {
   // 刪除评论
   @Delete('delete')
   @UseGuards(JwtAuthGuard)
-  async delete(@Query('id') id) {
+  async delete(@Query('id') id: string) {
     return await this.commentService.delete(id);
   }
 
   // 获取对应文章所有评论
   @Get('findAll')
-  async getArticleComments(@Query('articleId') id) {
+  async getArticleComments(@Query('articleId') id: string) {
     return await this.commentService.findAll(id);
   }
 }

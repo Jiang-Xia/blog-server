@@ -29,18 +29,18 @@ export class MenuController {
   }
 
   @Post('menu')
-  create(@Body() menu) {
+  create(@Body() menu: Menu) {
     // console.log({ menu });
     return this.menuService.create(menu);
   }
 
   @Patch('menu')
-  updateById(@Body() menu) {
+  updateById(@Body() menu: Menu) {
     return this.menuService.updateField(menu);
   }
 
   @Get('menu/detail')
-  findById(@Query('id') id) {
+  findById(@Query('id') id: string) {
     // console.log({ id });
     return this.menuService.findById(id);
   }
@@ -48,7 +48,7 @@ export class MenuController {
   @Delete('menu')
   @Roles(['super'])
   @UseGuards(JwtAuthGuard)
-  deleteById(@Query('id') id) {
+  deleteById(@Query('id') id: string) {
     return this.menuService.deleteById(id);
   }
 }
@@ -62,24 +62,24 @@ export class LinkController {
 
   @ApiResponse({ status: 200, description: '添加分类', type: [Link] })
   @Post()
-  create(@Body() Link) {
-    return this.linkService.create(Link);
+  create(@Body() link: Link) {
+    return this.linkService.create(link);
   }
 
   @Get()
-  findAll(@Query() queryParams): Promise<Link[]> {
-    return this.linkService.findAll(queryParams);
+  findAll(@Query('client') client: string): Promise<Link[]> {
+    return this.linkService.findAll({ client });
   }
 
   @Patch()
-  updateById(@Body() Link) {
-    return this.linkService.updateById(Link.id, Link);
+  updateById(@Body() link: Link) {
+    return this.linkService.updateById(link.id, link);
   }
 
   @Delete()
   @Roles(['super'])
   @UseGuards(JwtAuthGuard)
-  deleteById(@Query('id') id) {
+  deleteById(@Query('id') id: string) {
     return this.linkService.deleteById(id);
   }
 }

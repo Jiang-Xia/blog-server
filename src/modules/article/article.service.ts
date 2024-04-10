@@ -341,7 +341,7 @@ export class ArticleService {
   //  * @param id
   //  * @returns
   //  */
-  async updateLikesById(articleId: number, status: number): Promise<Article> {
+  async updateLikesById(articleId: string, status: number): Promise<Article> {
     const oldArticle = await this.articleRepository.findOne({ where: { articleId } });
     const updatedArticle = await this.articleRepository.merge(oldArticle, {
       likes: status === 1 ? oldArticle.likes + 1 : oldArticle.likes - 1,

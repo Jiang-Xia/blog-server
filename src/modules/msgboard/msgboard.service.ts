@@ -73,7 +73,7 @@ export class MsgboardService {
     const checkResult = await lastValueFrom(checkResultObservable);
     return checkResult;
   }
-  async deleteByIds(ids: []) {
+  async deleteByIds(ids: string[]) {
     try {
       await this.msgboardRepository.delete(ids);
       return true;

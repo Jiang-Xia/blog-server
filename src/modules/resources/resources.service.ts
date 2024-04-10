@@ -197,7 +197,7 @@ export class ResourcesService {
   /**
    * 获取所有文件
    */
-  async findAll(queryParams): Promise<[FileStore[], number]> {
+  async findAll(queryParams: any): Promise<[FileStore[], number]> {
     const query = this.fileRepository.createQueryBuilder('file').orderBy('file.createAt', 'DESC');
 
     if (typeof queryParams === 'object') {

@@ -73,6 +73,8 @@ export class MsgboardService {
     const checkResult = await lastValueFrom(checkResultObservable);
     return checkResult;
   }
+  // https://restapi.amap.com/v3/geocode/regeo
+  // https://restapi.amap.com/v3/ip
   async deleteByIds(ids: string[]) {
     try {
       await this.msgboardRepository.delete(ids);

@@ -56,6 +56,7 @@ export const InitConfig = () => {
   const appConfig = {
     openMsgLog: conf.get('app_openMsgLog') === 'true',
     closeMsgBodyLog: conf.get('app_closeMsgBodyLog') === 'true',
+    gaoDeMapApiKey: conf.get('app_gaoDeMapApiKey'),
   };
   Config = {
     databaseConfig,

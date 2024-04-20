@@ -17,7 +17,12 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      // 路径别名
+      "@/*": ["src/*"],
+      "@/auth/*": ["src/modules/auth/*"],
+    }
   },
   // "include": ["src/**/*.json","src/**/*.ts", "src/**/*.d.ts", "src/**/*.html",  "src/**/*.md","types/*.d.ts"]
 }

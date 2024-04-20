@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Article } from '../article/entity/article.entity';
+import { PaginationType } from '@/types';
 
 @Entity()
 export class Tag {
@@ -50,4 +51,9 @@ export class Tag {
     name: 'update_at',
   })
   updateAt: Date;
+}
+
+export interface TagListVo {
+  list: Tag[];
+  pagination: PaginationType;
 }

@@ -1,3 +1,4 @@
+import { PaginationType } from '@/types';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   Entity,
@@ -99,4 +100,9 @@ export class Link {
   @ApiProperty({ description: '是否已经同意申请' })
   @Column({ default: false })
   agreed: boolean;
+}
+
+export interface LinkListVo {
+  list: Link[];
+  pagination: PaginationType;
 }

@@ -3,14 +3,15 @@ import { HttpService } from '@nestjs/axios';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as dayjs from 'dayjs';
 import { Repository } from 'typeorm';
-import { Msgboard } from './msgboard.entity';
+import { Msgboard, MsgboardListVo } from './msgboard.entity';
 import { UAParser } from 'ua-parser-js';
 import { MD5 } from 'crypto-js';
 import { map } from 'rxjs/operators';
 import { lastValueFrom } from 'rxjs';
 import { isIPv4 } from 'node:net';
+import { getPagination, likeQeuryParams } from 'src/utils';
+// 后端还是一个个模块分开写比较清晰，集合再一起久了，不清晰功能在哪里了！
 
-// 后端还是一个个模块分开写比较清晰，集合再一起久了，不清晰功能下载哪里了！
 @Injectable()
 export class MsgboardService {
   constructor(
@@ -51,14 +52,22 @@ export class MsgboardService {
     return newMsgboard;
   }
 
-  async findAll(): Promise<Msgboard[]> {
+  async findAll(queryParams: any): Promise<MsgboardListVo> {
+    const { page = 1, pageSize = 20, ...otherParams } = queryParams;
     const sql = this.msgboardRepository.createQueryBuilder('msgboard');
     sql.orderBy('msgboard.createTime', 'DESC');
-    const data = await sql.getMany();
-    return data.map((v: any) => {
-      v.createAt = dayjs(v.createTime).format('YYYY-MM-DD HH:mm:ss');
-      return v;
-    });
+    likeQeuryParams(sql, 'msgboard', otherParams);
+    const getList = sql
+      .skip((page - 1) * pageSize)
+      .take(pageSize)
+      .getManyAndCount();
+    const [list, total] = await getList;
+    const pagination = getPagination(total, pageSize, page);
+    list.forEach((v: any) => (v.createAt = dayjs(v.createTime).format('YYYY-MM-DD HH:mm:ss')));
+    return {
+      list: list,
+      pagination,
+    };
   }
   // 获取IP信息
   async getIPInfo(ip: string) {

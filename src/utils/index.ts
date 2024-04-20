@@ -2,7 +2,10 @@ import './test';
 // 需要全部导入
 import * as os from 'os';
 import { jwtDecode } from 'jwt-decode';
-import { User } from 'src/modules/user/entity/user.entity';
+import { User } from '@/modules/user/entity/user.entity';
+import { PaginationType } from '../types';
+import { SelectQueryBuilder } from 'typeorm';
+import { AnyAaaaRecord } from 'dns';
 
 export default class utils {
   getPagination;
@@ -16,7 +19,7 @@ export default class utils {
  * @param page
  * @returns
  */
-export const getPagination = (total: number, pageSize: number, page: number) => {
+export const getPagination = (total: number, pageSize: number, page: number): PaginationType => {
   const pages = Math.ceil(total / pageSize);
   return {
     total,
@@ -24,6 +27,29 @@ export const getPagination = (total: number, pageSize: number, page: number) => 
     pageSize,
     pages,
   };
+};
+/**
+ * 模糊查询动态参数
+ * @param query 查询实例
+ * @param otherParams 模糊查询
+ * @param tableName 表名
+ * @param keys 固定字段模糊查询
+ * @returns
+ */
+export const likeQeuryParams = (
+  query: any,
+  tableName: string,
+  otherParams: any,
+  keys: string[] = [],
+): any => {
+  let allkeys: string[] = Object.keys(otherParams);
+  // 固定字段模糊查询
+  keys.length && (allkeys = allkeys.filter((k: string) => keys.includes(k)));
+  allkeys.forEach((key) => {
+    query
+      .andWhere(`${tableName}.${key} LIKE :${key}`)
+      .setParameter(`${key}`, `%${otherParams[key]}%`);
+  });
 };
 // 用的echart主题配色
 const colors: string[] = [

@@ -7,6 +7,7 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import { IsNotEmpty } from 'class-validator';
+import { PaginationType } from '@/types';
 /* 留言板表 */
 @Entity()
 export class Msgboard {
@@ -75,4 +76,9 @@ export class Msgboard {
   @ApiProperty({ description: 'ip地址' })
   @Column({ default: null })
   ip: string;
+}
+
+export interface MsgboardListVo {
+  list: Msgboard[];
+  pagination: PaginationType;
 }

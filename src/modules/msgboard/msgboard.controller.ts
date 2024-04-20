@@ -49,8 +49,8 @@ export class MsgboardController {
   }
 
   @Get()
-  async findAll(): Promise<Msgboard[]> {
-    return this.msgboardService.findAll();
+  async findAll(@Query() query: any) {
+    return this.msgboardService.findAll(query);
   }
 
   @Post('/delete')

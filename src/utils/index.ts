@@ -42,10 +42,14 @@ export const likeQeuryParams = (
   otherParams: any,
   keys: string[] = [],
 ): any => {
-  let allkeys: string[] = Object.keys(otherParams);
+  // 排除 undefined null
+  let allkeys: string[] = Object.keys(otherParams).filter(
+    (k) => ![null, undefined].includes(otherParams[k]),
+  );
   // 固定字段模糊查询
   keys.length && (allkeys = allkeys.filter((k: string) => keys.includes(k)));
   allkeys.forEach((key) => {
+    console.log(key, otherParams[key]);
     query
       .andWhere(`${tableName}.${key} LIKE :${key}`)
       .setParameter(`${key}`, `%${otherParams[key]}%`);

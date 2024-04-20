@@ -1,6 +1,6 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getRandomClor } from 'src/utils';
+import { getRandomClor, likeQeuryParams } from 'src/utils';
 import { Repository } from 'typeorm';
 import { Tag } from './tag.entity';
 
@@ -33,9 +33,9 @@ export class TagService {
    * 获取所有标签
    */
   async findAll(queryParams): Promise<Tag[]> {
-    const { isDelete = false } = queryParams;
+    const { isDelete = false, title } = queryParams;
     const qb = this.tagRepository.createQueryBuilder('tag').orderBy('tag.createAt', 'ASC');
-
+    likeQeuryParams(qb, 'tag', { label: title });
     if (isDelete) {
       qb.leftJoinAndSelect('tag.articles', 'articles', 'articles.isDelete=:isDelete', {
         isDelete,

@@ -30,6 +30,7 @@ export const InitConfig = () => {
     username: conf.get('db_username'),
     password: conf.get('db_password') as string,
     database: conf.get('db_database'),
+    logging: conf.get('db_logging').split(','),
     // 此字段生产不能设置为true否则字段有改变时 影响生产数据或清空。
     synchronize: false,
   };

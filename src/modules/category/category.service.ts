@@ -2,7 +2,7 @@ import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Category } from './category.entity';
-import { getRandomClor } from '../../utils/index';
+import { getRandomClor, likeQeuryParams } from '../../utils/index';
 @Injectable()
 export class CategoryService {
   constructor(
@@ -34,10 +34,11 @@ export class CategoryService {
    * 获取所有分类
    */
   async findAll(queryParams): Promise<Category[]> {
-    const { isDelete = false } = queryParams;
+    const { isDelete = false, title } = queryParams;
     const qb = this.categoryRepository
       .createQueryBuilder('category')
       .orderBy('category.createAt', 'ASC');
+    likeQeuryParams(qb, 'category', { label: title });
     //增加是否发布字段
     if (isDelete) {
       qb.leftJoinAndSelect('category.articles', 'articles', 'articles.isDelete=:isDelete', {

@@ -37,8 +37,8 @@ export class TagController {
    * 获取所有标签
    */
   @Get()
-  findAll(@Query('isDelete') isDelete: string): Promise<Tag[]> {
-    return this.tagService.findAll({ isDelete });
+  findAll(@Query() query: any): Promise<Tag[]> {
+    return this.tagService.findAll(query);
   }
 
   /**

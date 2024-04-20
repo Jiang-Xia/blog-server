@@ -37,8 +37,8 @@ export class CategoryController {
    * 获取所有分类
    */
   @Get()
-  findAll(@Query('isDelete') isDelete: string): Promise<Category[]> {
-    return this.categoryService.findAll({ isDelete });
+  findAll(@Query() query: any): Promise<Category[]> {
+    return this.categoryService.findAll(query);
   }
 
   /**

@@ -32,7 +32,7 @@ export const InitConfig = () => {
     database: conf.get('db_database'),
     logging: conf.get('db_logging').split(','),
     // 此字段生产不能设置为true否则字段有改变时 影响生产数据或清空。
-    synchronize: false,
+    synchronize: conf.get('db_synchronize') === 'true',
   };
   /* 服务配置 */
   const serveConfig = {

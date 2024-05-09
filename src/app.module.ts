@@ -55,4 +55,5 @@ const envFilePath = `.env.${environment}`;
   controllers: [AppController],
   providers: [AppService],
 })
+// 相关字段解释  https://docs.nestjs.cn/8/modules?id=功能模块
 export class AppModule {}

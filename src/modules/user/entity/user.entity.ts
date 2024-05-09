@@ -10,9 +10,11 @@ import {
   CreateDateColumn,
   VersionColumn,
   OneToMany,
+  ManyToMany,
 } from 'typeorm';
 import { Article } from '../../article/entity/article.entity';
 import { Comment } from '../../comment/comment.entity';
+import { Role } from '@/modules/auth/entities/role.entity';
 
 @Entity()
 export class User {
@@ -103,4 +105,8 @@ export class User {
   @ApiProperty({ description: '用户文章数/一个用户多个文章' })
   @OneToMany(() => Comment, (comment) => comment.user)
   comments: Array<Comment>;
+
+  @ApiProperty({ description: '角色' })
+  @ManyToMany(() => Role, (role) => role.users, { cascade: false })
+  roles: Array<Role>;
 }

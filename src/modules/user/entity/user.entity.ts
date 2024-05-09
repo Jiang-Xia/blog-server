@@ -14,7 +14,7 @@ import {
 } from 'typeorm';
 import { Article } from '../../article/entity/article.entity';
 import { Comment } from '../../comment/comment.entity';
-import { Role } from '@/modules/auth/entities/role.entity';
+import { Role } from '@/modules/admin/system/entities/role.entity';
 
 @Entity()
 export class User {

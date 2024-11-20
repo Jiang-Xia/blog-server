@@ -3,6 +3,7 @@ module.exports = {
   apps: [
     {
       name: 'blog-server', // 项目名字,启动后的名字
+      port: '5000',
       script: './dist/main.js', // 执行的文件
       cwd: './', // 根目录
       args: '', // 传递给脚本的参数
@@ -28,11 +29,13 @@ module.exports = {
       env: {
         // 环境参数，当前指定为开发环境
         NODE_ENV: 'development',
+        PORT: '5000',
       },
       env_production: {
         // 环境参数,当前指定为生产环境
         // 使用production模式 pm2 start ecosystem.config.js --env production
         NODE_ENV: 'production',
+        PORT: '5000',
       },
       env_test: {
         // 环境参数,当前为测试环境

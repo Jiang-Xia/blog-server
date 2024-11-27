@@ -47,6 +47,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   // app.use(json({ limit: '5mb' })); // 统一配置http传输设置 解析json
   app.use(text({ limit: '5mb', type: 'text/xml' })); // json和xml都可以解析
+
   // 配置session
   const sess: SessionOptions = {
     secret: 'jx123!456jx', // 密钥

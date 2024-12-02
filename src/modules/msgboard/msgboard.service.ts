@@ -25,7 +25,7 @@ export class MsgboardService {
     if (ip.indexOf('::ffff:') !== -1) {
       ip = ip.substring(7);
     }
-    const info: any = await this.getIPInfo(ip);
+    const info: any = await this.getIPInfo(ip).catch(console.log);
     console.log({
       info,
       ip,
@@ -77,7 +77,7 @@ export class MsgboardService {
     }
     // lastValueFrom可以获取到请求到的接口数据
     const checkResultObservable: any = this.httpService
-      .get('https://api.vvhan.com/api/getIpInfo?ip=' + ip)
+      .get('https://api.vvhan.com/api/ipInfo?ip=' + ip)
       .pipe(map((res) => res.data));
     const checkResult = await lastValueFrom(checkResultObservable);
     return checkResult;

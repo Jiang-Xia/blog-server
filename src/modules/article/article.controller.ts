@@ -49,8 +49,8 @@ export class ArticleController {
     // 解析xml传输数据格式
     // const parser = new XMLParser();
     // console.log('xml', parser.parse(listDTO));
-
-    return await this.articleService.getMore(listDTO, getUserInfo(headers.authorization));
+    const info = getUserInfo(headers.authorization);
+    return await this.articleService.getMore(listDTO, info);
   }
   @Get('info')
   @ApiOkResponse({ description: '文章详情', type: ArticleInfoResponse })
@@ -113,7 +113,8 @@ export class ArticleController {
    */
   @Patch('disabled')
   @HttpCode(HttpStatus.OK)
-  updateArticleIsDelete(@Body() field: ArticleEditDTO) {
+  updateArticleIsDelete(@Body() field: any) {
+    console.log(field, 'updateArticleField===>请选择文章分类');
     return this.articleService.updateArticleField(field);
   }
 
@@ -122,7 +123,7 @@ export class ArticleController {
    */
   @Patch('topping')
   @HttpCode(HttpStatus.OK)
-  updateArticleTopping(@Body() field: ArticleEditDTO) {
+  updateArticleTopping(@Body() field: any) {
     return this.articleService.updateArticleField(field);
   }
   /**

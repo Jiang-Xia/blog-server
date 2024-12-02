@@ -47,6 +47,7 @@ export const likeQeuryParams = (
     (k) => ![null, undefined].includes(otherParams[k]),
   );
   // 固定字段模糊查询
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   keys.length && (allkeys = allkeys.filter((k: string) => keys.includes(k)));
   allkeys.forEach((key) => {
     console.log(key, otherParams[key]);
@@ -151,6 +152,7 @@ export function getUid(authorization = '') {
 export function getUserInfo(authorization = ''): User {
   if (!authorization) return;
   const token = authorization.replace('Bearer ', '');
+  if (!token) return;
   const user: any = jwtDecode(token);
   // console.log(uid);
   return user;

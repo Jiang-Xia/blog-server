@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Header,
   Param,
   Patch,
   Post,
@@ -36,8 +37,8 @@ export class ResourcesController {
     return await this.resourcesService.baiDuTongJi(query);
   }
   @Get('weather')
-  async weather(@IpAddress() ip: string) {
-    return await this.resourcesService.getWeather(ip);
+  async weather(@Query() tip: string) {
+    return await this.resourcesService.getWeather(tip);
   }
 
   /**

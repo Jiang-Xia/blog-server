@@ -25,7 +25,7 @@ export class BaseModel {
   @BeforeInsert()
   @BeforeUpdate()
   formatDates() {
-    this.createTime = dayjs(this.createTime).format('yyyy-MM-dd HH:mm:ss');
-    this.updateTime = dayjs(this.updateTime).format('yyyy-MM-dd HH:mm:ss');
+    this.createTime = dayjs(this.createTime).format('YYYY-MM-DD HH:mm:ss');
+    this.updateTime = dayjs(this.updateTime).format('YYYY-MM-DD HH:mm:ss');
   }
 }

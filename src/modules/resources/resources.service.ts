@@ -1,13 +1,14 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { Repository } from 'typeorm';
 import { FileStore } from '../file/file.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { catchError, map } from 'rxjs/operators';
 import { isIPv4 } from 'net';
-import fs = require('fs');
+import fs from 'fs';
 // promise 文件操作
-import fsPromises = require('fs/promises');
+import fsPromises from 'fs/promises';
+import { lastValueFrom } from 'rxjs';
 async function delPath(path: string) {
   // console.log('start');
   try {
@@ -297,14 +298,19 @@ export class ResourcesService {
   }
 
   // 获取天气
-  async getWeather(ip: string) {
-    if (!isIPv4(ip)) {
-      // 判断是不是ip4
-      ip = '';
+  async getWeather(tip: string) {
+    // const imgUrl =
+    //   'https://cn.bing.com/th?id=OHR.ArraialdoCabo_ZH-CN6202620711_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp';
+    const imgUrl = 'https://api.vvhan.com/api/ipCard?tip' + tip;
+    try {
+      const response = await lastValueFrom(
+        this.httpService.get(imgUrl, { responseType: 'arraybuffer', timeout: 1500 }),
+      );
+      const imageBuffer = response.data;
+      const imageBase64 = Buffer.from(imageBuffer).toString('base64');
+      return `data:image/jpeg;base64,${imageBase64}`;
+    } catch (error) {
+      throw new HttpException('第三方接口错误：' + error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    const res: any = this.httpService
-      .get('https://api.vvhan.com/api/weather?ip=' + ip)
-      .pipe(map((res) => res.data));
-    return res;
   }
 }

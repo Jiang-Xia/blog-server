@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -16,6 +16,7 @@ import { MsgboardModule } from './modules/msgboard/msgboard.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { ResourcesModule } from './modules/resources/resources.module';
 import { FileModule } from './modules/file/file.module';
+// import { GatewagMiddleware } from './middleware/gateway.middleware';
 
 import { Config } from './config';
 
@@ -57,3 +58,10 @@ const envFilePath = `.env.${environment}`;
 })
 // 相关字段解释  https://docs.nestjs.cn/8/modules?id=功能模块
 export class AppModule {}
+// export class AppModule implements NestModule {
+//   configure(consumer: MiddlewareConsumer) {
+//     // * 对所有路由生效
+//     consumer.apply(GatewagMiddleware).forRoutes('*');
+//     // consumer.apply(GatewagMiddleware);
+//   }
+// }

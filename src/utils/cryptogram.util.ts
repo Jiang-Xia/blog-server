@@ -2,7 +2,7 @@
 
 import * as crypto from 'crypto';
 import * as JSEncrypt from 'node-jsencrypt';
-import { enc, mode, AES, pad } from 'crypto-js';
+import { enc, mode, AES, pad, format } from 'crypto-js';
 import { publicKey, privateKey } from '../config/ssh';
 
 // 随机盐
@@ -55,7 +55,7 @@ export function aesEncrypt(word: any, key = secretKey, offset = iv) {
     padding: pad.Pkcs7,
   });
   // 转成16进制 变成大写不影响解密
-  return encrypted.toString(CryptoJS.format.Hex).toUpperCase();
+  return encrypted.toString(format.Hex).toUpperCase();
 }
 
 /**
@@ -72,7 +72,7 @@ export function aesDecrypt(encryptedWord: any, key = secretKey, offset = iv) {
   // 偏移量 从 UTF-8编码 解析出原始字符串
   const offsetUTF8 = enc.Utf8.parse(offset);
   // 解析十六进制字符串
-  encryptedWord = CryptoJS.format.Hex.parse(encryptedWord);
+  encryptedWord = format.Hex.parse(encryptedWord);
   // console.log('encryptedWord:',encryptedWord)
   const bytes = AES.decrypt(encryptedWord, keyUTF8, {
     iv: offsetUTF8,

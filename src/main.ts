@@ -2,7 +2,7 @@
  * @Author: 酱
  * @LastEditors: jx
  * @Date: 2021-11-12 17:31:46
- * @LastEditTime: 2024-12-28 23:16:46
+ * @LastEditTime: 2025-01-20 19:44:33
  * @Description:
  * @FilePath: \blog-server\src\main.ts
  */
@@ -37,6 +37,7 @@ async function bootstrap() {
     credentials: true,
     origin: true,
   });
+
   // 配置静态资源目录
   app.useStaticAssets('public');
   // 3.1 设置虚拟路径

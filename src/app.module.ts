@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -16,6 +16,8 @@ import { MsgboardModule } from './modules/msgboard/msgboard.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { ResourcesModule } from './modules/resources/resources.module';
 import { FileModule } from './modules/file/file.module';
+import { PubModule } from './modules/pub/pub.module';
+
 // import { GatewagMiddleware } from './middleware/gateway.middleware';
 
 import { Config } from './config';
@@ -52,6 +54,7 @@ const envFilePath = `.env.${environment}`;
     MsgboardModule,
     AdminModule,
     FileModule,
+    PubModule,
   ],
   controllers: [AppController],
   providers: [AppService],

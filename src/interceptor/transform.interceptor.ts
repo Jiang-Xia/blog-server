@@ -26,7 +26,8 @@ export class TransformInterceptor implements NestInterceptor {
     const startTime = Date.now();
     // 不走公共处理
     if (whiteControllerList.some((str) => url.includes(str))) {
-      return next.handle().pipe(timeout(120000));
+      // timeout(120000)
+      return next.handle().pipe();
     } else {
       return next.handle().pipe(
         tap(() => {

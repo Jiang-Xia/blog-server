@@ -54,26 +54,22 @@ export class PubController {
         }
       }
       res.write(`data: [DONE]\n\n`);
-    } else if (model === 'deepseek-chat') {
+    } else {
       const response: any = await openai.beta.chat.completions.stream({
         messages,
         model,
         stream,
       });
-      response.on('content', (delta, snapshot) => {
-        // console.log('delta', delta);
-        res.write(`data: ${delta}\n\n`);
-      });
-      // for await (const chunk of response) {
-      //   res.write(`data: ${chunk.choices[0]?.delta?.content}` || '');
-      // }
-      res.write('data: [DONE]'); // 完成后发送 DONE 标识
-      const chatCompletion = await response.finalChatCompletion();
+      for await (const chunk of response) {
+        res.write(`data: ${JSON.stringify(chunk)}\n\n`);
+      }
+      res.write(`data: [DONE]\n\n`); // 完成后发送 DONE 标识
+      // const chatCompletion = await response.finalChatCompletion();
       // res.write(`data: [DONE]\n\n`);
-      console.log(chatCompletion);
+      // console.log(chatCompletion);
     }
     res.on('close', () => {
-      console.log('close connection!');
+      // console.log('close connection!');
       res.end();
     });
   }

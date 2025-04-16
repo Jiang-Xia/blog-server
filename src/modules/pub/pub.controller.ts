@@ -36,24 +36,38 @@ export class PubController {
     const model = body.model || 'deepseek-reasoner';
     const stream = body.stream || true;
     if (model === 'deepseek-reasoner' || model === 'deepseek-r1:1.5b') {
-      const response: any = await openai.chat.completions.create({
-        messages,
-        model,
-        stream,
-      });
-      // console.log('response:', response);
-      for await (const chunk of response) {
-        // console.log('chunk:', JSON.stringify(chunk));
-        if (chunk.choices[0].delta.reasoning_content) {
-          // console.log('reasoning_content:', chunk.choices[0].delta.reasoning_content);
-          // ! \n\n结尾是必需的
-          res.write(`data: ${JSON.stringify(chunk)}\n\n`);
-        } else {
-          // console.log('content:', chunk.choices[0].delta.content);
-          res.write(`data: ${JSON.stringify(chunk)}\n\n`);
+      try {
+        const response: any = await openai.chat.completions.create({
+          messages,
+          model,
+          stream,
+        });
+        // console.log('response:', response);
+        for await (const chunk of response) {
+          // console.log('chunk:', JSON.stringify(chunk));
+          if (chunk.choices[0].delta.reasoning_content) {
+            // console.log('reasoning_content:', chunk.choices[0].delta.reasoning_content);
+            // ! \n\n结尾是必需的
+            res.write(`data: ${JSON.stringify(chunk)}\n\n`);
+          } else {
+            // console.log('content:', chunk.choices[0].delta.content);
+            res.write(`data: ${JSON.stringify(chunk)}\n\n`);
+          }
         }
+        res.write(`data: [DONE]\n\n`);
+      } catch (error) {
+        let msg: string = '';
+        if (error instanceof OpenAI.APIError) {
+          msg = `API Error: ${error.message}`;
+        } else if (error.constructor.name === 'TimeoutError') {
+          msg = '请求超时，请检查网络或增加超时时间';
+          throw new Error('请求超时，请检查网络或增加超时时间');
+        } else {
+          msg = '未知错误';
+        }
+        res.write(`data: [DONE]\n\n`);
+        throw new HttpException(msg, HttpStatus.INTERNAL_SERVER_ERROR);
       }
-      res.write(`data: [DONE]\n\n`);
     } else if (model === 'deepseek-chat') {
       const response: any = await openai.beta.chat.completions.stream({
         messages,

@@ -9,7 +9,7 @@ WORKDIR /app
 RUN ls
 RUN npm config set registry https://registry.npmmirror.com
 RUN npm config list
-
+# 把 package.json 拷贝到workdir中
 COPY package.json .
 
 # !天坑 一定要加上--include=dev不然只会安装package.json中dependencies的依赖
@@ -21,7 +21,7 @@ COPY . .
 
 RUN npm run build
 
-
+# 容器重启会执行的命令
 CMD [ "npm", "run", "start:prod" ]
 
 EXPOSE 5000:5000

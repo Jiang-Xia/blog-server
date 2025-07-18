@@ -1,8 +1,20 @@
-version: '3.4'
-
+# compose 自动创建子网共享网络
 services:
+ # mysql镜像 
+  mysql:
+    image: mysql:8.0.42
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: jiangxia123!@#
+      MYSQL_ROOT_HOST: 127.0.0.1
+      MYSQL_DATABASE: myblog
+      MYSQL_USER: jiangxia
+      MYSQL_PASSWORD: jiangxia123!@#
+    ports:
+      # 宿主: 容器 只设置3306的话让宿主主机自动分配
+      - 8366:3306
+
   sever:
-    image: sever
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -10,3 +22,29 @@ services:
       NODE_ENV: production
     ports:
       - 5000:5000
+    depends_on: # 服务依赖于mysql
+      - mysql
+    
+  nginx:
+    image: nginx
+    build:
+      context: ./
+    volumes:
+      - ./public:/etc/nginx/templates
+    environment:
+      NODE_ENV:  production
+      NGINX_HOST: foobar.com
+      NGINX_PORT: 80
+
+    ports:
+      - 8089:80
+    
+
+
+# 常用命令 
+# docker-compose up -d  构建配置的镜像
+# docker-compose ps 查看启动的容器
+# docker exec -it mysql bash 查看对应容器
+# docker-compose down -v 停止并删除容器、网络、卷（保留镜像）
+# docker image prune -a 删除所有未被容器使用的镜像，包括中间层镜像
+# apt update && apt install -y iputils-ping 容器里面安装调试网络工具

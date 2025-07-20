@@ -4,6 +4,10 @@ services:
   mysql:
     image: mysql:8.0.42
     restart: always
+    volumes:
+      - ./backups/mysql-backups:/backups
+      - ./backups/db-data:/var/lib/mysql
+      - ./deploy/sql/init.sql:/docker-entrypoint-initdb.d/init.sql  
     environment:
       MYSQL_ROOT_PASSWORD: jiangxia123!@#
       MYSQL_ROOT_HOST: 127.0.0.1
@@ -13,38 +17,66 @@ services:
     ports:
       # 宿主: 容器 只设置3306的话让宿主主机自动分配
       - 8366:3306
+    networks:
+      - backend-networks
 
   sever:
     build:
       context: .
       dockerfile: ./Dockerfile
+    restart: always
+    volumes:
+      - ./backups/server/public:/app/public
     environment:
       NODE_ENV: production
     ports:
       - 5000:5000
     depends_on: # 服务依赖于mysql
       - mysql
-    
+    networks:
+      - backend-networks
+
   nginx:
-    image: nginx
     build:
-      context: ./
-    volumes:
-      - ./public:/etc/nginx/templates
+      context: .
+      dockerfile: ./deploy/nginx/Dockerfile
+    # volumes:
+      # - ./public:/usr/share/nginx/html/public
+      # - ./deploy/nginx/nginx.conf:/etc/nginx/nginx.conf  # 挂载配置文件
     environment:
       NODE_ENV:  production
-      NGINX_HOST: foobar.com
-      NGINX_PORT: 80
-
     ports:
-      - 8089:80
-    
+      - 80:80
+    depends_on:
+      - sever
+      - home
+    networks:
+      - frontend-networks
+      - backend-networks
+  home:
+    build:
+      context: .
+      dockerfile: ./deploy/front/Dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - 3000:3000
+    networks:
+      - frontend-networks
+networks:
+  frontend-networks:
+    # external: true
+  backend-networks:
 
 
 # 常用命令 
+# docker network create frontend-networks #手动创建一个外部网络
+# docker network connect <existing_network_name> <container_name> 将新服务的容器手动加入网络
 # docker-compose up -d  构建配置的镜像
 # docker-compose ps 查看启动的容器
 # docker exec -it mysql bash 查看对应容器
 # docker-compose down -v 停止并删除容器、网络、卷（保留镜像）
 # docker image prune -a 删除所有未被容器使用的镜像，包括中间层镜像
 # apt update && apt install -y iputils-ping 容器里面安装调试网络工具
+# docker-compose build nginx 打包单个镜像
+# docker-compose rm nginx 打包单个容器

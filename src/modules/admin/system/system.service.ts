@@ -22,6 +22,9 @@ export class RoleService {
 
   async update(id, updateData: Partial<Role>): Promise<Role> {
     const oldModel = await this.roleRepository.findOne({ where: { id } });
+    if (!oldModel) {
+      throw new HttpException('角色不存在', HttpStatus.NOT_FOUND);
+    }
     const updatedModel = await this.roleRepository.merge(oldModel, updateData);
     return this.roleRepository.save(updatedModel);
   }
@@ -29,6 +32,9 @@ export class RoleService {
   async delete(id) {
     try {
       const repo = await this.roleRepository.findOne({ where: { id } });
+      if (!repo) {
+        throw new HttpException('角色不存在', HttpStatus.NOT_FOUND);
+      }
       await this.roleRepository.remove(repo);
       return true;
     } catch (e) {
@@ -65,6 +71,9 @@ export class PrivilegeService {
 
   async update(id, updateData: Partial<Privilege>): Promise<Privilege> {
     const oldModel = await this.privilegeRepository.findOne({ where: { id } });
+    if (!oldModel) {
+      throw new HttpException('权限不存在', HttpStatus.NOT_FOUND);
+    }
     const updatedModel = await this.privilegeRepository.merge(oldModel, updateData);
     return this.privilegeRepository.save(updatedModel);
   }
@@ -72,6 +81,9 @@ export class PrivilegeService {
   async delete(id) {
     try {
       const repo = await this.privilegeRepository.findOne({ where: { id } });
+      if (!repo) {
+        throw new HttpException('权限不存在', HttpStatus.NOT_FOUND);
+      }
       await this.privilegeRepository.remove(repo);
       return true;
     } catch (e) {

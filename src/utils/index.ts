@@ -124,23 +124,23 @@ export function getLocalIP() {
     for (const dev in netInfo) {
       //win7的网络信息中显示为本地连接，win10显示为以太网
       if (dev === '本地连接' || dev === '以太网') {
-        for (let j = 0; j < netInfo[dev].length; j++) {
-          if (netInfo[dev][j].family === 'IPv4') {
-            ip = netInfo[dev][j].address;
+        for (let j = 0; j < (netInfo[dev]?.length || 0); j++) {
+          if (netInfo[dev]?.[j]?.family === 'IPv4') {
+            ip = netInfo[dev]?.[j]?.address;
             break;
           }
         }
       }
     }
   } else if (osType === 'Linux') {
-    ip = netInfo.eth0[0].address;
+    ip = (netInfo as any)?.eth0?.[0]?.address as string;
   }
   return ip;
 }
 
 // 获取用户uid
 export function getUid(authorization = '') {
-  if (!authorization) return;
+  if (!authorization) return undefined as any;
   const token = authorization.replace('Bearer ', '');
   const user: any = jwtDecode(token);
   const uid = user.id;
@@ -150,9 +150,9 @@ export function getUid(authorization = '') {
 
 // 根据token获取yoghurt信息
 export function getUserInfo(authorization = ''): User {
-  if (!authorization) return;
+  if (!authorization) return undefined as any;
   const token = authorization.replace('Bearer ', '');
-  if (!token) return;
+  if (!token) return undefined as any;
   const user: any = jwtDecode(token);
   // console.log(uid);
   return user;
@@ -160,9 +160,9 @@ export function getUserInfo(authorization = ''): User {
 
 // 组装返回用户信息
 export function setUserInfo(user: User, keys = ['nickname', 'id', 'avatar']) {
-  const nUser = {};
+  const nUser: Record<string, any> = {};
   for (const key of keys) {
-    nUser[key] = user[key];
+    (nUser as any)[key] = (user as any)?.[key];
   }
   return nUser;
 }

@@ -26,7 +26,7 @@ export const InitConfig = () => {
   const databaseConfig: any = {
     type: conf.get('db_type'),
     host: conf.get('db_host'),
-    port: parseInt(conf.get('db_port')),
+    port: parseInt(conf.get('db_port') as string),
     username: conf.get('db_username'),
     password: conf.get('db_password') as string,
     database: conf.get('db_database'),
@@ -36,7 +36,7 @@ export const InitConfig = () => {
   };
   /* 服务配置 */
   const serveConfig = {
-    port: parseInt(conf.get('serve_port')),
+    port: parseInt(conf.get('serve_port') as string),
     apiPath: conf.get('serve_apiPath'),
     baseUrl: conf.get('serve_baseUrl'),
     isDev: env !== 'production',

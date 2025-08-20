@@ -35,7 +35,7 @@ export class RolesGuard implements CanActivate {
       token = token.split(' ').pop();
     }
     // console.log('token', token);
-    const user = this.jwtService.decode(token) as User;
+    const user = this.jwtService.decode(token);
     // console.log('user', user);
     if (!user) {
       return false;

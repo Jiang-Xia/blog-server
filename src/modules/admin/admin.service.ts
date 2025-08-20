@@ -54,7 +54,7 @@ export class MenuService {
     qb.orderBy('menu.order', 'ASC');
     const data = await qb.getMany();
     // console.log({ role, data });
-    const menuTree = [];
+    const menuTree: MenuState[] = [];
     // 设置一下属性和删属性
     const setMenuTree = (item: any) => {
       const { order, icon, locale, requiresAuth } = item;
@@ -107,6 +107,9 @@ export class MenuService {
     const { id } = field;
     delete field.id;
     const oldItem = await this.menuRepository.findOne({ where: { id } });
+    if (!oldItem) {
+      throw new HttpException('菜单不存在', HttpStatus.NOT_FOUND);
+    }
     // merge - 将多个实体合并为一个实体。
     const updatedItem = await this.menuRepository.merge(oldItem, {
       ...field,
@@ -115,13 +118,16 @@ export class MenuService {
     return this.menuRepository.save(updatedItem);
   }
 
-  async findById(id): Promise<Menu> {
+  async findById(id): Promise<Menu | null> {
     return await this.menuRepository.findOne({ where: { id } });
   }
 
   async deleteById(id) {
     try {
       const menu = await this.menuRepository.findOne({ where: { id } });
+      if (!menu) {
+        throw new HttpException('菜单不存在', HttpStatus.NOT_FOUND);
+      }
       await this.menuRepository.remove(menu);
       return true;
     } catch (e) {
@@ -168,6 +174,9 @@ export class LinkService {
 
   async updateById(id, item: Partial<Link>): Promise<Link> {
     const oldItem = await this.linkRepository.findOne({ where: { id } });
+    if (!oldItem) {
+      throw new HttpException('外链不存在', HttpStatus.NOT_FOUND);
+    }
     const updatedItem = await this.linkRepository.merge(oldItem, item);
     return this.linkRepository.save(updatedItem);
   }
@@ -175,6 +184,9 @@ export class LinkService {
   async deleteById(id) {
     try {
       const link = await this.linkRepository.findOne({ where: { id } });
+      if (!link) {
+        throw new HttpException('外链不存在', HttpStatus.NOT_FOUND);
+      }
       await this.linkRepository.remove(link);
       return true;
     } catch (e) {

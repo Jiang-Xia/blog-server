@@ -7,7 +7,7 @@ import { ResourcesService } from '../resources/resources.service';
 import { Cron } from '@nestjs/schedule';
 import { Config } from '../../config';
 import { getFolderSizeBin } from 'go-get-folder-size';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -85,7 +85,7 @@ export class FileService {
         reject(new HttpException('硬盘内存不足了~', status));
         return;
       }
-      let files = [];
+      let files: string[] = [];
       try {
         // 文件夹不存在会报错
         files = fs.readdirSync(slicePath);
@@ -162,7 +162,7 @@ export class FileService {
     }
     const basePath = `${Config.fileConfig.filePath}tempFolder`;
     const slicePath = `${basePath}/${hash}`;
-    let files = [];
+    let files: string[] = [];
     try {
       // 文件夹不存在会报错
       files = fs.readdirSync(slicePath);

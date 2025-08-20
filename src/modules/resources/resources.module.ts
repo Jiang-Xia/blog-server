@@ -6,7 +6,7 @@ import { AuthModule } from '../auth/auth.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { FileStore } from '../file/file.entity';
 import { diskStorage } from 'multer';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { Config } from '../../config';
 import { HttpModule } from '@nestjs/axios';
 import { v4 as uuidv4 } from 'uuid';

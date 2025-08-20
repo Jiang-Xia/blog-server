@@ -52,7 +52,7 @@ export class CategoryService {
     data.forEach((d) => {
       // 启用的才合计
       Object.assign(d, { articleCount: d.articles.length });
-      delete d.articles;
+      delete (d as any).articles;
     });
     data.sort(function (a: any, b: any) {
       return b.articleCount - a.articleCount;
@@ -75,7 +75,7 @@ export class CategoryService {
       .setParameter('id', id)
       .getOne();
 
-    return data;
+    return data as Category;
   }
 
   async findByIds(ids): Promise<Array<Category>> {
@@ -89,6 +89,9 @@ export class CategoryService {
    */
   async updateById(id: string, category: Partial<Category>): Promise<Category> {
     const oldCategory = await this.categoryRepository.findOne({ where: { id } });
+    if (!oldCategory) {
+      throw new HttpException('分类不存在', HttpStatus.NOT_FOUND);
+    }
     const updatedCategory = await this.categoryRepository.merge(oldCategory, category);
     return this.categoryRepository.save(updatedCategory);
   }
@@ -100,6 +103,9 @@ export class CategoryService {
   async deleteById(id) {
     try {
       const category = await this.categoryRepository.findOne({ where: { id } });
+      if (!category) {
+        throw new HttpException('分类不存在', HttpStatus.NOT_FOUND);
+      }
       await this.categoryRepository.remove(category);
       return true;
     } catch (e) {

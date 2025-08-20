@@ -27,8 +27,8 @@ export class ReplyService {
     qb.where('reply.parentId = :id', { id });
     const getList = qb.getManyAndCount();
     const [list, total] = await getList;
-    const uArr = []; // 组装promise任务
-    const tArr = [];
+    const uArr: Array<Promise<any>> = []; // 组装promise任务
+    const tArr: Array<Promise<any>> = [];
     // 组装多个异步函数查询
     list.forEach((v: any) => {
       uArr.push(this.userService.findById(v.uid));
@@ -46,9 +46,9 @@ export class ReplyService {
       const { nickname, id, avatar } = uUsers[i];
       v.userInfo = { nickname, id, avatar };
       v.tUserInfo = {
-        nickname: tUsers[i].nickname,
-        id: tUsers[i].id,
-        avatar: tUsers[i].avatar,
+        nickname: tUsers[i]?.nickname,
+        id: tUsers[i]?.id,
+        avatar: tUsers[i]?.avatar,
       }; // 目标用户
       return v;
     });

@@ -187,15 +187,16 @@ export class ArticleService {
       .setParameter('id', id)
       .setParameter('title', id);
     const data = await query.getOne();
-    data.likes = data.articleLikes.length;
-    data.userInfo = setUserInfo(data.user);
-    delete data.user;
-    delete data.articleLikes;
-    // 评论已通过单独的接口去查了
-    // console.log(data);
-    if (!query) {
+    if (!data) {
       throw new NotFoundException('找不到文章');
     }
+    data.likes = data.articleLikes.length;
+    data.userInfo = setUserInfo(data.user);
+    delete (data as any).user;
+    delete (data as any).articleLikes;
+    // 评论已通过单独的接口去查了
+    // console.log(data);
+    // data 校验已在上面进行
     return {
       info: data,
     };
@@ -213,7 +214,7 @@ export class ArticleService {
 
   // 先把文章列表查询出来，再根据列表组装一一根据文章去查询对应评论数
   async findComment(list: any) {
-    const sArr = [];
+    const sArr: Array<Promise<any>> = [];
     // 组装多个异步函数查询
     list.forEach((v: any) => {
       sArr.push(this.commentService.findAll(v.id));
@@ -265,15 +266,20 @@ export class ArticleService {
   async update(articleEditDTO: ArticleEditDTO) {
     const { id } = articleEditDTO;
     const articleToUpdate = await this.articleRepository.findOne({ where: { id } });
-    articleToUpdate.title = articleEditDTO.title;
-    articleToUpdate.description = articleEditDTO.description;
-    articleToUpdate.content = articleEditDTO.content;
-    articleToUpdate.contentHtml = articleEditDTO.contentHtml;
-    articleToUpdate.cover = articleEditDTO.cover;
-    articleToUpdate.category = articleEditDTO.category;
+    if (!articleToUpdate) {
+      throw new NotFoundException('文章不存在');
+    }
+    if (articleEditDTO.title !== undefined) articleToUpdate.title = articleEditDTO.title!;
+    if (articleEditDTO.description !== undefined)
+      articleToUpdate.description = articleEditDTO.description!;
+    if (articleEditDTO.content !== undefined) articleToUpdate.content = articleEditDTO.content!;
+    if (articleEditDTO.contentHtml !== undefined)
+      articleToUpdate.contentHtml = articleEditDTO.contentHtml!;
+    if (articleEditDTO.cover !== undefined) articleToUpdate.cover = articleEditDTO.cover!;
+    if (articleEditDTO.category !== undefined) articleToUpdate.category = articleEditDTO.category;
     // 只有admin端才传
-    if (articleToUpdate.isDelete !== undefined) {
-      articleToUpdate.isDelete = articleEditDTO.isDelete;
+    if (articleToUpdate.isDelete !== undefined && articleEditDTO.isDelete !== undefined) {
+      articleToUpdate.isDelete = Boolean(articleEditDTO.isDelete);
     }
     // 需要去数据库找那个查询是否存在，才能赋值更新
     const tags = await this.tagService.findByIds(('' + articleEditDTO.tags).split(','));
@@ -295,7 +301,7 @@ export class ArticleService {
   async delete(idDTO: IdDTO) {
     const { id, uid } = idDTO;
     const articleToUpdate = await this.articleRepository.findOne({ where: { id } });
-    if (articleToUpdate.uid === uid) {
+    if (articleToUpdate && articleToUpdate.uid === uid) {
       await this.articleRepository.delete(id);
       return {
         info: {
@@ -314,6 +320,9 @@ export class ArticleService {
    */
   async updateViewsById(id): Promise<Article> {
     const oldArticle = await this.articleRepository.findOne({ where: { id } });
+    if (!oldArticle) {
+      throw new NotFoundException('文章不存在');
+    }
     // merge - 将多个实体合并为一个实体。
     const updatedArticle = await this.articleRepository.merge(oldArticle, {
       views: oldArticle.views + 1,
@@ -329,6 +338,9 @@ export class ArticleService {
     const { id } = field;
     delete field.id;
     const oldArticle = await this.articleRepository.findOne({ where: { id } });
+    if (!oldArticle) {
+      throw new NotFoundException('文章不存在');
+    }
     // merge - 将多个实体合并为一个实体。
     const updatedArticle = await this.articleRepository.merge(oldArticle, {
       ...field,
@@ -343,6 +355,9 @@ export class ArticleService {
   //  */
   async updateLikesById(articleId: string, status: number): Promise<Article> {
     const oldArticle = await this.articleRepository.findOne({ where: { articleId } });
+    if (!oldArticle) {
+      throw new NotFoundException('文章不存在');
+    }
     const updatedArticle = await this.articleRepository.merge(oldArticle, {
       likes: status === 1 ? oldArticle.likes + 1 : oldArticle.likes - 1,
     });
@@ -393,7 +408,7 @@ export class ArticleService {
       };
       ret[year][months[month]].push(rep);
     });
-    const list = [];
+    const list: Array<{ year: string; data: any }> = [];
     Object.keys(ret)
       .sort((a: string, b: string) => Number(b) - Number(a))
       .forEach((k) => {

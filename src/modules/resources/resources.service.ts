@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { FileStore } from '../file/file.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { catchError, map } from 'rxjs/operators';
-import { isIPv4 } from 'net';
+import { isIPv4 } from 'node:net';
 import fs from 'fs';
 // promise 文件操作
 import fsPromises from 'fs/promises';
@@ -173,7 +173,7 @@ export class ResourcesService {
    * @param file
    */
   async uploadFile(files: Partial<Express.Multer.File>[], pid: string): Promise<FileStore[]> {
-    const newFiles = [];
+    const newFiles: FileStore[] = [];
     files.forEach((file: Express.Multer.File) => {
       const { originalname, destination, mimetype, size, filename } = file;
       const item: Partial<FileStore> = {
@@ -233,7 +233,7 @@ export class ResourcesService {
    * @param id
    */
   async findById(id): Promise<FileStore> {
-    return this.fileRepository.findOne({ where: { id } });
+    return this.fileRepository.findOne({ where: { id } }) as unknown as FileStore;
   }
 
   async findByIds(ids): Promise<Array<FileStore>> {
@@ -245,7 +245,10 @@ export class ResourcesService {
    * @param id
    */
   async deleteById(id: string) {
-    const target: FileStore = await this.fileRepository.findOne({ where: { id } });
+    const target: FileStore | null = await this.fileRepository.findOne({ where: { id } });
+    if (!target) {
+      throw new HttpException('文件不存在', HttpStatus.NOT_FOUND);
+    }
     // await this.oss.deleteFile(target.filename);
     const path: string = target.url.replace('/static/', './public/');
     delPath(path);
@@ -289,6 +292,9 @@ export class ResourcesService {
     const { id } = field;
     delete field.id;
     const oldItem = await this.fileRepository.findOne({ where: { id } });
+    if (!oldItem) {
+      throw new HttpException('文件不存在', HttpStatus.NOT_FOUND);
+    }
     // merge - 将多个实体合并为一个实体。
     const updatedItem = await this.fileRepository.merge(oldItem, {
       ...field,

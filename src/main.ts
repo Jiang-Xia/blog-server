@@ -18,7 +18,7 @@ import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { text, json } from 'body-parser';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import * as session from 'express-session';
+import session from 'express-session';
 import { SessionOptions } from 'express-session';
 import { GatewagMiddleware } from './middleware/gateway.middleware';
 

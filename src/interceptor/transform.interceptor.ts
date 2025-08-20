@@ -53,7 +53,7 @@ export class TransformInterceptor implements NestInterceptor {
             message = data.message;
             delete data.message;
             // data为空对象时返回Boolean true
-            data = !!!Object.keys(data).length ? true : data;
+            data = !Object.keys(data).length ? true : data;
           }
           return {
             code: 200,

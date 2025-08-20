@@ -55,7 +55,7 @@ export class TagController {
    * @param id
    */
   @Get(':id/article')
-  getArticleById(@Param('id') id: string, @Query('status') status: string) {
+  getArticleById(@Param('id') id: string, @Query('status') status?: string | null) {
     return this.tagService.getArticleById(id, status);
   }
 

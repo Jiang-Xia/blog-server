@@ -23,7 +23,7 @@ export class TagService {
       throw new HttpException('标签已存在', HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    const newTag = await this.tagRepository.create(tag);
+    const newTag = this.tagRepository.create(tag);
     newTag.color = getRandomClor();
     await this.tagRepository.save(newTag);
     return newTag;
@@ -47,7 +47,7 @@ export class TagService {
 
     data.forEach((d) => {
       Object.assign(d, { articleCount: d.articles.length });
-      delete d.articles;
+      delete (d as any).articles;
     });
     data.sort(function (a: any, b: any) {
       return b.articleCount - a.articleCount;
@@ -67,15 +67,14 @@ export class TagService {
       .orWhere('tag.value=:id')
       .setParameter('id', id)
       .getOne();
-
-    return data;
+    return data as Tag;
   }
 
   /**
    * 获取指定标签信息，包含相关文章
    * @param id
    */
-  async getArticleById(id: string, status = null): Promise<Tag> {
+  async getArticleById(id: string, status: string | null = null): Promise<Tag> {
     const data = await this.tagRepository
       .createQueryBuilder('tag')
       .leftJoinAndSelect('tag.articles', 'articles')
@@ -86,8 +85,10 @@ export class TagService {
       .setParameter('id', id)
       .getOne();
 
+    if (!data) return data as any;
+
     if (status) {
-      data.articles = data.articles.filter((a) => a.status === status);
+      (data as any).articles = data.articles.filter((a) => a.status === status);
       return data;
     }
     return data;
@@ -104,7 +105,10 @@ export class TagService {
    */
   async updateById(id, tag: Partial<Tag>): Promise<Tag> {
     const oldTag = await this.tagRepository.findOne({ where: { id } });
-    const updatedTag = await this.tagRepository.merge(oldTag, tag);
+    if (!oldTag) {
+      throw new HttpException('标签不存在', HttpStatus.NOT_FOUND);
+    }
+    const updatedTag = this.tagRepository.merge(oldTag, tag);
     return this.tagRepository.save(updatedTag);
   }
 
@@ -115,6 +119,9 @@ export class TagService {
   async deleteById(id) {
     try {
       const tag = await this.tagRepository.findOne({ where: { id } });
+      if (!tag) {
+        throw new HttpException('标签不存在', HttpStatus.NOT_FOUND);
+      }
       await this.tagRepository.remove(tag);
       return true;
     } catch (e) {

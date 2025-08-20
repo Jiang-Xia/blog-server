@@ -170,7 +170,7 @@ export class UserService {
    * @param id
    */
   async findById(id): Promise<User> {
-    return await this.userRepository.findOne({ where: { id } });
+    return (await this.userRepository.findOne({ where: { id } })) as unknown as User;
   }
 
   async findAll(queryParams): Promise<userListVO> {
@@ -200,6 +200,9 @@ export class UserService {
     const { id } = field;
     delete field.id;
     const oldItem = await this.userRepository.findOne({ where: { id } });
+    if (!oldItem) {
+      throw new NotFoundException('用户不存在');
+    }
     // merge - 将多个实体合并为一个实体。
     const updatedItem = await this.userRepository.merge(oldItem, {
       ...field,
@@ -215,12 +218,16 @@ export class UserService {
       throw new NotFoundException('两次输入的密码不一致，请检查');
     }
     // console.log({ password, passwordRepeat, passwordOld, id });
-    const { password: dbPassword, salt } = await this.userRepository
+    const userWithSecret = await this.userRepository
       .createQueryBuilder('user')
       .addSelect('user.salt')
       .addSelect('user.password')
       .where('user.id = :id', { id })
       .getOne();
+    if (!userWithSecret) {
+      throw new NotFoundException('用户不存在');
+    }
+    const { password: dbPassword, salt } = userWithSecret as any;
     // console.log(user);
 
     if (!User.compactPass(passwordOld, dbPassword, salt)) {
@@ -243,9 +250,9 @@ export class UserService {
     const user = await this.userRepository
       .createQueryBuilder('user')
       .where('user.mobile = :mobile', { mobile })
-      .where('user.nickname = :nickname', { nickname })
+      .andWhere('user.nickname = :nickname', { nickname })
       .getOne();
-    if (mobile !== user.mobile) {
+    if (!user || mobile !== user.mobile) {
       throw new NotFoundException('此用户不存在！');
     }
     const newSalt = makeSalt(); // 制作新密码盐
@@ -265,6 +272,9 @@ export class UserService {
       /* !!! 注意 如果id为undefined会找到第一个 导致删除数据 */
       const user = await this.userRepository.findOne({ where: { id } });
       // console.log(id, user);
+      if (!user) {
+        throw new NotFoundException('用户不存在');
+      }
       await this.userRepository.remove(user);
       return true;
     } catch (e) {

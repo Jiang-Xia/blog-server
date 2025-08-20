@@ -17,7 +17,7 @@ import { Msgboard } from './msgboard.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { IpAddress } from 'src/utils/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
+import type { Cache } from 'cache-manager';
 import { DayMilliseconds } from 'src/utils/constant';
 // 文档
 @ApiTags('留言板模块')
@@ -34,7 +34,8 @@ export class MsgboardController {
   async create(@Body() msgboard: Msgboard, @Request() req: Request, @IpAddress() ip: string) {
     const maxCount = 10;
     const day = DayMilliseconds;
-    let count: number = await this.cacheManager.get(ip);
+    const cached = await this.cacheManager.get<number>(ip);
+    let count: number = cached ?? 0;
     if (!count) {
       // 一天里首次留言记录次数
       this.cacheManager.set(ip, 1, day);

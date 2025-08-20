@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { InjectRepository } from '@nestjs/typeorm';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { Repository } from 'typeorm';
 import { Msgboard, MsgboardListVo } from './msgboard.entity';
 import { UAParser } from 'ua-parser-js';
@@ -32,7 +32,7 @@ export class MsgboardService {
       parserResults,
     });
     if (!msgboard.avatar) {
-      const hash = MD5(msgboard.eamil);
+      const hash = MD5(msgboard.eamil || '');
       const avatar = `https://cravatar.cn/avatar/${hash}?s=100`;
       msgboard.avatar = avatar;
     }
@@ -43,8 +43,8 @@ export class MsgboardService {
     } else {
       msgboard.location = prov + '-' + city || '未知';
     }
-    msgboard.browser = browser.name + browser.major;
-    msgboard.system = os.name + os.version;
+    msgboard.browser = `${browser?.name ?? ''}${browser?.major ?? ''}`;
+    msgboard.system = `${os?.name ?? ''}${os?.version ?? ''}`;
     msgboard.ip = ip;
     // uaParser
     const newMsgboard = this.msgboardRepository.create(msgboard);

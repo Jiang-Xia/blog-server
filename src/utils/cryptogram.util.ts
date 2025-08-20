@@ -1,7 +1,7 @@
 // src/utils/cryptogram.util.ts
 
 import * as crypto from 'crypto';
-import * as JSEncrypt from 'node-jsencrypt';
+import JSEncrypt from 'node-jsencrypt';
 import { enc, mode, AES, pad, format } from 'crypto-js';
 import { publicKey, privateKey } from '../config/ssh';
 

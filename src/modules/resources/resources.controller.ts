@@ -68,7 +68,7 @@ export class ResourcesController {
   ) {
     // ! 这里的 file 已经是保存后的文件信息了，在此处做数据库处理，或者直接返回保存后的文件信息
     // console.log(files.fileContents);
-    return this.resourcesService.uploadFile(files.fileContents, pid);
+    return this.resourcesService.uploadFile(files.fileContents || [], pid);
   }
 
   /**

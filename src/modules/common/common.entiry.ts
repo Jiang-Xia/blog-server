@@ -6,7 +6,7 @@ import {
   BeforeInsert,
   BeforeUpdate,
 } from 'typeorm';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 
 // 基础字段(必须字段)
 export class BaseModel {

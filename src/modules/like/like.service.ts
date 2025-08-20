@@ -21,7 +21,8 @@ export class LikeService {
         throw new NotFoundException('该文章您点赞太过频繁了！');
       }
       if (!LikeDTO.uid) {
-        LikeDTO.id = undefined;
+        // 未登录用户，确保创建新记录
+        LikeDTO.id = undefined as any;
       }
       // 新增
       this.likeRepository.save(LikeDTO);

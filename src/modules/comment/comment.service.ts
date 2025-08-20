@@ -110,7 +110,7 @@ export class CommentService {
     const pagination = getPagination(total, pageSize, page);
     // console.log(list);
     // console.log('pagination', pagination);
-    const rArr = [];
+    const rArr: Array<Promise<any>> = [];
     // 组装多个异步函数查询
     list.forEach((v: any) => {
       rArr.push(this.replyService.findAll(v.id));

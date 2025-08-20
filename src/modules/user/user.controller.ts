@@ -12,7 +12,7 @@ import {
   Res,
   Session,
 } from '@nestjs/common';
-import { Response } from 'express';
+import type { Response, Request } from 'express';
 import {
   ApiTags,
   ApiBody,
@@ -32,9 +32,7 @@ import { UserInfoResponse } from './vo/user-info.vo';
 import { userListVO } from './vo/user-list.vo';
 import * as svgCaptcha from 'svg-captcha';
 
-interface SessionReq extends Request {
-  session: Record<string, any>;
-}
+type SessionReq = Request & { session: Record<string, any> };
 @ApiTags('用户模块')
 @Controller('user')
 export class UserController {
@@ -69,7 +67,7 @@ export class UserController {
     @Session() session: Record<string, any>,
     @Body() registerDTO: RegisterDTO,
   ): Promise<any> {
-    const bool = this.userService.authCodeMatch(session.authCode, registerDTO.authCode);
+    const bool = this.userService.authCodeMatch(session.authCode, registerDTO.authCode || '');
     if (bool) {
       return this.userService.register(registerDTO);
     }

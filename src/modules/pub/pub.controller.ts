@@ -69,18 +69,20 @@ export class PubController {
         throw new HttpException(msg, HttpStatus.INTERNAL_SERVER_ERROR);
       }
     } else if (model === 'deepseek-chat') {
-      const response: any = await openai.beta.chat.completions.stream({
+      const response: any = await openai.chat.completions.create({
         messages,
         model,
         stream,
       });
-      for await (const chunk of response) {
-        res.write(`data: ${JSON.stringify(chunk)}\n\n`);
+      if (stream) {
+        for await (const chunk of response) {
+          res.write(`data: ${JSON.stringify(chunk)}\n\n`);
+        }
+        res.write(`data: [DONE]\n\n`);
+      } else {
+        res.write(`data: ${JSON.stringify(response)}\n\n`);
+        res.write(`data: [DONE]\n\n`);
       }
-      res.write(`data: [DONE]\n\n`); // 完成后发送 DONE 标识
-      // const chatCompletion = await response.finalChatCompletion();
-      // res.write(`data: [DONE]\n\n`);
-      // console.log(chatCompletion);
     }
     res.on('close', () => {
       // console.log('close connection!');

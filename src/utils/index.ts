@@ -2,7 +2,7 @@ import './test';
 // 需要全部导入
 import * as os from 'os';
 import { jwtDecode } from 'jwt-decode';
-import { User } from '@/modules/user/entity/user.entity';
+import { User } from '@/modules/features/user/entity/user.entity';
 import { PaginationType } from '../types';
 import { SelectQueryBuilder } from 'typeorm';
 import { AnyAaaaRecord } from 'dns';

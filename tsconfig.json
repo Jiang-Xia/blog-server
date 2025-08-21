@@ -25,7 +25,7 @@
     "paths": {
       // 路径别名
       "@/*": ["src/*"],
-      "@/auth/*": ["src/modules/auth/*"],
+      "@/auth/*": ["src/modules/security/auth/*"],
     }
   },
   // "include": ["src/**/*.json","src/**/*.ts", "src/**/*.d.ts", "src/**/*.html",  "src/**/*.md","types/*.d.ts"]

@@ -35,29 +35,26 @@
 ```
 blog-server/
 ├── src/                           # 源代码目录
-│   ├── modules/                   # 功能模块目录
-│   │   ├── article/               # 文章管理模块
-│   │   │   ├── dto/               # 数据传输对象
-│   │   │   ├── entity/            # 数据库实体
-│   │   │   ├── interface/         # 接口定义
-│   │   │   └── vo/                # 视图对象
-│   │   ├── user/                  # 用户管理模块
-│   │   │   ├── dto/               # 数据传输对象
-│   │   │   ├── entity/            # 数据库实体
-│   │   │   └── vo/                # 视图对象
-│   │   ├── auth/                  # 认证授权模块
-│   │   ├── admin/                 # 管理后台模块
-│   │   │   └── system/            # 系统管理子模块
-│   │   │       └── entities/      # 系统实体
-│   │   ├── category/              # 分类管理模块
-│   │   ├── tag/                   # 标签管理模块
-│   │   ├── comment/               # 评论管理模块
-│   │   ├── reply/                 # 回复管理模块
-│   │   ├── like/                  # 点赞管理模块
-│   │   ├── msgboard/              # 留言板模块
-│   │   ├── file/                  # 文件管理模块
-│   │   ├── resources/             # 资源管理模块
-│   │   └── pub/                   # 公共接口模块
+│   ├── modules/                   # 业务模块目录（分层管理）
+│   │   ├── core/                  # 基础设施层
+│   │   │   └── redis/             # Redis 全局模块
+│   │   ├── security/              # 安全相关
+│   │   │   ├── auth/              # 认证授权模块
+│   │   │   └── captcha/           # 验证码模块
+│   │   ├── features/              # 业务功能聚合（由 FeaturesModule 管理）
+│   │   │   ├── article/           # 文章管理
+│   │   │   ├── user/              # 用户管理
+│   │   │   ├── admin/             # 管理后台
+│   │   │   │   └── system/        # 系统管理子模块
+│   │   │   ├── category/          # 分类
+│   │   │   ├── tag/               # 标签
+│   │   │   ├── comment/           # 评论
+│   │   │   ├── reply/             # 回复
+│   │   │   ├── like/              # 点赞
+│   │   │   ├── msgboard/          # 留言板
+│   │   │   ├── file/              # 文件
+│   │   │   ├── resources/         # 资源
+│   │   │   └── pub/               # 公共接口
 │   ├── config/                    # 配置文件目录
 │   ├── utils/                     # 工具函数目录
 │   ├── filters/                   # 异常过滤器目录
@@ -87,6 +84,15 @@ blog-server/
 ├── commitlint.config.js           # 提交规范配置
 └── README.md                      # 项目说明文档
 ```
+
+### 🧩 模块管理与装配
+
+- 统一在 `src/modules/registry.ts` 聚合模块，`AppModule` 仅引入 `AllAppModules`。
+- 业务功能由 `FeaturesModule` 统一装配，支持通过环境变量动态启用：
+  - `ENABLED_FEATURES` 为空或未设置时，启用全部 `features` 子模块。
+  - 指定启用（示例）：`ENABLED_FEATURES=ArticleModule,UserModule,CommentModule`。
+- 基础设施：`RedisModule` 为全局模块，提供 `RedisService` 能力。
+- 安全模块：`CaptchaModule` 基于 `svg-captcha` + Redis，提供 `GET /captcha` 获取验证码与 `POST /captcha/verify` 校验接口。
 
 ## 🛠️ 技术栈
 

@@ -46,6 +46,7 @@
     "express-session": "^1.18.2",
     "fast-xml-parser": "^5.2.5",
     "go-get-folder-size": "^0.5.5",
+    "ioredis": "^5.7.0",
     "jwt-decode": "^4.0.0",
     "marked": "^16.2.0",
     "multer": "^2.0.2",

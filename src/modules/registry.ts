@@ -7,6 +7,6 @@ import { FeaturesModule } from './features';
 
 export const CoreModules = [RedisModule];
 export const SecurityModules = [AuthModule, CaptchaModule];
-export const FeatureModules = [FeaturesModule.registerFromEnv()];
+export const FeatureModules = [FeaturesModule.register()];
 
 export const AllAppModules = [...CoreModules, ...SecurityModules, ...FeatureModules];

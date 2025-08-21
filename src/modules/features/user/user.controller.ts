@@ -30,44 +30,48 @@ import { UserService } from './user.service';
 import { TokenResponse } from './vo/token.vo';
 import { UserInfoResponse } from './vo/user-info.vo';
 import { userListVO } from './vo/user-list.vo';
-import * as svgCaptcha from 'svg-captcha';
+import { CaptchaService } from '../../security/captcha/captcha.service';
+import { Config } from '../../../config';
 
 type SessionReq = Request & { session: Record<string, any> };
+
 @ApiTags('用户模块')
 @Controller('user')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private captchaService: CaptchaService,
+  ) {}
 
   //利用svg-captcha生成校验码图片并存储在前端session中
   @ApiOperation({ summary: '验证码生成', description: '验证码' })
   @Get('authCode')
-  createCaptcha(@Req() req: SessionReq, @Res() res: Response) {
-    const captcha = svgCaptcha.create({
-      size: 4, //生成几个验证码
-      fontSize: 50, //文字大小
-      ignoreChars: '0o1i', // 忽略字符
-      noise: 3, //干扰线条
-      width: 100, //宽度
-      height: 48, //高度
-      background: 'transparent', //背景颜色 #cc9966
-    });
-    req.session.authCodeCount++;
-    console.log(req.session.authCodeCount);
-    req.session.authCode = captcha.text; //存储验证码记录到session
-    res.type('image/svg+xml');
-    // res.send();
-    res.end(captcha.data);
+  async createCaptcha(@Req() req: SessionReq, @Res() res: Response) {
+    try {
+      const captcha = await this.captchaService.create();
+      // 将验证码ID设置到Cookie中，方便后续验证
+      res.cookie('captcha_id', captcha.id, {
+        httpOnly: true, // 防止 XSS 攻击
+        maxAge: 120000, // 2分钟
+        sameSite: 'strict', // 防止 CSRF 攻击
+        secure: !Config.serveConfig.isDev, // 生产环境需要设置为true
+        path: '/',
+      });
+      res.setHeader('Content-Type', 'image/svg+xml');
+      res.setHeader('Cache-Control', 'no-cache, no-store');
+      res.send(captcha.svg);
+    } catch (error) {
+      res.status(500).send('生成验证码失败');
+    }
   }
 
   @ApiBody({ type: RegisterDTO })
   @ApiOkResponse({ description: '注册', type: UserInfoResponse })
   @ApiOperation({ summary: '账号注册', description: '注册' })
   @Post('register')
-  async register(
-    @Session() session: Record<string, any>,
-    @Body() registerDTO: RegisterDTO,
-  ): Promise<any> {
-    const bool = this.userService.authCodeMatch(session.authCode, registerDTO.authCode || '');
+  async register(@Req() req: Request, @Body() registerDTO: RegisterDTO): Promise<any> {
+    const captchaId = req.cookies?.captcha_id; // 从Cookie中获取验证码ID
+    const bool = await this.captchaService.verify(captchaId, registerDTO.authCode || '');
     if (bool) {
       return this.userService.register(registerDTO);
     }
@@ -77,9 +81,9 @@ export class UserController {
   @ApiOkResponse({ description: '登陆', type: TokenResponse })
   @ApiOperation({ summary: '账号登陆', description: '登陆' })
   @Post('login')
-  async login(@Req() req: SessionReq, @Body() loginDTO: LoginDTO): Promise<any> {
-    // console.log(req.session, { loginAuthCode: loginDTO.authCode });
-    const bool = this.userService.authCodeMatch(req.session?.authCode, loginDTO.authCode);
+  async login(@Req() req: Request, @Body() loginDTO: LoginDTO): Promise<any> {
+    const captchaId = req.cookies?.captcha_id; // 从Cookie中获取验证码ID
+    const bool = await this.captchaService.verify(captchaId, loginDTO.authCode);
     if (bool) {
       return this.userService.login(loginDTO);
     }

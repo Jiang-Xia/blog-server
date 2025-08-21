@@ -4,16 +4,16 @@ import { CaptchaService } from './captcha.service';
 
 @Controller('captcha')
 export class CaptchaController {
-	constructor(private readonly service: CaptchaService) {}
+  constructor(private readonly service: CaptchaService) {}
 
-	@Get()
-	async getCaptcha() {
-		return this.service.create();
-	}
+  @Get()
+  async getCaptcha() {
+    return this.service.create();
+  }
 
-	@Post('verify')
-	async verify(@Body() body: { id: string; answer: string }) {
-		const ok = await this.service.verify(body.id, body.answer);
-		return { ok };
-	}
+  @Post('verify')
+  async verify(@Body() body: { id: string; answer: string }) {
+    const ok = await this.service.verify(body.id, body.answer);
+    return { ok };
+  }
 }

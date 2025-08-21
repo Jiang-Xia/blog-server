@@ -6,6 +6,7 @@ import { Logger } from '@nestjs/common';
  */
 
 type ConfigInterface = {
+  redisConfig: any;
   databaseConfig: any;
   serveConfig: any;
   accountConfig: any;
@@ -13,6 +14,7 @@ type ConfigInterface = {
   appConfig: any;
 };
 export let Config: ConfigInterface = {
+  redisConfig: {},
   databaseConfig: {},
   serveConfig: {},
   accountConfig: {},
@@ -23,6 +25,13 @@ export const InitConfig = () => {
   const conf = new ConfigService();
   const env = process.env.NODE_ENV;
   Logger.warn(`当前环境： ${env} ${conf.get('app_desc')}`);
+  /* redis 配置 */
+  const redisConfig: any = {
+    host: conf.get('redis_host'),
+    port: parseInt(conf.get('redis_port') as string),
+    db: parseInt(conf.get('redis_db') as string),
+  };
+  /* 数据库配置 */
   const databaseConfig: any = {
     type: conf.get('db_type'),
     host: conf.get('db_host'),
@@ -60,6 +69,7 @@ export const InitConfig = () => {
     gaoDeMapApiKey: conf.get('app_gaoDeMapApiKey'),
   };
   Config = {
+    redisConfig,
     databaseConfig,
     serveConfig,
     accountConfig,

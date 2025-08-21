@@ -5,9 +5,9 @@ import { CaptchaService } from './captcha.service';
 import { RedisModule } from '../../core/redis/redis.module';
 
 @Module({
-	imports: [RedisModule],
-	controllers: [CaptchaController],
-	providers: [CaptchaService],
-	exports: [CaptchaService],
+  imports: [RedisModule],
+  controllers: [CaptchaController],
+  providers: [CaptchaService],
+  exports: [CaptchaService],
 })
 export class CaptchaModule {}

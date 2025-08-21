@@ -30,7 +30,7 @@ const envFilePath = `.env.${environment}`;
       },
     }),
     ScheduleModule.forRoot(),
-    ...AllAppModules
+    ...AllAppModules,
   ],
   controllers: [AppController],
   providers: [AppService],

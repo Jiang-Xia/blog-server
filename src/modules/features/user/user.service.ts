@@ -12,7 +12,6 @@ import {
   Injectable,
   NotFoundException,
   UnauthorizedException,
-  InternalServerErrorException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { encryptPassword, makeSalt, rsaDecrypt } from 'src/utils/cryptogram.util';
@@ -279,17 +278,6 @@ export class UserService {
       return true;
     } catch (e) {
       throw new HttpException('删除失败', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
-  // 校验验证码是否一致
-  authCodeMatch(sesssionCode: string, bodyCode: string) {
-    const bool = bodyCode?.toLocaleUpperCase() === sesssionCode?.toLocaleUpperCase();
-    // console.log({ sesssionCode, bodyCode, bool });
-    if (bool) {
-      return bool;
-    } else {
-      throw new InternalServerErrorException('验证码错误');
     }
   }
 }

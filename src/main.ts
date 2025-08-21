@@ -18,9 +18,8 @@ import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { text, json } from 'body-parser';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import session from 'express-session';
-import { SessionOptions } from 'express-session';
 import { GatewagMiddleware } from './middleware/gateway.middleware';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   Logger.warn('开始初始化配置==================>');
@@ -50,26 +49,7 @@ async function bootstrap() {
   app.use(json({ limit: '5mb' })); // 统一配置http传输设置 解析json
   // app.use(text({ limit: '5mb', type: 'text/xml' })); // json和xml都可以解析
   app.use(GatewagMiddleware); // 需放在body-parser插件后面
-  // 配置session
-  const sess: SessionOptions = {
-    secret: 'jx123!456jx', // 密钥
-    name: 'blog.connect.sid', //返回客户端(cookie里面)的 key 的名称 默认为connect.sid
-    resave: false, //强制保存
-    saveUninitialized: true,
-    rolling: false, //每次请求重新设置cookie 过期时间
-    cookie: {
-      // 5分钟
-      maxAge: 300000,
-    },
-  };
-  app.use(session(sess));
-  // 自定义插件
-  app.use(function (req: any, res: any, next: any) {
-    if (!req.session.authCodeCount) {
-      req.session.authCodeCount = 0;
-    }
-    next();
-  });
+  app.use(cookieParser());
   // 设置api前缀
   app.setGlobalPrefix(serveConfig.apiPath);
 

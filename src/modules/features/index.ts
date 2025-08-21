@@ -12,5 +12,3 @@ export { ReplyModule } from './reply/reply.module';
 export { MsgboardModule } from './msgboard/msgboard.module';
 export { UserModule } from './user/user.module';
 export { AdminModule } from './admin/admin.module';
-
-

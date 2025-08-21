@@ -37,35 +37,4 @@ export class FeaturesModule {
       exports: enabled,
     };
   }
-
-  static registerFromEnv(): DynamicModule {
-    const env = process.env.ENABLED_FEATURES || '';
-    const names = env
-      .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean);
-
-    const mapping: Record<string, any> = {
-      ArticleModule,
-      CategoryModule,
-      TagModule,
-      CommentModule,
-      LikeModule,
-      ResourcesModule,
-      FileModule,
-      PubModule,
-      ReplyModule,
-      MsgboardModule,
-      UserModule,
-      AdminModule,
-    };
-
-    const selected = names
-      .map((n) => mapping[n])
-      .filter(Boolean);
-
-    return this.register(selected);
-  }
 }
-
-

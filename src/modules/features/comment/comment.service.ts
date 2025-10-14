@@ -90,17 +90,15 @@ export class CommentService {
   // }
 
   // 左联查询
-  async findAll(id: string) {
+  async findAll(id: string, page = 1, pageSize = 100, sort: 'DESC' | 'ASC' = 'DESC') {
     const qb = this.commentRepository.createQueryBuilder('comment');
     // 联表查询（会自动把关联的字段筛选出来）
     qb.leftJoinAndSelect('comment.user', 'user');
     qb.leftJoinAndSelect('comment.article', 'article');
     // 筛选当前文章的评论
     qb.where('article.id = :id', { id });
-    qb.addOrderBy('comment.createTime', 'ASC').printSql();
+    qb.addOrderBy('comment.createTime', sort).printSql();
     // console.log(list);
-    const page = 1;
-    const pageSize = 100; // 写死获取第一页，一页一百条
     const getList = qb
       .skip((page - 1) * pageSize)
       .take(pageSize)

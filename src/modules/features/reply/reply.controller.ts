@@ -27,7 +27,12 @@ export class ReplyController {
 
   // 获取对应文章所有评论
   @Get('findAll')
-  async getArticleReplys(@Query('articleId') id: string) {
-    return await this.replyService.findAll(id);
+  async getArticleReplys(
+    @Query('articleId') id: string,
+    @Query('page') page: string = '1',
+    @Query('pageSize') pageSize: string = '100',
+    @Query('sort') sort: 'DESC' | 'ASC' = 'DESC',
+  ) {
+    return await this.replyService.findAll(id, Number(page), Number(pageSize), sort);
   }
 }

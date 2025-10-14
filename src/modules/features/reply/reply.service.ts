@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserService } from '../user/user.service';
 import { Reply } from './reply.entity';
+import { getPagination } from '@/utils';
 @Injectable()
 export class ReplyService {
   constructor(
@@ -22,11 +23,16 @@ export class ReplyService {
     //
   }
   // 根据评论id查找所有的回复
-  async findAll(id: string) {
+  async findAll(id: string, page = 1, pageSize = 100, sort: 'DESC' | 'ASC' = 'DESC') {
     const qb = this.replyRepository.createQueryBuilder('reply');
     qb.where('reply.parentId = :id', { id });
-    const getList = qb.getManyAndCount();
+    qb.addOrderBy('reply.createTime', sort).printSql();
+    const getList = qb
+      .skip((page - 1) * pageSize)
+      .take(pageSize)
+      .getManyAndCount();
     const [list, total] = await getList;
+    const pagination = getPagination(total, pageSize, page);
     const uArr: Array<Promise<any>> = []; // 组装promise任务
     const tArr: Array<Promise<any>> = [];
     // 组装多个异步函数查询
@@ -55,6 +61,7 @@ export class ReplyService {
     return {
       list: data,
       total,
+      pagination,
     };
   }
 }

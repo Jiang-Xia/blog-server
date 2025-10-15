@@ -96,7 +96,9 @@ export class CommentService {
     qb.leftJoinAndSelect('comment.user', 'user');
     qb.leftJoinAndSelect('comment.article', 'article');
     // 筛选当前文章的评论
-    qb.where('article.id = :id', { id });
+    if (id) {
+      qb.where('article.id = :id', { id });
+    }
     qb.addOrderBy('comment.createTime', sort).printSql();
     // console.log(list);
     const getList = qb
@@ -120,6 +122,7 @@ export class CommentService {
       v.userInfo = setUserInfo(v.user); // 简洁返回用户信息
       v.replys = replys[i].list; // 所有回复列表
       v.allReplyCount = replys[i].total; // 一个父级评论下的所有回复数
+      v.articleId = v.article.id;
       delete v.user;
       delete v.article;
       return v;

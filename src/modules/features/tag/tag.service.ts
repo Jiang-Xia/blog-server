@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getRandomClor, likeQeuryParams } from 'src/utils';
 import { Repository } from 'typeorm';
@@ -117,11 +117,11 @@ export class TagService {
    * @param id
    */
   async deleteById(id) {
+    const tag = await this.tagRepository.findOne({ where: { id } });
+    if (!tag) {
+      throw new HttpException('标签不存在', HttpStatus.NOT_FOUND);
+    }
     try {
-      const tag = await this.tagRepository.findOne({ where: { id } });
-      if (!tag) {
-        throw new HttpException('标签不存在', HttpStatus.NOT_FOUND);
-      }
       await this.tagRepository.remove(tag);
       return true;
     } catch (e) {

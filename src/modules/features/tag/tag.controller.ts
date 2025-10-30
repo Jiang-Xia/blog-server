@@ -65,7 +65,7 @@ export class TagController {
    * @param tag
    */
   @Patch(':id')
-  @Roles(['admin'])
+  @Roles(['admin', 'super'])
   @UseGuards(JwtAuthGuard)
   updateById(@Param('id') id: string, @Body() tag: Tag) {
     return this.tagService.updateById(id, tag);
@@ -76,7 +76,7 @@ export class TagController {
    * @param id
    */
   @Delete(':id')
-  @Roles(['admin'])
+  @Roles(['admin', 'super'])
   @UseGuards(JwtAuthGuard)
   deleteById(@Param('id') id: string) {
     return this.tagService.deleteById(id);

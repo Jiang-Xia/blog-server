@@ -26,6 +26,9 @@ import { JwtAuthGuard } from '../../security/auth/jwt-auth.guard';
 import { Roles } from '../../security/auth/roles.guard';
 import { LoginDTO } from './dto/login.dto';
 import { RegisterDTO, resetPassword } from './dto/register.dto';
+import { EmailRegisterDTO } from './dto/email-register.dto';
+import { EmailLoginDTO } from './dto/email-login.dto';
+import { SendEmailCodeDTO } from './dto/send-email-code.dto';
 import { UserService } from './user.service';
 import { TokenResponse } from './vo/token.vo';
 import { UserInfoResponse } from './vo/user-info.vo';
@@ -144,5 +147,30 @@ export class UserController {
   @Delete()
   deleteById(@Query('id') id) {
     return this.userService.deleteById(id);
+  }
+
+  // ==================== 邮箱相关接口 ====================
+
+  @ApiBody({ type: SendEmailCodeDTO })
+  @Post('email/sendCode')
+  @ApiOperation({ summary: '发送邮箱验证码', description: '发送邮箱验证码' })
+  async sendEmailCode(@Body() sendEmailCodeDTO: SendEmailCodeDTO): Promise<any> {
+    return this.userService.sendEmailCode(sendEmailCodeDTO);
+  }
+
+  @ApiBody({ type: EmailRegisterDTO })
+  @ApiOkResponse({ description: '邮箱注册', type: UserInfoResponse })
+  @ApiOperation({ summary: '邮箱注册', description: '通过邮箱和验证码注册账号' })
+  @Post('email/register')
+  async emailRegister(@Body() emailRegisterDTO: EmailRegisterDTO): Promise<any> {
+    return this.userService.emailRegister(emailRegisterDTO);
+  }
+
+  @ApiBody({ type: EmailLoginDTO })
+  @ApiOkResponse({ description: '邮箱登录', type: TokenResponse })
+  @ApiOperation({ summary: '邮箱登录', description: '通过邮箱和验证码登录账号' })
+  @Post('email/login')
+  async emailLogin(@Body() emailLoginDTO: EmailLoginDTO): Promise<any> {
+    return this.userService.emailLogin(emailLoginDTO);
   }
 }

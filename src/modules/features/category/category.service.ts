@@ -101,11 +101,11 @@ export class CategoryService {
    * @param id
    */
   async deleteById(id) {
+    const category = await this.categoryRepository.findOne({ where: { id } });
+    if (!category) {
+      throw new HttpException('分类不存在', HttpStatus.NOT_FOUND);
+    }
     try {
-      const category = await this.categoryRepository.findOne({ where: { id } });
-      if (!category) {
-        throw new HttpException('分类不存在', HttpStatus.NOT_FOUND);
-      }
       await this.categoryRepository.remove(category);
       return true;
     } catch (e) {

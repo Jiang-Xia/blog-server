@@ -16,6 +16,17 @@ import { Article } from '../../article/entity/article.entity';
 import { Comment } from '../../comment/comment.entity';
 import { Role } from '@/modules/features/admin/system/entities/role.entity';
 
+export enum UserStatus {
+  LOCKED = 'locked',
+  ACTIVE = 'active',
+}
+
+export enum UserRole {
+  SUPER = 'super',
+  ADMIN = 'admin',
+  AUTHOR = 'author',
+}
+
 @Entity()
 export class User {
   /**
@@ -60,14 +71,14 @@ export class User {
    * author 可以增删改查文章，评论，回复。
    */
   @Column('simple-enum', {
-    enum: ['super', 'admin', 'author'],
-    default: 'author',
+    enum: UserRole,
+    default: UserRole.AUTHOR,
   })
-  role: string;
+  role: UserRole;
 
   /// 用户状态
-  @Column('simple-enum', { enum: ['locked', 'active'], default: 'active' })
-  status: string;
+  @Column('simple-enum', { enum: UserStatus, default: UserStatus.ACTIVE })
+  status: UserStatus;
 
   // 昵称
   @Column('text')
@@ -76,6 +87,11 @@ export class User {
   // 手机号
   @Column('text')
   mobile: string;
+
+  // 邮箱
+  @Column('varchar', { nullable: true, unique: true })
+  @ApiProperty({ description: '邮箱地址', example: 'user@example.com' })
+  email?: string;
 
   // 加密后的密码
   @Column('text', { select: false /* 默认查询不选择的，需要时 andSelect */ })

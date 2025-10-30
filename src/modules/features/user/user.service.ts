@@ -2,9 +2,9 @@
  * @Author: 酱
  * @LastEditors: jx
  * @Date: 2021-11-16 16:52:15
- * @LastEditTime: 2024-04-05 23:17:08
+ * @LastEditTime: 2025-10-30 10:00:54
  * @Description:
- * @FilePath: \blog-server\src\modules\user\user.service.ts
+ * @FilePath: \blog-server\src\modules\features\user\user.service.ts
  */
 import {
   HttpException,
@@ -18,17 +18,23 @@ import { encryptPassword, makeSalt, rsaDecrypt } from 'src/utils/cryptogram.util
 import { Repository } from 'typeorm';
 import { RegisterDTO } from './dto/register.dto';
 import { LoginDTO } from './dto/login.dto';
-import { User } from './entity/user.entity';
+import { User, UserStatus, UserRole } from './entity/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { getPagination } from 'src/utils';
 import { userListVO } from './vo/user-list.vo';
 import { Config } from 'src/config';
+import { EmailService } from '../email/email.service';
+import { EmailRegisterDTO } from './dto/email-register.dto';
+import { EmailLoginDTO } from './dto/email-login.dto';
+import { SendEmailCodeDTO, EmailCodeType } from './dto/send-email-code.dto';
+
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly jwtService: JwtService,
+    private readonly emailService: EmailService,
   ) {
     /* class 初始化时会执行 constructor*/
     // 初始化账户
@@ -77,7 +83,7 @@ export class UserService {
     newUser.salt = salt;
     newUser.avatar = avatar;
     if (role && init) {
-      newUser.role = role;
+      newUser.role = role as UserRole;
     }
     return await this.userRepository.save(newUser);
   }
@@ -97,7 +103,7 @@ export class UserService {
 
     if (!user) {
       throw new NotFoundException('用户不存在');
-    } else if (user.status === 'locked') {
+    } else if (user.status === UserStatus.LOCKED) {
       throw new UnauthorizedException('账号已被锁定！');
     }
     // console.log({ user });
@@ -279,5 +285,146 @@ export class UserService {
     } catch (e) {
       throw new HttpException('删除失败', HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  /**
+   * 发送邮箱验证码
+   * @param sendEmailCodeDTO 发送验证码DTO
+   */
+  async sendEmailCode(sendEmailCodeDTO: SendEmailCodeDTO): Promise<any> {
+    const { email, type } = sendEmailCodeDTO;
+
+    // 检查发送频率
+    await this.emailService.checkSendFrequency(email, type);
+
+    // 如果是注册验证码，检查邮箱是否已存在
+    if (type === EmailCodeType.REGISTER) {
+      const existUser = await this.userRepository.findOne({ where: { email } });
+      if (existUser) {
+        throw new HttpException('该邮箱已被注册', HttpStatus.BAD_REQUEST);
+      }
+    }
+
+    // 如果是登录或重置密码验证码，检查邮箱是否存在
+    if (type === EmailCodeType.LOGIN || type === EmailCodeType.RESET) {
+      const existUser = await this.userRepository.findOne({ where: { email } });
+      if (!existUser) {
+        throw new HttpException('该邮箱尚未注册', HttpStatus.BAD_REQUEST);
+      }
+    }
+
+    // 发送验证码
+    await this.emailService.sendVerificationCode(email, type);
+
+    return {
+      message: '验证码发送成功',
+    };
+  }
+
+  /**
+   * 校验邮箱注册信息
+   * @param emailRegisterDTO 邮箱注册DTO
+   */
+  async checkEmailRegisterForm(emailRegisterDTO: EmailRegisterDTO): Promise<any> {
+    if (emailRegisterDTO.password !== emailRegisterDTO.passwordRepeat) {
+      throw new HttpException('两次输入的密码不一致，请检查', HttpStatus.BAD_REQUEST);
+    }
+
+    const { email } = emailRegisterDTO;
+    const hasUser = await this.userRepository.findOne({ where: { email } });
+    if (hasUser) {
+      throw new HttpException('该邮箱已被注册', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  /**
+   * 邮箱注册
+   * @param emailRegisterDTO 邮箱注册DTO
+   */
+  async emailRegister(emailRegisterDTO: EmailRegisterDTO): Promise<any> {
+    // 验证邮箱验证码
+    await this.emailService.verifyCode(
+      emailRegisterDTO.email,
+      emailRegisterDTO.verificationCode,
+      'register',
+    );
+
+    // 校验注册信息
+    await this.checkEmailRegisterForm(emailRegisterDTO);
+
+    // 创建用户
+    const { nickname, password, email, role, avatar } = emailRegisterDTO;
+    const salt = makeSalt(); // 制作密码盐
+    const hashPassword = encryptPassword(password, salt); // 加密密码
+
+    const newUser: User = new User();
+    newUser.nickname = nickname;
+    newUser.email = email;
+    newUser.mobile = ''; // 邮箱注册的用户手机号为空
+    newUser.password = hashPassword;
+    newUser.salt = salt;
+    newUser.avatar = avatar;
+    if (role) {
+      newUser.role = role as UserRole;
+    }
+
+    return await this.userRepository.save(newUser);
+  }
+
+  /**
+   * 校验邮箱登录用户
+   * @param emailLoginDTO 邮箱登录DTO
+   */
+  async checkEmailLoginForm(emailLoginDTO: EmailLoginDTO): Promise<any> {
+    const { email } = emailLoginDTO;
+    // 解密密码
+    const password = rsaDecrypt(emailLoginDTO.password);
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .addSelect('user.salt')
+      .addSelect('user.password')
+      .where('user.email = :email', { email })
+      .getOne();
+
+    if (!user) {
+      throw new HttpException('用户不存在', HttpStatus.NOT_FOUND);
+    } else if (user.status === UserStatus.LOCKED) {
+      throw new HttpException('账号已被锁定！', HttpStatus.UNAUTHORIZED);
+    }
+
+    const { password: dbPassword, salt } = user;
+    if (!User.compactPass(password, dbPassword, salt)) {
+      throw new HttpException('密码错误', HttpStatus.BAD_REQUEST);
+    }
+
+    return user;
+  }
+
+  /**
+   * 邮箱登录
+   * @param emailLoginDTO 邮箱登录DTO
+   */
+  async emailLogin(emailLoginDTO: EmailLoginDTO): Promise<any> {
+    // 验证邮箱验证码
+    await this.emailService.verifyCode(
+      emailLoginDTO.email,
+      emailLoginDTO.verificationCode,
+      'login',
+    );
+
+    // 校验用户信息
+    const user = await this.checkEmailLoginForm(emailLoginDTO);
+
+    // 密码和加盐不返回
+    delete user.password;
+    delete user.salt;
+
+    const data = await this.certificate(user);
+    return {
+      info: {
+        ...data,
+        user,
+      },
+    };
   }
 }

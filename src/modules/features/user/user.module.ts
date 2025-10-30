@@ -5,6 +5,7 @@ import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { AuthModule } from '../../security/auth/auth.module';
 import { CaptchaModule } from '../../security/captcha/captcha.module';
+import { EmailModule } from '../email/email.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { CaptchaModule } from '../../security/captcha/captcha.module';
     // https://docs.nestjs.cn/8/fundamentals?id=%e5%be%aa%e7%8e%af%e4%be%9d%e8%b5%96
     forwardRef(() => AuthModule),
     CaptchaModule,
+    EmailModule,
   ],
   controllers: [UserController],
   // auth使用到user依赖，需要导出

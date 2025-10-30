@@ -56,7 +56,7 @@ export class CategoryController {
    * @param category
    */
   @Patch(':id')
-  @Roles(['admin'])
+  @Roles(['admin', 'super'])
   @UseGuards(JwtAuthGuard)
   updateById(@Param('id') id: string, @Body() category: Category) {
     return this.categoryService.updateById(id, category);

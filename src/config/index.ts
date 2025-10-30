@@ -67,6 +67,10 @@ export const InitConfig = () => {
     openMsgLog: conf.get('app_openMsgLog') === 'true',
     closeMsgBodyLog: conf.get('app_closeMsgBodyLog') === 'true',
     gaoDeMapApiKey: conf.get('app_gaoDeMapApiKey'),
+    emailHost: conf.get('app_emailHost'),
+    emailPort: parseInt(conf.get('app_emailPort') as string),
+    emailUser: conf.get('app_emailUser'),
+    emailPass: conf.get('app_emailPass'),
   };
   Config = {
     redisConfig,

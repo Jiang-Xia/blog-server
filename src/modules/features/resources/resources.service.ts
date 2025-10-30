@@ -77,7 +77,7 @@ export class ResourcesService {
     let data: any = await this.getDaiDuTongJiData(query);
     // token 过期 刷新token
     if (data.error_code === 110 || data.error_code === 111) {
-      console.log('data1', data);
+      // console.log('data1', data);
       await this.refreshAccessToken();
       // 重新请求数据
       data = await this.getDaiDuTongJiData(query);
@@ -105,7 +105,7 @@ export class ResourcesService {
             map((res) => res.data),
             catchError((e) => {
               reject(e);
-              throw new HttpException(`刷新access_token错误`, e);
+              throw new HttpException(`刷新access_token错误`, HttpStatus.INTERNAL_SERVER_ERROR);
             }),
           )
           .subscribe({
@@ -130,7 +130,7 @@ export class ResourcesService {
               //   name: err.name,
               //   err: err,
               // }
-              console.log('刷新token失败百度响应信息: ', err.status.response.data);
+              console.log('刷新token失败百度响应信息: ', 'err.status.response.data');
               // console.log('HTTP Error', err);
             },
           });
@@ -161,7 +161,7 @@ export class ResourcesService {
           next: (data) => {
             resolve(data);
           },
-          error: (error) => console.log('HTTP Error', error),
+          error: (error) => console.log('HTTP Error', HttpStatus.INTERNAL_SERVER_ERROR),
         });
     });
   }

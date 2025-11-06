@@ -12,6 +12,7 @@ type ConfigInterface = {
   accountConfig: any;
   fileConfig: any;
   appConfig: any;
+  payConfig: any;
 };
 export let Config: ConfigInterface = {
   redisConfig: {},
@@ -20,6 +21,7 @@ export let Config: ConfigInterface = {
   accountConfig: {},
   fileConfig: {},
   appConfig: {},
+  payConfig: {},
 };
 export const InitConfig = () => {
   const conf = new ConfigService();
@@ -72,6 +74,17 @@ export const InitConfig = () => {
     emailUser: conf.get('app_emailUser'),
     emailPass: conf.get('app_emailPass'),
   };
+  // 支付宝配置（从 .env 读取 alipay* 小驼峰键）
+  const payConfig = {
+    alipayAppId: conf.get('pay_alipayAppId'),
+    alipayPrivateKey: conf.get('pay_alipayPrivateKey'),
+    alipayPublicKey: conf.get('pay_alipayPublicKey'),
+    alipayGateway: conf.get('pay_alipayGateway'),
+    alipaySignType: conf.get('pay_alipaySignType'),
+    alipayTimeout: parseInt(conf.get('pay_alipayTimeout') as string),
+    alipayNotifyUrl: conf.get('pay_alipayNotifyUrl'),
+    alipayReturnUrl: conf.get('pay_alipayReturnUrl'),
+  };
   Config = {
     redisConfig,
     databaseConfig,
@@ -79,6 +92,7 @@ export const InitConfig = () => {
     accountConfig,
     fileConfig,
     appConfig,
+    payConfig,
   };
   console.warn(Config);
   return Config;

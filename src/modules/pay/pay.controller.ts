@@ -7,6 +7,7 @@ import { TradeQueryDto } from './dto/trade-query.dto';
 import { TradeRefundDto } from './dto/trade-refund.dto';
 import { TradeCloseDto } from './dto/trade-close.dto';
 import { GetOpenIdDto } from './dto/get-openid.dto';
+import { H5OpenMiniDto } from './dto/h5-open-mini.dto';
 
 @ApiTags('支付')
 @Controller('pay')
@@ -41,6 +42,12 @@ export class PayController {
   @Post('openid')
   async getOpenId(@Body() dto: GetOpenIdDto) {
     return await this.payService.getOpenIdByCode(dto);
+  }
+
+  @ApiOperation({ summary: '生成 H5 拉起支付宝小程序页面链接' })
+  @Post('h5-open-mini')
+  async buildH5OpenMiniUrl(@Body() dto: H5OpenMiniDto) {
+    return this.payService.buildH5OpenMiniUrl(dto);
   }
 }
 

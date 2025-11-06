@@ -7,6 +7,7 @@ import { TradeQueryDto } from './dto/trade-query.dto';
 import { TradeRefundDto } from './dto/trade-refund.dto';
 import { TradeCloseDto } from './dto/trade-close.dto';
 import { GetOpenIdDto } from './dto/get-openid.dto';
+import { H5OpenMiniDto } from './dto/h5-open-mini.dto';
 
 @Injectable()
 export class PayService {
@@ -54,6 +55,20 @@ export class PayService {
       code: dto.code,
     });
     return result;
+  }
+
+  /**
+   * 生成在 H5 中拉起支付宝小程序特定页面的链接
+   */
+  buildH5OpenMiniUrl(dto: H5OpenMiniDto) {
+    const configuredAppId = Config.payConfig.alipayAppId;
+    const appId = dto.appId || configuredAppId;
+    const page = dto.page?.startsWith('/') ? dto.page.slice(1) : dto.page;
+    const queryString = dto.query ? new URLSearchParams(dto.query as any).toString() : '';
+    const pageParam = queryString ? `${page}?${queryString}` : page;
+    const scheme = `alipays://platformapi/startapp?appId=${encodeURIComponent(appId)}${pageParam ? `&page=${encodeURIComponent(pageParam)}` : ''}`;
+    const universalLink = `https://render.alipay.com/p/s/i?scheme=${encodeURIComponent(scheme)}`;
+    return { scheme, universalLink };
   }
 }
 

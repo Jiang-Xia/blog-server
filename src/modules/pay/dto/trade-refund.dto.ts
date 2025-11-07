@@ -27,5 +27,3 @@ export class TradeRefundDto {
   @IsString()
   out_request_no?: string;
 }
-
-

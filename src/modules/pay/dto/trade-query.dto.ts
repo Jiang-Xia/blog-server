@@ -12,5 +12,3 @@ export class TradeQueryDto {
   @IsString()
   trade_no?: string;
 }
-
-

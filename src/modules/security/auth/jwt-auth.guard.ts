@@ -6,7 +6,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { User } from '../../features/user/entity/user.entity';
+import { User, UserStatus } from '../../features/user/entity/user.entity';
 import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { RolesGuard, Roles } from './roles.guard';
 
@@ -29,7 +29,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     // console.log('handleRequest-user', user, err);
     if (err || !user) {
       throw new UnauthorizedException('身份验证失败');
-    } else if (user.status === 'locked') {
+    } else if (user.status === UserStatus.ACTIVE) {
       throw new UnauthorizedException('账号已被锁定！');
     }
     return user;

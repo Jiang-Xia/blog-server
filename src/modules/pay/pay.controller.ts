@@ -17,12 +17,14 @@ export class PayController {
   @ApiOperation({ summary: '交易创建 alipay.trade.create' })
   @Post('trade/create')
   async tradeCreate(@Body() dto: TradeCreateDto) {
+    // console.log('TradeCreateDto', dto);
     return await this.payService.tradeCreate(dto);
   }
 
   @ApiOperation({ summary: '交易查询 alipay.trade.query' })
   @Get('trade/query')
   async tradeQuery(@Query() dto: TradeQueryDto) {
+    // console.log('TradeQueryDto', dto);
     return await this.payService.tradeQuery(dto);
   }
 
@@ -50,5 +52,3 @@ export class PayController {
     return this.payService.buildH5OpenMiniUrl(dto);
   }
 }
-
-

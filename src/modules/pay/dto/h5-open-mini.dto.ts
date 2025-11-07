@@ -16,10 +16,8 @@ export class H5OpenMiniDto {
   @IsString()
   appId?: string;
 
-  @ApiPropertyOptional({ description: '微信或者支付宝',default: 'alipay',example: 'alipay' })
+  @ApiPropertyOptional({ description: '微信或者支付宝', default: 'alipay', example: 'alipay' })
   @IsNotEmpty()
   @IsString()
-  type: string = 'alipay';  
+  type: string = 'alipay';
 }
-
-

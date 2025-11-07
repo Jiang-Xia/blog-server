@@ -7,10 +7,12 @@ export class GetOpenIdDto {
   @IsString()
   code: string;
 
-  @ApiProperty({ description: '支付宝小程序获取的授权码code', example: 'alipay',default: 'alipay' })
+  @ApiProperty({
+    description: '支付宝小程序获取的授权码code',
+    example: 'alipay',
+    default: 'alipay',
+  })
   @IsNotEmpty()
   @IsString()
   type: string = 'alipay';
-  
 }
-

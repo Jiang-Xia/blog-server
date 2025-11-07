@@ -12,5 +12,3 @@ export class TradeCloseDto {
   @IsString()
   trade_no?: string;
 }
-
-

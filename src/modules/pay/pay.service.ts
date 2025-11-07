@@ -30,7 +30,7 @@ export class PayService {
   }
 
   async tradeQuery(dto: TradeQueryDto) {
-    const result = await this.sdk.exec('alipay.trade.query', { bizContent: dto });
+    const result = await this.sdk.exec('alipay.trade.query', { bizContent: { ...dto } });
     return result;
   }
 
@@ -66,10 +66,9 @@ export class PayService {
     const page = dto.page?.startsWith('/') ? dto.page.slice(1) : dto.page;
     const queryString = dto.query ? new URLSearchParams(dto.query as any).toString() : '';
     const pageParam = queryString ? `${page}?${queryString}` : page;
+    // 页面参数需要需要再page上面，文档写的query参数只是小程序启动参数
     const scheme = `alipays://platformapi/startapp?appId=${encodeURIComponent(appId)}${pageParam ? `&page=${encodeURIComponent(pageParam)}` : ''}`;
     const universalLink = `https://render.alipay.com/p/s/i?scheme=${encodeURIComponent(scheme)}`;
     return { scheme, universalLink };
   }
 }
-
-

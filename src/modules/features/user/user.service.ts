@@ -61,7 +61,7 @@ export class UserService {
     const { mobile } = registerDTO;
     const hasUser = await this.userRepository.findOne({ where: { mobile } });
     if (hasUser) {
-      throw new NotFoundException('用户已存在');
+      throw new NotFoundException('账号已存在,建议使用手机号注册');
     }
   }
 
@@ -79,6 +79,7 @@ export class UserService {
     const newUser: User = new User();
     newUser.nickname = nickname;
     newUser.mobile = mobile;
+    newUser.username = mobile;
     newUser.password = hashPassword;
     newUser.salt = salt;
     newUser.avatar = avatar;
@@ -92,17 +93,17 @@ export class UserService {
     const { mobile } = loginDTO;
     // 解密密码
     const password = rsaDecrypt(loginDTO.password);
-    const user = await this.userRepository
+    const sql = this.userRepository
       .createQueryBuilder('user')
       .addSelect('user.salt')
       .addSelect('user.password')
-      .where('user.mobile = :mobile', { mobile })
-      .getOne();
+      .andWhere('user.mobile = :mobile', { mobile });
+    const user = await sql.getOne();
 
     // console.log('用户信息:', { user });
 
     if (!user) {
-      throw new NotFoundException('用户不存在');
+      throw new NotFoundException('账号不存在');
     } else if (user.status === UserStatus.LOCKED) {
       throw new UnauthorizedException('账号已被锁定！');
     }
@@ -426,5 +427,30 @@ export class UserService {
         user,
       },
     };
+  }
+
+  /**
+   * 根据GitHub ID查找用户
+   * @param githubId GitHub ID
+   */
+  async findByGithubId(githubId: string): Promise<User | undefined> {
+    const user = await this.userRepository.findOne({ where: { githubId } });
+    return user || undefined;
+  }
+
+  /**
+   * 从GitHub创建用户
+   * @param user 用户信息
+   */
+  async createUserFromGithub(user: User): Promise<User> {
+    return await this.userRepository.save(user);
+  }
+
+  /**
+   * 从GitHub更新用户信息
+   * @param user 用户信息
+   */
+  async updateUserFromGithub(user: User): Promise<User> {
+    return await this.userRepository.save(user);
   }
 }

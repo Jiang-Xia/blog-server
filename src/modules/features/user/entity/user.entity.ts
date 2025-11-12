@@ -81,17 +81,28 @@ export class User {
   status: UserStatus;
 
   // 昵称
-  @Column('text')
+  @Column('varchar')
+  @ApiProperty({ description: '昵称', example: '江夏' })
   nickname: string;
 
-  // 手机号
-  @Column('text')
+  // 用户名
+  @Column('varchar', { default: '' })
+  @ApiProperty({ description: '用户名', example: 'jiangxia' })
+  username?: string;
+
+  @Column('varchar', { default: '' })
+  @ApiProperty({ description: '手机号', example: '18666666666' })
   mobile: string;
 
   // 邮箱
   @Column('varchar', { nullable: true, unique: true })
   @ApiProperty({ description: '邮箱地址', example: 'user@example.com' })
   email?: string;
+
+  // 邮箱
+  @Column('varchar', { nullable: true, unique: true })
+  @ApiProperty({ description: 'githubId', example: '123456789' })
+  githubId?: string;
 
   // 加密后的密码
   @Column('text', { select: false /* 默认查询不选择的，需要时 andSelect */ })

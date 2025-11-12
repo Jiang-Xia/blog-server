@@ -73,6 +73,10 @@ export const InitConfig = () => {
     emailPort: parseInt(conf.get('app_emailPort') as string),
     emailUser: conf.get('app_emailUser'),
     emailPass: conf.get('app_emailPass'),
+    blogHome: conf.get('app_blogHome'),
+    githubClientId: conf.get('app_githubClientId'),
+    githubClientSecret: conf.get('app_githubClientSecret'),
+    githubCallbackUrl: conf.get('app_githubCallbackUrl'),
   };
   // 支付宝配置（从 .env 读取 alipay* 小驼峰键）
   const payConfig = {

@@ -11,6 +11,7 @@ import {
   Req,
   Res,
   Session,
+  Redirect,
 } from '@nestjs/common';
 import type { Response, Request } from 'express';
 import {
@@ -35,6 +36,7 @@ import { UserInfoResponse } from './vo/user-info.vo';
 import { userListVO } from './vo/user-list.vo';
 import { CaptchaService } from '../../security/captcha/captcha.service';
 import { Config } from '../../../config';
+import { AuthGuard } from '@nestjs/passport';
 
 type SessionReq = Request & { session: Record<string, any> };
 
@@ -172,5 +174,17 @@ export class UserController {
   @Post('email/login')
   async emailLogin(@Body() emailLoginDTO: EmailLoginDTO): Promise<any> {
     return this.userService.emailLogin(emailLoginDTO);
+  }
+
+  @Get('auth/github')
+  @UseGuards(AuthGuard('github'))
+  async githubAuth() {}
+
+  @Get('auth/github/callback')
+  @UseGuards(AuthGuard('github'))
+  async githubAuthRedirect(@Req() req, @Res() res) {
+    const data = await this.userService.certificate(req.user);
+    const url = `${Config.appConfig.blogHome}/login?accessToken=${data.accessToken}&refreshToken=${data.refreshToken}`;
+    res.redirect(url);
   }
 }

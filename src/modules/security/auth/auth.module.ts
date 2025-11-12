@@ -4,6 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { UserModule } from '../../features/user/user.module';
 import { JwtStrategy } from './jwt.strategy';
+import { GithubStrategy } from './github.strategy';
 
 const PassModule = PassportModule.register({ defaultStrategy: 'jwt' });
 const jwtModule = JwtModule.register({
@@ -14,7 +15,7 @@ const jwtModule = JwtModule.register({
 @Module({
   imports: [UserModule, PassModule, jwtModule],
   exports: [PassModule, jwtModule],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, GithubStrategy],
   controllers: [],
 })
 export class AuthModule {}

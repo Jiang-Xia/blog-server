@@ -88,6 +88,9 @@ export const InitConfig = () => {
     alipayTimeout: parseInt(conf.get('pay_alipayTimeout') as string),
     alipayNotifyUrl: conf.get('pay_alipayNotifyUrl'),
     alipayReturnUrl: conf.get('pay_alipayReturnUrl'),
+    // 微信配置
+    wechatAppId: conf.get('pay_wechatAppId'),
+    wechatSecret: conf.get('pay_wechatSecret'),
   };
   Config = {
     redisConfig,

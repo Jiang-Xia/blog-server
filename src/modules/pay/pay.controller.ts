@@ -46,9 +46,9 @@ export class PayController {
     return await this.payService.getOpenIdByCode(dto);
   }
 
-  @ApiOperation({ summary: '生成 H5 拉起支付宝小程序页面链接' })
+  @ApiOperation({ summary: '生成 H5 拉起小程序页面链接（支持支付宝和微信）' })
   @Post('h5-open-mini')
   async buildH5OpenMiniUrl(@Body() dto: H5OpenMiniDto) {
-    return this.payService.buildH5OpenMiniUrl(dto);
+    return await this.payService.buildH5OpenMiniUrl(dto);
   }
 }

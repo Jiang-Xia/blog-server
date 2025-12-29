@@ -4,7 +4,7 @@ module.exports = {
     {
       name: 'blog-server', // 项目名字,启动后的名字
       port: '5000',
-      script: './dist/main.js', // 执行的文件
+      script: './dist/src/main.js', // 执行的文件
       cwd: './', // 根目录
       args: '', // 传递给脚本的参数
       watch: true, // 开启监听文件变动重启

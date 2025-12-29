@@ -66,6 +66,7 @@ export class UserController {
       res.setHeader('Cache-Control', 'no-cache, no-store');
       res.send(captcha.svg);
     } catch (error) {
+      console.error(error);
       res.status(500).send('生成验证码失败');
     }
   }

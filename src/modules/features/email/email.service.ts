@@ -1,13 +1,13 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
-import { RedisService } from '../../core/redis/redis.service';
+import { RedisClientService } from '../grpc/redis-client.service';
 import { Config } from '../../../config';
 
 @Injectable()
 export class EmailService {
   private transporter: nodemailer.Transporter;
 
-  constructor(private readonly redisService: RedisService) {
+  constructor(private readonly redisService: RedisClientService) {
     // 创建邮件传输器
     this.transporter = nodemailer.createTransport({
       host: Config.appConfig.emailHost || 'smtp.163.com', // 163邮箱SMTP服务器

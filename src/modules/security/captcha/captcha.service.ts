@@ -1,12 +1,12 @@
 // src/modules/security/captcha/captcha.service.ts
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { RedisService } from '../../core/redis/redis.service';
+import { RedisClientService } from '../../features/grpc/redis-client.service';
 import { randomUUID } from 'crypto';
 import svgCaptcha from 'svg-captcha';
 
 @Injectable()
 export class CaptchaService {
-  constructor(private readonly redis: RedisService) {}
+  constructor(private readonly redis: RedisClientService) {}
 
   /**
    * 生成图形验证码，并将答案以一次性键写入 Redis。

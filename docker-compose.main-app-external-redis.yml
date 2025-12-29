@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: blog-app-external-redis
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      # 连接到外部Redis微服务，需要修改为实际的Redis微服务地址
+      - REDIS_GRPC_URL=your-redis-service-host:50052
+    command: ["npm", "run", "start:main"]
+    networks:
+      - app-network
+    depends_on:
+      - mysql
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: myblog
+      MYSQL_USER: jiangxia
+      MYSQL_PASSWORD: jiangxia123!@#
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+
+networks:
+  app-network:
+    driver: bridge

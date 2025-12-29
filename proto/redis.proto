@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package redis;
+
+// Redis服务定义
+service RedisService {
+  // 获取键值
+  rpc Get (GetRequest) returns (GetResponse);
+  // 设置键值
+  rpc Set (SetRequest) returns (SetResponse);
+  // 删除键
+  rpc Del (DelRequest) returns (DelResponse);
+  // 自增键值
+  rpc IncrBy (IncrByRequest) returns (IncrByResponse);
+}
+
+// 获取请求消息
+message GetRequest {
+  string key = 1;
+}
+
+// 获取响应消息
+message GetResponse {
+  string value = 1;
+}
+
+// 设置请求消息
+message SetRequest {
+  string key = 1;
+  string value = 2;
+  int32 ttl_seconds = 3;  // 可选的过期时间（秒）
+}
+
+// 设置响应消息
+message SetResponse {
+  bool success = 1;
+}
+
+// 删除请求消息
+message DelRequest {
+  string key = 1;
+}
+
+// 删除响应消息
+message DelResponse {
+  int64 deleted_count = 1;
+}
+
+// 自增请求消息
+message IncrByRequest {
+  string key = 1;
+  int64 increment = 2;
+}
+
+// 自增响应消息
+message IncrByResponse {
+  int64 new_value = 1;
+}

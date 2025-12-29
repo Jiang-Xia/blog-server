@@ -18,6 +18,7 @@ RUN npm install --include=dev
 RUN npm list
 
 COPY . .
+COPY proto ./proto
 
 RUN npm run build
 

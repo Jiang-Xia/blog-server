@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  redis-service:
+    build:
+      context: .
+      dockerfile: microservices/redis-service/Dockerfile
+    container_name: redis-microservice-standalone
+    ports:
+      - "50052:50052"
+    environment:
+      - NODE_ENV=production
+      - REDIS_HOST=redis-db # 连接到同网络的Redis数据库
+      - REDIS_PORT=6379
+      - REDIS_DB=1
+      - REDIS_GRPC_HOST=0.0.0.0
+      - REDIS_GRPC_PORT=50052
+    command: ["npm", "run", "start:redis-service:standalone"]
+    networks:
+      - redis-network
+    depends_on:
+      - redis-db
+    restart: unless-stopped
+
+  redis-db:
+    image: redis:7-alpine
+    container_name: redis-standalone-db
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_standalone_data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+    networks:
+      - redis-network
+    restart: unless-stopped
+
+volumes:
+  redis_standalone_data:
+
+networks:
+  redis-network:
+    driver: bridge

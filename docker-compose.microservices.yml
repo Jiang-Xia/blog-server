@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # Redis微服务部署（如果在同一个环境中部署）
+  redis-service:
+    build:
+      context: .
+      dockerfile: microservices/redis-service/Dockerfile
+    container_name: redis-microservice
+    ports:
+      - "50052:50052"
+    environment:
+      - NODE_ENV=production
+      - REDIS_HOST=redis-db
+      - REDIS_PORT=6379
+      - REDIS_DB=1
+      - REDIS_GRPC_HOST=0.0.0.0
+      - REDIS_GRPC_PORT=50052
+    command: ["npm", "run", "start:redis-service:standalone"]
+    networks:
+      - app-network
+    depends_on:
+      - redis-db
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: blog-app
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      # 如果Redis微服务部署在外部，需要修改为外部地址
+      - REDIS_GRPC_URL=redis-service:50052
+    command: ["npm", "run", "start:main"]
+    networks:
+      - app-network
+    depends_on:
+      - redis-service  # 或者如果是外部服务则删除此行
+      - mysql
+
+  redis-db:
+    image: redis:7-alpine
+    container_name: redis-db
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: myblog
+      MYSQL_USER: jiangxia
+      MYSQL_PASSWORD: jiangxia123!@#
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+
+volumes:
+  redis_data:
+  mysql_data:
+
+networks:
+  app-network:
+    driver: bridge

@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { EmailService } from './email.service';
-import { RedisModule } from '../../core/redis/redis.module';
+import { RedisGrpcModule } from '../grpc/redis-grpc.module';
 
 @Module({
-  imports: [RedisModule],
+  imports: [RedisGrpcModule],
   providers: [EmailService],
   exports: [EmailService],
 })

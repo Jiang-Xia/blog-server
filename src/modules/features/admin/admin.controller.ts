@@ -14,6 +14,8 @@ import { Roles, RolesGuard } from '../../security/auth/roles.guard';
 import { MenuService, LinkService } from './admin.service';
 import { Menu, Link } from './admin.entity';
 import { JwtAuthGuard } from '../../security/auth/jwt-auth.guard';
+import { MenuCreateDTO } from './dto/menu-create.dto';
+import { MenuUpdateDTO } from './dto/menu-update.dto';
 // 文档
 @ApiTags('管理台菜单模块')
 @Controller('admin')
@@ -29,13 +31,13 @@ export class MenuController {
   }
 
   @Post('menu')
-  create(@Body() menu: Menu) {
+  create(@Body() menu: MenuCreateDTO) {
     // console.log({ menu });
     return this.menuService.create(menu);
   }
 
   @Patch('menu')
-  updateById(@Body() menu: Menu) {
+  updateById(@Body() menu: MenuUpdateDTO) {
     return this.menuService.updateField(menu);
   }
 

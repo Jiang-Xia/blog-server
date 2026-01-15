@@ -7,7 +7,11 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   CreateDateColumn,
+  BeforeUpdate,
+  BeforeInsert,
+  ManyToMany,
 } from 'typeorm';
+import { Role } from './system/entities/role.entity';
 
 /* admin 菜单表 */
 @Entity()
@@ -17,37 +21,41 @@ export class Menu {
   id: string;
 
   @ApiProperty({ description: '父级id' })
-  @Column()
-  pid: string;
+  @Column({ default: '0' })
+  pid: string = '0';
 
   @ApiProperty({ description: '菜单路由路径' })
   @Column()
   path: string;
 
-  @ApiProperty({ description: '菜单路由名' })
+  @ApiProperty({ description: '菜单英文名' })
   @Column()
   name: string;
 
+  @ApiProperty({ description: '菜单中文名' })
+  @Column({ default: '' })
+  menuCnName: string = '';
+
   @ApiProperty({ description: '用于菜单排序' })
   @Column({ default: 1 })
-  order: number;
+  order: number = 1;
 
   @ApiProperty({ description: '用于菜单图标' })
   @Column({ default: '' })
-  icon: string;
+  icon: string = '';
 
   @ApiProperty({ description: '用于菜单本地化' })
   @Column({ default: '' })
-  locale: string;
+  locale: string = '';
 
   @ApiProperty({ description: '菜单鉴权' })
   @Column({ default: true })
-  requiresAuth: boolean;
+  requiresAuth: boolean = true;
 
   // 暂时用不上
   @ApiProperty({ description: '菜单路由对应前端组件路径' })
   @Column({ default: '' })
-  filePath: string;
+  filePath: string = '';
 
   // 软删除
   @Column({
@@ -56,13 +64,25 @@ export class Menu {
   isDelete: boolean;
 
   @Column({ default: true })
-  super: boolean;
+  super: boolean = true;
 
   @Column({ default: true })
-  admin: boolean;
+  admin: boolean = true;
 
   @Column({ default: false })
-  author: boolean;
+  author: boolean = false;
+
+  @ApiProperty()
+  @ManyToMany(() => Role, (role) => role.menus, { cascade: false })
+  roles: Array<Role>;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  setData() {
+    if (!this.pid) {
+      this.pid = '0';
+    }
+  }
 }
 // 可以建多个表
 

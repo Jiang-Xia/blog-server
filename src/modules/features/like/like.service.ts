@@ -61,4 +61,13 @@ export class CollectService {
     @InjectRepository(Collect)
     private readonly collectRepository: Repository<Collect>,
   ) {}
+  async collectArticle(articleId: string, uid: number) {
+    return this.collectRepository.save({ articleId, uid });
+  }
+  async cancelCollectArticle(id: string) {
+    return this.collectRepository.delete({ id });
+  }
+  async findAllCollectArticle(uid: number) {
+    return this.collectRepository.find({ where: { uid } });
+  }
 }

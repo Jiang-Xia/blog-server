@@ -27,7 +27,7 @@ export class resetPassword {
   })
   @IsNotEmpty({ message: '请输入用户昵称' })
   @IsString({ message: '名字必须是 String 类型' })
-  @MaxLength(6, { message: '账号不能超过6个字符' })
+  @MaxLength(6, { message: '昵称不能超过6个字符' })
   readonly nickname: string;
 
   @IsNotEmpty({ message: '请输入验证码' })

@@ -3,7 +3,7 @@ import { Entity, Column, ManyToMany } from 'typeorm';
 import { BaseModel } from '@/modules/features/common/common.entiry';
 import { Role } from './role.entity';
 import { PaginationType } from '@/types';
-import { IsString, IsNotEmpty, IsOptional, MaxLength, MinLength } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, MaxLength, MinLength, IsBoolean } from 'class-validator';
 
 @Entity({
   name: 'privilege',
@@ -25,6 +25,26 @@ export class Privilege extends BaseModel {
   @ApiProperty({ description: '是否可见', example: true })
   @Column({ comment: '是否可见', default: true })
   isVisible: boolean;
+
+  @ApiProperty({ description: '路径模式，如 /api/users/:id' })
+  @Column({ length: 500, comment: '路径模式，如 /api/users/:id' })
+  pathPattern: string;
+
+  @ApiProperty({ description: 'HTTP方法，*表示全部' })
+  @Column({ length: 10, comment: 'HTTP方法，*表示全部' })
+  httpMethod: string;
+
+  @ApiProperty({ description: '是否公开接口', example: false })
+  @Column({ default: false, comment: '是否公开接口' })
+  isPublic: boolean;
+
+  @ApiProperty({ description: '是否需要检查资源所有权', example: false })
+  @Column({ default: false, comment: '是否需要检查资源所有权' })
+  requireOwnership: boolean;
+
+  @ApiProperty({ description: '描述', required: false })
+  @Column({ length: 500, nullable: true, comment: '描述' })
+  description: string;
 
   @ApiProperty()
   @ManyToMany(() => Role, (role) => role.privileges, { cascade: false })
@@ -74,6 +94,54 @@ export class CreatePrivilegeDTO {
   })
   @IsOptional()
   isVisible: boolean;
+
+  @ApiProperty({
+    description: '路径模式，如 /api/users/:id',
+    example: '/api/users/:id',
+    required: false,
+  })
+  @IsOptional()
+  @IsString({ message: '路径模式必须是字符串' })
+  @MaxLength(500, { message: '路径模式不能超过500个字符' })
+  pathPattern: string;
+
+  @ApiProperty({
+    description: 'HTTP方法，*表示全部',
+    example: 'GET',
+    required: false,
+  })
+  @IsOptional()
+  @IsString({ message: 'HTTP方法必须是字符串' })
+  @MaxLength(10, { message: 'HTTP方法不能超过10个字符' })
+  httpMethod: string;
+
+  @ApiProperty({
+    description: '是否公开接口',
+    example: false,
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean({ message: '是否公开接口必须是布尔值' })
+  isPublic: boolean;
+
+  @ApiProperty({
+    description: '是否需要检查资源所有权',
+    example: false,
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean({ message: '是否需要检查资源所有权必须是布尔值' })
+  requireOwnership: boolean;
+
+  @ApiProperty({
+    description: '描述',
+    example: '这是一个权限描述',
+    required: false,
+  })
+  @IsOptional()
+  @IsString({ message: '描述必须是字符串' })
+  @MaxLength(500, { message: '描述不能超过500个字符' })
+  description: string;
 }
 
 export class UpdatePrivilegeDTO {
@@ -116,4 +184,52 @@ export class UpdatePrivilegeDTO {
   })
   @IsOptional()
   isVisible: boolean;
+
+  @ApiProperty({
+    description: '路径模式，如 /api/users/:id',
+    example: '/api/users/:id',
+    required: false,
+  })
+  @IsOptional()
+  @IsString({ message: '路径模式必须是字符串' })
+  @MaxLength(500, { message: '路径模式不能超过500个字符' })
+  pathPattern: string;
+
+  @ApiProperty({
+    description: 'HTTP方法，*表示全部',
+    example: 'GET',
+    required: false,
+  })
+  @IsOptional()
+  @IsString({ message: 'HTTP方法必须是字符串' })
+  @MaxLength(10, { message: 'HTTP方法不能超过10个字符' })
+  httpMethod: string;
+
+  @ApiProperty({
+    description: '是否公开接口',
+    example: false,
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean({ message: '是否公开接口必须是布尔值' })
+  isPublic: boolean;
+
+  @ApiProperty({
+    description: '是否需要检查资源所有权',
+    example: false,
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean({ message: '是否需要检查资源所有权必须是布尔值' })
+  requireOwnership: boolean;
+
+  @ApiProperty({
+    description: '描述',
+    example: '这是一个权限描述',
+    required: false,
+  })
+  @IsOptional()
+  @IsString({ message: '描述必须是字符串' })
+  @MaxLength(500, { message: '描述不能超过500个字符' })
+  description: string;
 }

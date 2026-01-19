@@ -176,9 +176,36 @@ export class UserService {
    * @param id
    */
   async findById(id): Promise<User> {
-    return (await this.userRepository.findOne({ where: { id } })) as unknown as User;
+    // 这里的relations指的是实体中的属性key
+    return (await this.userRepository.findOne({ where: { id }, relations: ['roles'] })) as User;
   }
-
+  /**
+   * 获取指定用户信息、角色;
+   * @param id
+   */
+  async getUserRoleInfo(uid: number): Promise<any> {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .where('user.id = :id', { id: uid })
+      .leftJoinAndSelect('user.roles', 'roles')
+      .getOne();
+  }
+  /**
+   * 获取指定用户信息、角色、权限;
+   * @param id
+   */
+  async getUserRolePrivilegeInfo(uid: number): Promise<any> {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .where('user.id = :id', { id: uid })
+      .leftJoinAndSelect('user.roles', 'roles')
+      .leftJoinAndSelect('roles.privileges', 'privileges')
+      .getOne();
+  }
+  /**
+   * 获取用户列表
+   * @param queryParams
+   */
   async findAll(queryParams): Promise<userListVO> {
     const { page = 1, pageSize = 20, mobile } = queryParams;
     const sql = this.userRepository.createQueryBuilder('user');

@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { Privilege, PrivilegeListVo } from '../entities/privilege.entity';
+import { CreatePrivilegeDTO, Privilege, PrivilegeListVo, UpdatePrivilegeDTO } from '../entities/privilege.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getPagination } from '@/utils';
 import { plainToClass } from 'class-transformer';
@@ -11,7 +11,7 @@ export class PrivilegeService {
     @InjectRepository(Privilege) private readonly privilegeRepository: Repository<Privilege>,
   ) {}
 
-  async create(privilege: Partial<Privilege>): Promise<Privilege> {
+  async create(privilege: CreatePrivilegeDTO): Promise<Privilege> {
     const newModel = await this.privilegeRepository.create(privilege);
     await this.privilegeRepository.save(newModel);
     return newModel;
@@ -48,7 +48,7 @@ export class PrivilegeService {
     return privilege;
   }
 
-  async update(id, updateData: Partial<Privilege>): Promise<Privilege> {
+  async update(id, updateData: UpdatePrivilegeDTO): Promise<Privilege> {
     const oldModel = await this.privilegeRepository.findOne({ where: { id } });
     if (!oldModel) {
       throw new HttpException('权限不存在', HttpStatus.NOT_FOUND);

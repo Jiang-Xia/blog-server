@@ -9,7 +9,7 @@ import { SystemModule } from './system/system.module';
 const modules = [SystemModule];
 @Module({
   imports: [TypeOrmModule.forFeature([Menu, Link]), ...modules, AuthModule],
-  exports: [MenuService, LinkService],
+  exports: [MenuService, LinkService, SystemModule],
   providers: [MenuService, LinkService],
   controllers: [MenuController, LinkController],
 })

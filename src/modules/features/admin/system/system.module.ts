@@ -14,7 +14,7 @@ import { MenuService } from '../../admin/admin.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Role, Privilege, Dept, Menu])],
-  exports: [RoleService],
+  exports: [RoleService, PrivilegeService, TypeOrmModule],
   providers: [PrivilegeService, RoleService, DeptService, MenuService],
   controllers: [RoleController, PrivilegeController, DeptController],
 })

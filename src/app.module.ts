@@ -1,10 +1,14 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
+import { CacheModule } from '@nestjs/cache-manager';
 import { AllAppModules } from './modules/registry';
+import { TestPermissionController } from './test-permission.controller';
+import { PermissionGuard } from './modules/security/auth/permission.guard';
 
 // import { GatewagMiddleware } from './middleware/gateway.middleware';
 
@@ -29,11 +33,20 @@ const envFilePath = `.env.${environment}`;
         };
       },
     }),
+    CacheModule.register({
+      isGlobal: true,
+    }),
     ScheduleModule.forRoot(),
     ...AllAppModules,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, TestPermissionController],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: PermissionGuard,
+    },
+  ],
 })
 // 相关字段解释  https://docs.nestjs.cn/8/modules?id=功能模块
 export class AppModule {}

@@ -12,13 +12,7 @@ export class PrivilegeController {
   @ApiResponse({ status: 200, description: '创建权限', type: Privilege })
   @Post()
   async create(@Body() createPrivilegeDto: CreatePrivilegeDTO) {
-    const privilegeData = {
-      privilegeName: createPrivilegeDto.privilegeName,
-      privilegeCode: createPrivilegeDto.privilegeCode,
-      privilegePage: createPrivilegeDto.privilegePage,
-      isVisible: createPrivilegeDto.isVisible,
-    };
-    return this.service.create(privilegeData);
+    return this.service.create(createPrivilegeDto);
   }
 
   @Get()
@@ -33,20 +27,7 @@ export class PrivilegeController {
 
   @Patch(':id')
   async update(@Param('id') id: string, @Body() updatePrivilegeDto: UpdatePrivilegeDTO) {
-    const privilegeData = {};
-    if (updatePrivilegeDto.privilegeName) {
-      privilegeData['privilegeName'] = updatePrivilegeDto.privilegeName;
-    }
-    if (updatePrivilegeDto.privilegeCode) {
-      privilegeData['privilegeCode'] = updatePrivilegeDto.privilegeCode;
-    }
-    if (updatePrivilegeDto.privilegePage) {
-      privilegeData['privilegePage'] = updatePrivilegeDto.privilegePage;
-    }
-    if (updatePrivilegeDto.isVisible !== undefined) {
-      privilegeData['isVisible'] = updatePrivilegeDto.isVisible;
-    }
-    return this.service.update(id, privilegeData);
+    return this.service.update(id, updatePrivilegeDto);
   }
 
   @Delete(':id')

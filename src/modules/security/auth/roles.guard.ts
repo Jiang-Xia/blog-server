@@ -8,7 +8,6 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
-import { User } from '../../features/user/entity/user.entity';
 
 export const Roles = (roles?: string[]) => {
   // console.log('SetMetadata', roles);

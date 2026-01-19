@@ -67,15 +67,19 @@ export class LinkController {
   create(@Body() link: Link) {
     return this.linkService.create(link);
   }
+  @Get(':id')
+  findOne(@Param('id') id: string): Promise<Link> {
+    return this.linkService.findOne(id);
+  }
 
   @Get()
   findAll(@Query('client') client: string): Promise<Link[]> {
     return this.linkService.findAll({ client });
   }
 
-  @Patch()
-  updateById(@Body() link: Link) {
-    return this.linkService.updateById(link.id, link);
+  @Patch(':id')
+  updateById(@Param('id') id: string, @Body() link: Link) {
+    return this.linkService.updateById(id, link);
   }
 
   @Delete()

@@ -157,6 +157,13 @@ export class LinkService {
     await this.linkRepository.save(newCategory);
     return newCategory;
   }
+  async findOne(id: string): Promise<Link> {
+    const link = await this.linkRepository.findOne({ where: { id } });
+    if (!link) {
+      throw new HttpException('外链不存在', HttpStatus.NOT_FOUND);
+    }
+    return link;
+  }
 
   async findAll(queryParams): Promise<Link[]> {
     const { client } = queryParams;

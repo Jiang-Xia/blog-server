@@ -111,7 +111,7 @@ export class PermissionGuard implements CanActivate {
     }
 
     // 5. 检查用户权限
-    const hasPermission = await this.checkUserPermission(user, apiPermission, request);
+    const hasPermission = await this.checkUserPermission(user, apiPermission);
 
     if (!hasPermission) {
       throw new HttpException('权限不足，无法访问该资源', HttpStatus.INTERNAL_SERVER_ERROR);
@@ -278,7 +278,6 @@ export class PermissionGuard implements CanActivate {
   private async checkUserPermission(
     user: UserInfo,
     apiPermission: ApiPermission,
-    request: Request,
   ): Promise<boolean> {
     try {
       // 1. 获取用户权限列表（带缓存）
@@ -333,12 +332,7 @@ export class PermissionGuard implements CanActivate {
    */
   private async getUserRolePermissionsFromDatabase(roleId: number): Promise<string[]> {
     try {
-      const queryResult = await this.privilegeService['privilegeRepository']
-        .createQueryBuilder('privilege')
-        .leftJoinAndSelect('privilege.roles', 'roles')
-        .where('roles.id = :roleId', { roleId })
-        .getMany();
-      // console.log('queryResult', queryResult);
+      const queryResult = await this.privilegeService.queryByRoleId(roleId);
       // 提取权限码
       const permissions = queryResult.map((item) => item.privilegeCode) || [];
       return permissions;

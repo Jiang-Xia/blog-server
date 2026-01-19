@@ -318,7 +318,7 @@ export class ArticleService {
    * @param id
    * @param article
    */
-  async updateViewsById(id): Promise<Article> {
+  async updateViewsById(id): Promise<boolean> {
     const oldArticle = await this.articleRepository.findOne({ where: { id } });
     if (!oldArticle) {
       throw new NotFoundException('文章不存在');
@@ -327,7 +327,8 @@ export class ArticleService {
     const updatedArticle = await this.articleRepository.merge(oldArticle, {
       views: oldArticle.views + 1,
     });
-    return this.articleRepository.save(updatedArticle);
+    await this.articleRepository.save(updatedArticle);
+    return true;
   }
 
   /**

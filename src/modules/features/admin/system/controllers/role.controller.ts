@@ -26,7 +26,7 @@ export class RoleController {
   }
 
   @Get(':id')
-  queryInfo(@Param('id') id: string): Promise<Role> {
+  queryInfo(@Param('id') id: number): Promise<Role> {
     return this.service.queryInfo(id);
   }
 

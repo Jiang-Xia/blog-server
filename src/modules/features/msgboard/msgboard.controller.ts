@@ -11,7 +11,6 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { Roles, RolesGuard } from '../../security/auth/roles.guard';
 import { MsgboardService } from './msgboard.service';
 import { Msgboard } from './msgboard.entity';
 import { JwtAuthGuard } from '../../security/auth/jwt-auth.guard';
@@ -23,7 +22,6 @@ import { DayMilliseconds } from 'src/utils/constant';
 @ApiTags('留言板模块')
 @Controller('msgboard')
 // 权限
-@UseGuards(RolesGuard)
 export class MsgboardController {
   constructor(
     private readonly msgboardService: MsgboardService,
@@ -55,7 +53,6 @@ export class MsgboardController {
   }
 
   @Post('/delete')
-  @Roles(['admin', 'super'])
   @UseGuards(JwtAuthGuard)
   deleteById(@Body() ids: string[]) {
     // console.log(ids);

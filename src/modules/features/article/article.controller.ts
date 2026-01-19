@@ -23,7 +23,6 @@ import { ApiTags, ApiOkResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { ArticleInfoVO, ArticleDeleteVO, ArticleInfoResponse } from './vo/article-info.vo';
 import { ArticleListResponse, ArticleListVO } from './vo/article-list.vo';
 import { JwtAuthGuard } from '../../security/auth/jwt-auth.guard';
-import { RolesGuard, Roles } from '../../security/auth/roles.guard';
 import { Article } from './entity/article.entity';
 import { getUserInfo, getUid } from 'src/utils';
 import { IpAddress } from 'src/utils/common';
@@ -32,7 +31,6 @@ import { ApiBody } from '@nestjs/swagger';
 
 @ApiTags('文章模块')
 @Controller('article')
-@UseGuards(RolesGuard)
 export class ArticleController {
   constructor(private articleService: ArticleService) {}
 

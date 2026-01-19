@@ -1,15 +1,13 @@
 import { Body, Headers, Controller, Delete, Get, Post, Param, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { RolesGuard } from '../../security/auth/roles.guard';
 import { CollectService, LikeService } from './like.service';
-import { Like, Collect } from './like.entity';
+import { Like } from './like.entity';
 import { IpAddress } from 'src/utils/common';
 import { getUid } from '@/utils';
 // 文档
 @ApiTags('喜欢模块')
 @Controller('like')
 // 权限
-@UseGuards(RolesGuard)
 export class LikeController {
   constructor(private readonly likeService: LikeService) {}
 
@@ -25,7 +23,6 @@ export class LikeController {
 @ApiTags('收藏模块')
 @Controller('collect')
 // 权限
-@UseGuards(RolesGuard)
 export class CollectController {
   constructor(private readonly collectService: CollectService) {}
   @Get(':id')

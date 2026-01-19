@@ -34,7 +34,7 @@ export class DeptController {
     return this.service.queryTree(id);
   }
   @Get(':id')
-  queryInfo(@Param('id') id: string): Promise<Dept> {
+  queryInfo(@Param('id') id: number): Promise<Dept> {
     return this.service.queryInfo(id);
   }
 

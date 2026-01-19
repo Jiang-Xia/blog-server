@@ -11,13 +11,11 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../security/auth/jwt-auth.guard';
-import { RolesGuard, Roles } from '../../security/auth/roles.guard';
 import { TagService } from './tag.service';
 import { Tag } from './tag.entity';
 
 @ApiTags('标签模块')
 @Controller('tag')
-@UseGuards(RolesGuard)
 export class TagController {
   constructor(private readonly tagService: TagService) {}
 
@@ -27,7 +25,6 @@ export class TagController {
    */
   @ApiResponse({ status: 200, description: '创建标签', type: [Tag] })
   @Post()
-  @Roles(['admin', 'super'])
   @UseGuards(JwtAuthGuard)
   create(@Body() tag: Tag) {
     return this.tagService.create(tag);
@@ -65,7 +62,6 @@ export class TagController {
    * @param tag
    */
   @Patch(':id')
-  @Roles(['admin', 'super'])
   @UseGuards(JwtAuthGuard)
   updateById(@Param('id') id: string, @Body() tag: Tag) {
     return this.tagService.updateById(id, tag);
@@ -76,7 +72,6 @@ export class TagController {
    * @param id
    */
   @Delete(':id')
-  @Roles(['admin', 'super'])
   @UseGuards(JwtAuthGuard)
   deleteById(@Param('id') id: string) {
     return this.tagService.deleteById(id);

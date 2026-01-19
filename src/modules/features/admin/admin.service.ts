@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Link, Menu } from './admin.entity';
 import MenuList = require('./menu.json');
+import { UserService } from '../user/user.service';
+import { RoleService } from './system/services/role.service';
 
 // 接口继承
 interface MenuState extends Menu {
@@ -22,6 +24,7 @@ export class MenuService {
   constructor(
     @InjectRepository(Menu)
     private readonly menuRepository: Repository<Menu>,
+    private readonly roleService: RoleService,
   ) {
     /* 初始化菜单列表 需要捕获错误防止已存在*/
     MenuList.forEach(async (v: Menu, index: number) => {
@@ -38,22 +41,34 @@ export class MenuService {
         });
     });
   }
-  async findAll(role: string): Promise<Menu[]> {
-    // const { articleStatus } = queryParams;
-    const qb = this.menuRepository.createQueryBuilder('menu');
-
-    // 作者权限只返回文章管理
-    if (role === 'author') {
-      qb.andWhere('menu.author=:author', { author: true });
-    } else if (role === 'admin') {
-      // 不返回用户设置
-      qb.andWhere('menu.admin=:admin', { admin: true });
-    } else {
-      qb.andWhere('menu.super=:super', { super: true });
-    }
-    qb.orderBy('menu.order', 'ASC');
-    const data = await qb.getMany();
-    // console.log({ role, data });
+  /**
+   * 根据角色ID获取菜单列表
+   * @param roleId
+   * @returns
+   */
+  async findByRoleId(roleId: number): Promise<Menu[]> {
+    const queryResult = await this.menuRepository
+      .createQueryBuilder('menu')
+      .leftJoinAndSelect('menu.roles', 'roles')
+      .where('roles.id = :roleId', { roleId })
+      .orderBy('menu.order', 'ASC')
+      .getMany();
+    return queryResult;
+  }
+  /**
+   * 根据用户角色返回菜单列表
+   * @param uid
+   * @returns
+   */
+  async findAll(uid: number): Promise<Menu[]> {
+    const role = await this.roleService.getRoleByUserId(uid);
+    const menus = await this.findByRoleId(role[0].id);
+    // console.log('menus.length', menus.length, role[0].id);
+    const data = menus;
+    // const data = await this.menuRepository
+    //   .createQueryBuilder('menu')
+    //   .orderBy('menu.order', 'ASC')
+    //   .getMany();
     const menuTree: MenuState[] = [];
     // 设置一下属性和删属性
     const setMenuTree = (item: any) => {

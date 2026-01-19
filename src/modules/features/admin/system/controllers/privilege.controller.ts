@@ -21,7 +21,7 @@ export class PrivilegeController {
   }
 
   @Get(':id')
-  queryInfo(@Param('id') id: string): Promise<Privilege> {
+  queryInfo(@Param('id') id: number): Promise<Privilege> {
     return this.service.queryInfo(id);
   }
 

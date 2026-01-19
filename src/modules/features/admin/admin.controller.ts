@@ -8,26 +8,27 @@ import {
   Post,
   Query,
   UseGuards,
+  Headers,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Roles, RolesGuard } from '../../security/auth/roles.guard';
 import { MenuService, LinkService } from './admin.service';
 import { Menu, Link } from './admin.entity';
 import { JwtAuthGuard } from '../../security/auth/jwt-auth.guard';
 import { MenuCreateDTO } from './dto/menu-create.dto';
 import { MenuUpdateDTO } from './dto/menu-update.dto';
+import { getUid } from '@/utils';
 // 文档
 @ApiTags('管理台菜单模块')
 @Controller('admin')
-@UseGuards(RolesGuard)
 export class MenuController {
   constructor(private readonly menuService: MenuService) {}
 
   // https://www.cnblogs.com/xiaoyantongxue/p/15758271.html
 
   @Get('menu')
-  findAll(@Query('role') role: string) {
-    return this.menuService.findAll(role);
+  findAll(@Headers() headers) {
+    const uid = getUid(headers.authorization);
+    return this.menuService.findAll(uid);
   }
 
   @Post('menu')
@@ -48,7 +49,6 @@ export class MenuController {
   }
 
   @Delete('menu')
-  @Roles(['super'])
   @UseGuards(JwtAuthGuard)
   deleteById(@Query('id') id: string) {
     return this.menuService.deleteById(id);
@@ -57,7 +57,6 @@ export class MenuController {
 
 @ApiTags('外链模块')
 @Controller('link')
-@UseGuards(RolesGuard)
 // 外链
 export class LinkController {
   constructor(private readonly linkService: LinkService) {}
@@ -83,7 +82,6 @@ export class LinkController {
   }
 
   @Delete()
-  @Roles(['super'])
   @UseGuards(JwtAuthGuard)
   deleteById(@Query('id') id: string) {
     return this.linkService.deleteById(id);

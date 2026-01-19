@@ -45,7 +45,7 @@ export class DeptService {
     };
   }
 
-  async queryInfo(id: string): Promise<Dept> {
+  async queryInfo(id: number): Promise<Dept> {
     const dept = await this.deptRepository.findOne({ where: { id } });
     if (!dept) {
       throw new HttpException('部门不存在', HttpStatus.NOT_FOUND);

@@ -11,13 +11,11 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../security/auth/jwt-auth.guard';
-import { RolesGuard, Roles } from '../../security/auth/roles.guard';
 import { CategoryService } from './category.service';
 import { Category } from './category.entity';
 
 @ApiTags('分类模块')
 @Controller('category')
-@UseGuards(RolesGuard)
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
@@ -27,7 +25,6 @@ export class CategoryController {
    */
   @ApiResponse({ status: 200, description: '添加分类', type: [Category] })
   @Post()
-  @Roles(['admin', 'super'])
   @UseGuards(JwtAuthGuard)
   create(@Body() category: Category) {
     return this.categoryService.create(category);
@@ -56,7 +53,6 @@ export class CategoryController {
    * @param category
    */
   @Patch(':id')
-  @Roles(['admin', 'super'])
   @UseGuards(JwtAuthGuard)
   updateById(@Param('id') id: string, @Body() category: Category) {
     return this.categoryService.updateById(id, category);
@@ -67,7 +63,6 @@ export class CategoryController {
    * @param id
    */
   @Delete(':id')
-  @Roles(['admin', 'super'])
   @UseGuards(JwtAuthGuard)
   deleteById(@Param('id') id: string) {
     return this.categoryService.deleteById(id);

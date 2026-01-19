@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  Header,
   Param,
   Patch,
   Post,
@@ -14,15 +13,12 @@ import {
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../../security/auth/jwt-auth.guard';
-import { Roles, RolesGuard } from '../../security/auth/roles.guard';
 import { ResourcesService } from './resources.service';
 import { FileStore } from '../file/file.entity';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { IpAddress } from 'src/utils/common';
 // 文档
 @ApiTags('资源模块')
 @Controller('resources')
-@UseGuards(RolesGuard)
 export class ResourcesController {
   constructor(private readonly resourcesService: ResourcesService) {}
 
@@ -93,7 +89,6 @@ export class ResourcesController {
    * @param id
    */
   @Delete('file')
-  @Roles(['super', 'admin'])
   @UseGuards(JwtAuthGuard)
   deleteById(@Query('id') id: string) {
     return this.resourcesService.deleteById(id);

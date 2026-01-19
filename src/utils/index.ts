@@ -139,11 +139,11 @@ export function getLocalIP() {
 }
 
 // 获取用户uid
-export function getUid(authorization = '') {
+export function getUid(authorization = ''): number {
   if (!authorization) return undefined as any;
   const token = authorization.replace('Bearer ', '');
   const user: any = jwtDecode(token);
-  const uid = user.id;
+  const uid = Number(user.id);
   // console.log(uid);
   return uid;
 }

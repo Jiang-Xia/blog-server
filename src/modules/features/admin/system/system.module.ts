@@ -10,12 +10,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { RoleService } from './services/role.service';
 import { PrivilegeService } from './services/privilege.service';
 import { DeptService } from './services/dept.service';
-import { MenuService } from '../../admin/admin.service';
+import { UserModule } from '../../user/user.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Role, Privilege, Dept, Menu])],
+  imports: [TypeOrmModule.forFeature([Role, Privilege, Dept, Menu]), UserModule],
   exports: [RoleService, PrivilegeService, TypeOrmModule],
-  providers: [PrivilegeService, RoleService, DeptService, MenuService],
+  providers: [PrivilegeService, RoleService, DeptService],
   controllers: [RoleController, PrivilegeController, DeptController],
 })
 export class SystemModule {}

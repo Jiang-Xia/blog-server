@@ -14,7 +14,6 @@ export class RoleService {
     @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
     @InjectRepository(Privilege) private readonly privilegeRepository: Repository<Privilege>,
     @InjectRepository(Menu) private readonly menuRepository: Repository<Menu>,
-    private readonly menuService: MenuService,
   ) {}
 
   async create(roleData: CreateRoleDTO): Promise<Role> {
@@ -54,7 +53,7 @@ export class RoleService {
     };
   }
 
-  async queryInfo(id: string): Promise<Role> {
+  async queryInfo(id: number): Promise<Role> {
     const role = await this.roleRepository.findOne({
       where: { id },
       relations: ['privileges', 'menus'],
@@ -171,5 +170,18 @@ export class RoleService {
     });
 
     return rootMenus;
+  }
+  /*
+   * 获取根据用户id获取所属角色信息
+   */
+  getRoleByUserId(userId: number): Promise<Role[]> {
+    return this.roleRepository.find({
+      where: {
+        users: {
+          id: userId,
+        },
+      },
+      relations: ['users'],
+    });
   }
 }

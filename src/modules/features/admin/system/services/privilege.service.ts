@@ -1,6 +1,11 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { CreatePrivilegeDTO, Privilege, PrivilegeListVo, UpdatePrivilegeDTO } from '../entities/privilege.entity';
+import {
+  CreatePrivilegeDTO,
+  Privilege,
+  PrivilegeListVo,
+  UpdatePrivilegeDTO,
+} from '../entities/privilege.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getPagination } from '@/utils';
 import { plainToClass } from 'class-transformer';
@@ -40,7 +45,7 @@ export class PrivilegeService {
     };
   }
 
-  async queryInfo(id: string): Promise<Privilege> {
+  async queryInfo(id: number): Promise<Privilege> {
     const privilege = await this.privilegeRepository.findOne({ where: { id } });
     if (!privilege) {
       throw new HttpException('权限不存在', HttpStatus.NOT_FOUND);
@@ -68,5 +73,15 @@ export class PrivilegeService {
     } catch (e) {
       throw new HttpException('删除失败', HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  /* 根据角色id查询权限 */
+  async queryByRoleId(roleId: number): Promise<Privilege[]> {
+    const queryResult = await this.privilegeRepository
+      .createQueryBuilder('privilege')
+      .leftJoinAndSelect('privilege.roles', 'roles')
+      .where('roles.id = :roleId', { roleId })
+      .getMany();
+    return queryResult;
   }
 }

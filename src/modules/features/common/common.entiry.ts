@@ -13,7 +13,7 @@ import dayjs from 'dayjs';
 export class BaseModel {
   @ApiProperty({ description: '自身id' })
   @PrimaryGeneratedColumn({ comment: '自身id' })
-  id: string;
+  id: number;
 
   @ApiProperty({ description: '创建时间' })
   @CreateDateColumn({ comment: '创建时间' })

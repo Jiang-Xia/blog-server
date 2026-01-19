@@ -24,7 +24,6 @@ import {
 } from '@nestjs/swagger';
 import { getUid } from 'src/utils';
 import { JwtAuthGuard } from '../../security/auth/jwt-auth.guard';
-import { Roles } from '../../security/auth/roles.guard';
 import { LoginDTO } from './dto/login.dto';
 import { RegisterDTO, resetPassword } from './dto/register.dto';
 import { EmailRegisterDTO } from './dto/email-register.dto';
@@ -142,7 +141,6 @@ export class UserController {
     return this.userService.resetPassword(user);
   }
 
-  @Roles(['super'])
   @UseGuards(JwtAuthGuard)
   // http://localhost:5000/user/10 @Delete(':id') 需配合 (@Param('id') id）
   // 这样收到的参数是一个对象即{id} 需前后端配合比较麻烦

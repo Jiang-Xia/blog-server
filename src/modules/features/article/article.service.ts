@@ -50,9 +50,14 @@ export class ArticleService {
       tags,
       sort,
       client,
-      onlyMy,
     } = listDTO;
     const uid = info?.id;
+
+    // 检查用户角色，如果是超级管理员则可以查看所有文章
+    const userRoles = await this.userService.getUserRoleInfo(info?.id);
+    const roleIds = userRoles?.roles ? userRoles.roles.map((role) => role.id) : [];
+    const isSuperAdmin = roleIds.includes(1); // 假设角色ID为1的是超级管理员
+
     const sql = this.articleRepository.createQueryBuilder('article');
     sql
       .leftJoinAndSelect('article.category', 'category')
@@ -77,9 +82,11 @@ export class ArticleService {
       sql.andWhere('article.isDelete=:isDelete', { isDelete: false });
     }
 
-    if (onlyMy) {
+    // 如果不是超级管理员，且不是admin端请求，则限制只显示用户自己的文章
+    if (!isSuperAdmin && !client) {
       sql.andWhere('article.uid=:uid', { uid });
     }
+
     // 关键字查询
     sql.andWhere(
       new Brackets((qb) => {

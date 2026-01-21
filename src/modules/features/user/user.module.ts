@@ -6,10 +6,12 @@ import { UserService } from './user.service';
 import { AuthModule } from '../../security/auth/auth.module';
 import { CaptchaModule } from '../../security/captcha/captcha.module';
 import { EmailModule } from '../email/email.module';
+import { Role } from '@/modules/features/admin/system/entities/role.entity';
+import { Dept } from '@/modules/features/admin/system/entities/dept.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Role, Dept]),
     // auth和user相互依赖，解决循环依赖问题
     // https://docs.nestjs.cn/8/fundamentals?id=%e5%be%aa%e7%8e%af%e4%be%9d%e8%b5%96
     forwardRef(() => AuthModule),

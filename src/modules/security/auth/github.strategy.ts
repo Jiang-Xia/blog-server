@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { Config } from 'src/config';
 import { UserService } from '../../features/user/user.service';
-import { User, UserRole } from '../../features/user/entity/user.entity';
+import { User } from '../../features/user/entity/user.entity';
 import { encryptPassword, makeSalt, rsaDecrypt } from 'src/utils/cryptogram.util';
 
 @Injectable()
@@ -32,7 +32,7 @@ export class GithubStrategy extends PassportStrategy(Strategy, 'github', true) {
       newUser.email = emails[0].value;
       newUser.avatar = photos[0]?.value || '';
       newUser.githubId = id;
-      newUser.role = UserRole.AUTHOR; // 默认角色为作者
+      newUser.roles = []; // 默认角色为作者
       newUser.mobile = username;
       const salt = makeSalt(); // 制作密码盐
       const hashPassword = encryptPassword('123456', salt); // 加密密码

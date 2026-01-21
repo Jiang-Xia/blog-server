@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Entity, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import { Entity, Column } from 'typeorm';
 import { BaseModel } from '@/modules/features/common/common.entiry';
 import { PaginationType } from '@/types';
 import { IsString, IsNotEmpty } from 'class-validator';
@@ -82,7 +82,6 @@ export class CreateDeptDTO {
   @IsOptional()
   @IsNumber({}, { message: '父级部门ID必须是数字' })
   @IsInt({ message: '父级部门ID必须是整数' })
-  @IsPositive({ message: '父级部门ID必须是正数或0' })
   parentId?: number = 0;
 
   @ApiProperty({

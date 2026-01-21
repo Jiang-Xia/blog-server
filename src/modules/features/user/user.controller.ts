@@ -8,10 +8,9 @@ import {
   Patch,
   Delete,
   Query,
+  Param,
   Req,
   Res,
-  Session,
-  Redirect,
 } from '@nestjs/common';
 import type { Response, Request } from 'express';
 import {
@@ -36,6 +35,9 @@ import { userListVO } from './vo/user-list.vo';
 import { CaptchaService } from '../../security/captcha/captcha.service';
 import { Config } from '../../../config';
 import { AuthGuard } from '@nestjs/passport';
+import { AdminCreateUserDTO } from './dto/admin-create-user.dto';
+import { AdminUpdateUserDTO } from './dto/admin-update-user.dto';
+import { User } from './entity/user.entity';
 
 type SessionReq = Request & { session: Record<string, any> };
 
@@ -105,9 +107,9 @@ export class UserController {
   @ApiBearerAuth()
   @ApiOkResponse({ description: '用户信息', type: UserInfoResponse })
   @Get('info')
-  async userInfo(@Headers() headers): Promise<any> {
+  async userInfo(@Headers() headers, @Query('id') userId: string): Promise<any> {
     const id = getUid(headers.authorization);
-    return this.userService.findById(id);
+    return this.userService.findById(userId || id);
   }
 
   @ApiOkResponse({ description: '用户列表', type: userListVO })
@@ -184,5 +186,36 @@ export class UserController {
     const data = await this.userService.certificate(req.user);
     const url = `${Config.appConfig.blogHome}/login?accessToken=${data.accessToken}&refreshToken=${data.refreshToken}`;
     res.redirect(url);
+  }
+
+  @ApiBody({ type: AdminCreateUserDTO })
+  @ApiOkResponse({ description: '管理员创建用户', type: User })
+  @ApiOperation({
+    summary: '管理员创建用户',
+    description: '仅限超级管理员创建用户并绑定角色和部门',
+  })
+  @UseGuards(JwtAuthGuard)
+  @Post('admin/create')
+  async adminCreateUser(@Body() adminCreateUserDTO: AdminCreateUserDTO): Promise<User> {
+    return await this.userService.adminCreateUser(adminCreateUserDTO);
+  }
+
+  @ApiBody({ type: AdminUpdateUserDTO })
+  @ApiOkResponse({ description: '管理员更新用户', type: User })
+  @ApiOperation({
+    summary: '管理员更新用户',
+    description: '仅限超级管理员更新用户信息并绑定角色和部门（手机号和用户名不可修改）',
+  })
+  @UseGuards(JwtAuthGuard)
+  @Post('admin/update/:id')
+  async adminUpdateUser(
+    @Param('id') id: number,
+    @Body() adminUpdateUserDTO: AdminUpdateUserDTO,
+  ): Promise<User> {
+    const result = await this.userService.adminUpdateUser(id, adminUpdateUserDTO);
+    if (!result) {
+      throw new Error('用户更新失败');
+    }
+    return result;
   }
 }

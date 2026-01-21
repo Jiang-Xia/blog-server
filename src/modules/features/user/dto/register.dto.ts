@@ -50,7 +50,7 @@ export class RegisterDTO extends resetPassword {
   @IsNotEmpty({ message: '请再次输入密码' })
   readonly passwordRepeat: string;
 
-  readonly role?: string;
+  readonly roles?: string;
 
   readonly avatar?: string;
 }

@@ -11,22 +11,18 @@ import {
   VersionColumn,
   OneToMany,
   ManyToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Article } from '../../article/entity/article.entity';
 import { Comment } from '../../comment/comment.entity';
 import { Role } from '@/modules/features/admin/system/entities/role.entity';
+import { Dept } from '@/modules/features/admin/system/entities/dept.entity';
 
 export enum UserStatus {
   LOCKED = 'locked',
   ACTIVE = 'active',
 }
-
-export enum UserRole {
-  SUPER = 'super',
-  ADMIN = 'admin',
-  AUTHOR = 'author',
-}
-
 @Entity()
 export class User {
   /**
@@ -62,19 +58,6 @@ export class User {
   // 更新次数
   @VersionColumn()
   version: number;
-
-  // 用户角色 开发阶段默认为admin
-
-  /**
-   * super 可以 admin和author进行角色控制，主要用于用户管理
-   * admin 可以修改网站的所有内容，除了管理端的用户管理
-   * author 可以增删改查文章，评论，回复。
-   */
-  @Column('simple-enum', {
-    enum: UserRole,
-    default: UserRole.AUTHOR,
-  })
-  role: UserRole;
 
   /// 用户状态
   @Column('simple-enum', { enum: UserStatus, default: UserStatus.ACTIVE })
@@ -136,4 +119,14 @@ export class User {
   @ApiProperty({ description: '角色' })
   @ManyToMany(() => Role, (role) => role.users, { cascade: false })
   roles: Array<Role>;
+
+  @ApiProperty({ description: '部门ID', required: false })
+  @Column({ type: 'int', nullable: true, comment: '部门ID' })
+  // 不和部门表直接强关联，通过deptId进行关联
+  deptId: number;
+
+  @ApiProperty({ description: '部门', required: false })
+  @ManyToOne(() => Dept, { eager: false })
+  @JoinColumn({ name: 'deptId' })
+  dept?: Dept;
 }

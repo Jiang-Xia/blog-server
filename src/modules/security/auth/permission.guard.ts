@@ -25,8 +25,8 @@ interface ApiPermission {
 interface UserInfo {
   id: number;
   username: string;
-  roles: string[];
-  roleId: number;
+  roles: any[]; // 角色数组
+  roleIds: number[]; // 角色ID数组
   isSuperAdmin?: boolean;
 }
 
@@ -76,8 +76,7 @@ export class PermissionGuard implements CanActivate {
     if (!uid) {
       throw new HttpException('用户未登录', HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    let user: UserInfo = { id: 0, username: '', roles: [], roleId: 0 };
-    let roleId: number = 0;
+    let user: UserInfo = { id: 0, username: '', roles: [], roleIds: [] };
     // 通过 uid 查询完整用户信息
     if (uid) {
       const fullUser = await this.userService.getUserRoleInfo(uid);
@@ -85,22 +84,24 @@ export class PermissionGuard implements CanActivate {
       if (fullUser) {
         // 将数据库中的用户信息转换为接口所需的格式
         const roles = fullUser.roles || [];
-        roleId = roles[0]?.id;
+        const roleIds = roles.map((role) => role.id);
         user = {
           id: fullUser.id,
           username: fullUser.username || '',
           roles: roles,
-          roleId: roleId,
-          isSuperAdmin: roleId === 1,
+          roleIds: roleIds,
+          isSuperAdmin: roleIds.includes(1), // 如果用户的角色ID中包含1（超级管理员角色）
         };
-        this.logger.debug(`用户登录,  roleId: ${roleId}, username: ${user.username}, uid: ${uid}`);
+        this.logger.debug(
+          `用户登录,  roleIds: ${JSON.stringify(roleIds)}, username: ${user.username}, uid: ${uid}`,
+        );
       }
     }
     // 3. 如果是超级管理员，直接放行, 不放行管理员角色配置全部权限
-    // if (user.isSuperAdmin) {
-    //   this.logger.debug(`超级管理员，直接放行: ${method} ${url}`);
-    //   return true;
-    // }
+    if (user.isSuperAdmin) {
+      this.logger.debug(`超级管理员，直接放行: ${method} ${url}`);
+      return true;
+    }
 
     // 4. 获取匹配的API权限配置（未检查用户的权限，只是检查是否配置了该接口的权限）
     const apiPermission = await this.getMatchedApiPermission(method, url);
@@ -281,7 +282,7 @@ export class PermissionGuard implements CanActivate {
   ): Promise<boolean> {
     try {
       // 1. 获取用户权限列表（带缓存）
-      const userPermissions = await this.getUserPermissions(user.roleId);
+      const userPermissions = await this.getUserPermissions(user.roleIds);
 
       // 2. 检查用户是否有该权限码
       if (!userPermissions.includes(apiPermission.privilegeCode)) {
@@ -301,30 +302,40 @@ export class PermissionGuard implements CanActivate {
   /**
    * 获取用户权限列表
    */
-  private async getUserPermissions(roleId: number): Promise<string[]> {
-    const cacheKey = `role_permissions:${roleId}`;
+  private async getUserPermissions(roleIds: number[]): Promise<string[]> {
+    // 为每个角色ID生成缓存键并获取权限
+    const allPermissions: string[] = [];
 
-    try {
-      // 1. 尝试从缓存获取
-      const cachedPermissionsStr = await this.redisService.get(cacheKey);
-      const cachedPermissions = cachedPermissionsStr ? JSON.parse(cachedPermissionsStr) : null;
+    for (const roleId of roleIds) {
+      const cacheKey = `role_permissions:${roleId}`;
 
-      if (cachedPermissions) {
-        return cachedPermissions;
+      try {
+        // 1. 尝试从缓存获取
+        const cachedPermissionsStr = await this.redisService.get(cacheKey);
+        const cachedPermissions = cachedPermissionsStr ? JSON.parse(cachedPermissionsStr) : null;
+
+        let permissions: string[];
+        if (cachedPermissions) {
+          permissions = cachedPermissions;
+        } else {
+          // 2. 从数据库查询用户所属角色的权限
+          permissions = await this.getUserRolePermissionsFromDatabase(roleId);
+
+          // 3. 缓存权限（缓存2分钟）
+          await this.redisService.set(cacheKey, JSON.stringify(permissions), 2 * 60);
+        }
+
+        // 合并权限
+        allPermissions.push(...permissions);
+      } catch (error) {
+        this.logger.error('获取用户权限失败:', error);
+        // 数据库查询失败时跳过该角色，继续处理其他角色
+        continue;
       }
-
-      // 2. 从数据库查询用户所属角色的权限
-      const permissions = await this.getUserRolePermissionsFromDatabase(roleId);
-
-      // 3. 缓存权限（缓存2分钟）
-      await this.redisService.set(cacheKey, JSON.stringify(permissions), 2 * 60);
-
-      return permissions;
-    } catch (error) {
-      this.logger.error('获取用户权限失败:', error);
-      // 数据库查询失败时返回空数组，避免误授权
-      return [];
     }
+
+    // 去重权限并返回
+    return [...new Set(allPermissions)];
   }
 
   /**

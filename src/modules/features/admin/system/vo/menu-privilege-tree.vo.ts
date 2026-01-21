@@ -33,15 +33,6 @@ export class MenuPrivilegeTreeVo {
   @ApiProperty({ description: '菜单路由对应前端组件路径' })
   filePath: string;
 
-  @ApiProperty({ description: '是否为超级管理员菜单' })
-  super: boolean;
-
-  @ApiProperty({ description: '是否为管理员菜单' })
-  admin: boolean;
-
-  @ApiProperty({ description: '是否为作者菜单' })
-  author: boolean;
-
   @ApiProperty({ description: '标签，用于前端树形选择器' })
   label?: string;
 

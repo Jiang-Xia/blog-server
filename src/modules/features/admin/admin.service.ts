@@ -61,14 +61,30 @@ export class MenuService {
    * @returns
    */
   async findAll(uid: number): Promise<Menu[]> {
-    const role = await this.roleService.getRoleByUserId(uid);
-    const menus = await this.findByRoleId(role[0].id);
-    // console.log('menus.length', menus.length, role[0].id);
-    const data = menus;
-    // const data = await this.menuRepository
-    //   .createQueryBuilder('menu')
-    //   .orderBy('menu.order', 'ASC')
-    //   .getMany();
+    const roles = await this.roleService.getRoleByUserId(uid);
+
+    // 如果用户没有任何角色，则返回空菜单
+    if (!roles || roles.length === 0) {
+      return [];
+    }
+
+    // 获取用户所有角色的菜单并去重
+    const allMenus: Menu[] = [];
+    for (const role of roles) {
+      const roleMenus = await this.findByRoleId(role.id);
+      allMenus.push(...roleMenus);
+    }
+
+    // 去重相同ID的菜单，使用Map来避免类型问题
+    const uniqueMenuMap = new Map<string, Menu>();
+    allMenus.forEach((menu) => {
+      if (menu && menu.id) {
+        uniqueMenuMap.set(menu.id, menu);
+      }
+    });
+    const uniqueMenus = Array.from(uniqueMenuMap.values());
+
+    const data = uniqueMenus;
     const menuTree: MenuState[] = [];
     // 设置一下属性和删属性
     const setMenuTree = (item: any) => {

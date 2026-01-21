@@ -15,10 +15,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { encryptPassword, makeSalt, rsaDecrypt } from 'src/utils/cryptogram.util';
-import { Repository } from 'typeorm';
+import { Repository, Not } from 'typeorm';
 import { RegisterDTO } from './dto/register.dto';
 import { LoginDTO } from './dto/login.dto';
-import { User, UserStatus, UserRole } from './entity/user.entity';
+import { User, UserStatus } from './entity/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { getPagination } from 'src/utils';
 import { userListVO } from './vo/user-list.vo';
@@ -27,12 +27,20 @@ import { EmailService } from '../email/email.service';
 import { EmailRegisterDTO } from './dto/email-register.dto';
 import { EmailLoginDTO } from './dto/email-login.dto';
 import { SendEmailCodeDTO, EmailCodeType } from './dto/send-email-code.dto';
+import { AdminCreateUserDTO } from './dto/admin-create-user.dto';
+import { AdminUpdateUserDTO } from './dto/admin-update-user.dto';
+import { Role } from '@/modules/features/admin/system/entities/role.entity';
+import { Dept } from '@/modules/features/admin/system/entities/dept.entity';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(Role)
+    private readonly roleRepository: Repository<Role>,
+    @InjectRepository(Dept)
+    private readonly deptRepository: Repository<Dept>,
     private readonly jwtService: JwtService,
     private readonly emailService: EmailService,
   ) {
@@ -72,7 +80,7 @@ export class UserService {
   }
 
   async createUser(registerDTO: RegisterDTO, init?: boolean) {
-    const { nickname, password, mobile, role, avatar } = registerDTO;
+    const { nickname, password, mobile, avatar } = registerDTO;
     const salt = makeSalt(); // 制作密码盐
     const hashPassword = encryptPassword(password, salt); // 加密密码
 
@@ -83,9 +91,10 @@ export class UserService {
     newUser.password = hashPassword;
     newUser.salt = salt;
     newUser.avatar = avatar;
-    if (role && init) {
-      newUser.role = role as UserRole;
-    }
+    newUser.deptId = 4; // 默认部门
+    const roles = await this.roleRepository.createQueryBuilder('role').whereInIds([3]).getMany();
+    newUser.roles = roles;
+
     return await this.userRepository.save(newUser);
   }
   // 校验登录用户
@@ -124,7 +133,7 @@ export class UserService {
       id: user.id,
       nickname: user.nickname,
       mobile: user.mobile,
-      role: user.role,
+      role: user.roles,
     };
     // console.log(payload);
     // 兼容老登录token
@@ -177,7 +186,15 @@ export class UserService {
    */
   async findById(id): Promise<User> {
     // 这里的relations指的是实体中的属性key
-    return (await this.userRepository.findOne({ where: { id }, relations: ['roles'] })) as User;
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['roles', 'dept'],
+    });
+    // console.log('用户信息:', { user });
+    if (!user) {
+      throw new NotFoundException('用户不存在');
+    }
+    return user;
   }
   /**
    * 获取指定用户信息、角色;
@@ -207,10 +224,13 @@ export class UserService {
    * @param queryParams
    */
   async findAll(queryParams): Promise<userListVO> {
-    const { page = 1, pageSize = 20, mobile } = queryParams;
+    const { page = 1, pageSize = 20, mobile, username } = queryParams;
     const sql = this.userRepository.createQueryBuilder('user');
     if (mobile) {
       sql.andWhere('user.mobile like :mobile', { mobile: `%${mobile}%` });
+    }
+    if (username) {
+      sql.andWhere('user.username like :username', { username: `%${username}%` });
     }
     sql.orderBy('user.createTime', 'ASC');
     const getList = sql
@@ -393,7 +413,7 @@ export class UserService {
     newUser.salt = salt;
     newUser.avatar = avatar;
     if (role) {
-      newUser.role = role as UserRole;
+      newUser.roles = [];
     }
 
     return await this.userRepository.save(newUser);
@@ -479,5 +499,114 @@ export class UserService {
    */
   async updateUserFromGithub(user: User): Promise<User> {
     return await this.userRepository.save(user);
+  }
+
+  /**
+   * 管理员创建用户
+   * @param adminCreateUserDTO 管理员创建用户DTO
+   */
+  async adminCreateUser(adminCreateUserDTO: AdminCreateUserDTO) {
+    const { nickname, username, password, roleIds, deptId, intro, avatar } = adminCreateUserDTO;
+    // 检查手机号是否已存在
+    const existingMobileUser = await this.userRepository.findOne({ where: { username: username } });
+    if (existingMobileUser) {
+      throw new HttpException('该账号已被注册', HttpStatus.BAD_REQUEST);
+    }
+    const salt = makeSalt(); // 制作密码盐
+    const hashPassword = encryptPassword(password, salt); // 加密密码
+
+    const newUser: User = new User();
+    newUser.nickname = nickname;
+    newUser.mobile = username;
+    newUser.username = username;
+    newUser.password = hashPassword;
+    newUser.salt = salt;
+    newUser.intro = intro;
+    newUser.avatar = avatar;
+
+    // 设置用户状态为激活
+    newUser.status = UserStatus.ACTIVE;
+
+    // 如果提供了部门ID，则关联部门
+    if (deptId) {
+      newUser.deptId = deptId;
+    }
+
+    // 如果提供了角色ID，则关联角色
+    if (roleIds && roleIds.length > 0) {
+      const roles = await this.roleRepository
+        .createQueryBuilder('role')
+        .whereInIds(roleIds)
+        .getMany();
+
+      if (roles.length !== roleIds.length) {
+        throw new HttpException('部分角色不存在', HttpStatus.BAD_REQUEST);
+      }
+
+      // 直接设置用户的角色，允许一次性保存
+      newUser.roles = roles;
+    }
+
+    // 一次性保存用户及其关联信息
+    const savedUser = await this.userRepository.save(newUser);
+
+    return savedUser;
+  }
+
+  /**
+   * 管理员更新用户
+   * @param userId 用户ID
+   * @param adminUpdateUserDTO 管理员更新用户DTO
+   */
+  async adminUpdateUser(userId: number, adminUpdateUserDTO: AdminUpdateUserDTO) {
+    const { nickname, roleIds, deptId, intro, avatar } = adminUpdateUserDTO;
+
+    // 查找要更新的用户
+    const existingUser = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['roles', 'dept'],
+    });
+    if (!existingUser) {
+      throw new HttpException('用户不存在', HttpStatus.NOT_FOUND);
+    }
+
+    // 更新基本用户信息
+    existingUser.nickname = nickname ?? existingUser.nickname;
+    existingUser.intro = intro ?? existingUser.intro;
+    existingUser.avatar = avatar ?? existingUser.avatar;
+    if (deptId) {
+      existingUser.deptId = deptId;
+      existingUser.dept =
+        (await this.deptRepository.findOne({ where: { id: deptId } })) || undefined;
+    }
+
+    // 如果提供了角色ID，则更新角色关联
+    if (roleIds !== undefined) {
+      if (roleIds && roleIds.length > 0) {
+        const roles = await this.roleRepository
+          .createQueryBuilder('role')
+          .whereInIds(roleIds)
+          .getMany();
+
+        if (roles.length !== roleIds.length) {
+          throw new HttpException('部分角色不存在', HttpStatus.BAD_REQUEST);
+        }
+
+        // 设置新角色
+        existingUser.roles = roles;
+      } else {
+        // 清空用户的角色
+        existingUser.roles = [];
+      }
+    }
+
+    // 一次性保存用户及其关联信息
+    const updatedUser = await this.userRepository.save(existingUser);
+
+    // 返回最终的用户信息
+    return await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['roles', 'dept'],
+    });
   }
 }

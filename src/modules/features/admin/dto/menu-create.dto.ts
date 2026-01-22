@@ -79,28 +79,4 @@ export class MenuCreateDTO {
   })
   @IsOptional()
   readonly filePath?: string;
-
-  @ApiProperty({
-    description: '是否为超级管理员菜单',
-    example: true,
-    required: false,
-  })
-  @IsOptional()
-  readonly super?: boolean;
-
-  @ApiProperty({
-    description: '是否为管理员菜单',
-    example: true,
-    required: false,
-  })
-  @IsOptional()
-  readonly admin?: boolean;
-
-  @ApiProperty({
-    description: '是否为作者菜单',
-    example: false,
-    required: false,
-  })
-  @IsOptional()
-  readonly author?: boolean;
 }

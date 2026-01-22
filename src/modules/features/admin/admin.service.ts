@@ -2,8 +2,6 @@ import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Link, Menu } from './admin.entity';
-import MenuList = require('./menu.json');
-import { UserService } from '../user/user.service';
 import { RoleService } from './system/services/role.service';
 
 // 接口继承
@@ -25,22 +23,7 @@ export class MenuService {
     @InjectRepository(Menu)
     private readonly menuRepository: Repository<Menu>,
     private readonly roleService: RoleService,
-  ) {
-    /* 初始化菜单列表 需要捕获错误防止已存在*/
-    MenuList.forEach(async (v: Menu, index: number) => {
-      await this.create(v)
-        .then(() => {
-          if (MenuList.length === index + 1) {
-            console.log(`默认菜单创建成功，`);
-          }
-        })
-        .catch(() => {
-          // if (MenuList.length === index + 1) {
-          //   console.log(`默认菜单已经存在`);
-          // }
-        });
-    });
-  }
+  ) {}
   /**
    * 根据角色ID获取菜单列表
    * @param roleId

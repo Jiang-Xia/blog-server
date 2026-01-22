@@ -62,16 +62,6 @@ export class Menu {
     default: false,
   })
   isDelete: boolean;
-
-  @Column({ default: true })
-  super: boolean = true;
-
-  @Column({ default: true })
-  admin: boolean = true;
-
-  @Column({ default: false })
-  author: boolean = false;
-
   @ApiProperty()
   @ManyToMany(() => Role, (role) => role.menus, { cascade: false })
   roles: Array<Role>;

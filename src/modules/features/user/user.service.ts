@@ -196,6 +196,23 @@ export class UserService {
     }
     return user;
   }
+
+  /**
+   * 获取指定用户所有信息
+   * @param id
+   */
+  async findUserAllInfoById(id): Promise<User> {
+    // 这里的relations指的是实体中的属性key
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['roles', 'roles.privileges', 'dept'],
+    });
+    // console.log('用户信息:', { user });
+    if (!user) {
+      throw new NotFoundException('用户不存在');
+    }
+    return user;
+  }
   /**
    * 获取指定用户信息、角色;
    * @param id

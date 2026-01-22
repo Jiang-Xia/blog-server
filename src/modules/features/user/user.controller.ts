@@ -107,9 +107,9 @@ export class UserController {
   @ApiBearerAuth()
   @ApiOkResponse({ description: '用户信息', type: UserInfoResponse })
   @Get('info')
-  async userInfo(@Headers() headers, @Query('id') userId: string): Promise<any> {
+  async userInfo(@Headers() headers, @Query('id') userId: number): Promise<any> {
     const id = getUid(headers.authorization);
-    return this.userService.findById(userId || id);
+    return this.userService.getUserRolePrivilegeInfo(userId || id);
   }
 
   @ApiOkResponse({ description: '用户列表', type: userListVO })

@@ -1,0 +1,15 @@
+---
+description: blog-server Controller 路由与响应契约规范
+globs: src/modules/**/*controller.ts
+alwaysApply: false
+---
+
+# Controller Contract Rules
+
+- controller 方法必须声明返回类型，避免裸 `Promise<any>`。
+- 成功响应由全局拦截器统一包装为 `{ code, data, message }`，controller 不重复手工包裹。
+- 参数装饰器优先使用 `@Body/@Query/@Param` + DTO，不直接接收大块 `any`。
+- 需要鉴权的接口同时加 `@UseGuards(JwtAuthGuard)` 和 `@ApiBearerAuth()`。
+- 写操作接口（create/edit/delete）需保持幂等语义清晰，避免“同名路径不同动作”混乱。
+- 请求头中 token 读取逻辑统一走现有工具函数，避免每个 controller 各写一套。
+- 接口注释保持中文可读，便于后续前后端联调排查。

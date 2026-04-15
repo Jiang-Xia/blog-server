@@ -1,0 +1,14 @@
+---
+description: blog-server 面向双前端联调的 API 契约约束
+globs: src/modules/**/*.ts
+alwaysApply: false
+---
+
+# Server API Joint Debug Rules
+
+- 对外响应保持一级结构稳定：`code`、`data`、`message`，不要随意改名或嵌套层级。
+- 新增字段优先向后兼容，禁止直接删除已被前台或后台使用的字段。
+- 错误码语义稳定：401 未登录/过期，403 无权限，404 资源不存在，500 服务异常。
+- 变更接口前先确认两个前端是否共用该接口，避免“改 admin 好了但 home 崩了”。
+- 需要加密联调时，明确接口是否支持 `/encrypt` 前缀与 `content` 包装结构。
+- 联调问题排查顺序：请求参数 -> 权限头 -> 后端日志 -> 响应结构。

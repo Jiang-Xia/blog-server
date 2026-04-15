@@ -1,0 +1,14 @@
+---
+description: blog-server 鉴权与安全实现规范
+globs: src/modules/security/**/*.ts
+alwaysApply: false
+---
+
+# Security Auth Rules
+
+- 鉴权链路保持 `JWT + Guard + 角色/权限` 一致，不引入绕过 guard 的旁路实现。
+- token 相关接口需兼容 `Authorization: Bearer <token>`，避免和前端约定冲突。
+- 密码、验证码、密钥类字段严禁明文日志输出；调试日志需做脱敏处理。
+- 账号登录和刷新 token 逻辑要区分失败原因：过期、无效、权限不足分别给出明确信息。
+- 验证码、登录限流、会话缓存等状态优先走 Redis，不落地到业务表。
+- 任何安全相关变更必须评估对 admin 与 home 两端登录流程的兼容性。

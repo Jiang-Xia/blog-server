@@ -1,0 +1,15 @@
+---
+description: blog-server Service 与 TypeORM 数据访问规范
+globs: src/modules/**/*service.ts
+alwaysApply: false
+---
+
+# Service TypeORM Rules
+
+- service 内查询优先使用 repository/queryBuilder，避免在 controller 拼接 SQL。
+- 查询接口统一考虑软删除字段（如 `isDelete`）与状态字段，避免返回脏数据。
+- 分页查询必须包含分页参数保护（页码、页大小上限）并返回前端可消费的总量信息。
+- 对多表关联（文章-分类-标签）优先复用已有关系映射，不重复写手动关联。
+- 事务场景（多步写入）要么使用事务管理器，要么保证失败时回滚策略明确。
+- service 抛错要可预期，避免直接把数据库原始错误文本透给前端。
+- 新增 service 方法时补充最小粒度单元测试或至少保留可测结构。

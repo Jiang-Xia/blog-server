@@ -1,0 +1,15 @@
+---
+description: blog-server 模块分层与目录结构规范
+globs: src/modules/**/*.ts
+alwaysApply: false
+---
+
+# Nest Module Architecture
+
+- 模块目录遵循 `module.ts + controller.ts + service.ts + dto/ + entity/ + vo/`，禁止把跨域逻辑塞进 controller。
+- controller 只做参数接收、鉴权注解、调用 service；复杂业务分支放到 service。
+- service 只依赖仓库/其他 service，不直接读写 `req/res`。
+- 公共逻辑优先沉淀到 `src/modules/features/common` 或 `src/utils`，避免复制粘贴。
+- 新增业务模块时，需要在模块装配处完成注册，保持可被应用正常加载。
+- 文件命名使用 kebab-case，类名 PascalCase，方法与变量 camelCase。
+- 未经确认不要修改既有路由前缀，避免影响两个前端联调。

@@ -1,0 +1,14 @@
+---
+description: blog-server DTO 校验与输入边界规则
+globs: src/modules/**/dto/*.ts
+alwaysApply: false
+---
+
+# DTO Validation Rules
+
+- 新增 DTO 字段必须加 `class-validator` 规则（如 `IsNotEmpty/IsOptional/MaxLength/Matches`）。
+- 对外 API 的核心字段补充 `@ApiProperty`（description + example），保证 Swagger 可读。
+- DTO 尽量区分创建与更新场景：`CreateXxxDTO` 与 `UpdateXxxDTO`，更新字段默认可选。
+- 禁止在 DTO 中写业务查询逻辑；DTO 只负责参数形状与校验。
+- 对账号、邮箱、手机号等格式统一复用已有正则工具，不重复写正则字面量。
+- 保持错误消息面向用户可读，避免返回技术术语或英文堆栈描述。

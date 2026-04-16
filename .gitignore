@@ -8,6 +8,10 @@
 /deploy/front/output2
 /backups
 
+# env
+!.env.example
+!.env.*.example
+
 # Logs
 logs
 *.log

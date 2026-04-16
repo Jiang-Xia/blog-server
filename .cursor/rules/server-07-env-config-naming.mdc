@@ -1,0 +1,39 @@
+---
+description: blog-server 环境变量命名与 Config 映射规则（禁止直接 process.env）
+globs: src/config/**/*.ts
+alwaysApply: false
+---
+
+# Env + Config Naming Rules
+
+## 环境变量（`.env.*`）命名约定
+
+- 使用 **小写域前缀** + `_` + **camelCaseKey** 的形式：`<domain>_<camelCaseKey>`
+  - **db**：数据库（如 `db_host`, `db_password`）
+  - **redis**：缓存（如 `redis_host`, `redis_db`）
+  - **serve**：服务运行（如 `serve_port`, `serve_apiPath`, `serve_corsOrigins`）
+  - **auth**：鉴权（如 `auth_jwtSecret`）
+  - **account**：初始化账号（如 `account_mobile`, `account_password`）
+  - **file**：文件上传（如 `file_filePath`）
+  - **app**：应用级配置（如 `app_openMsgLog`, `app_emailHost`, `app_aesKey`, `app_aesIv`）
+  - **pay**：支付（如 `pay_alipayAppId`, `pay_alipayPrivateKey`）
+
+## `src/config/index.ts` 映射规则
+
+- `ConfigService.get('<envKey>')` 读取 `.env` 的 key，然后统一装配到 `Config`：
+  - `db_*` → `Config.databaseConfig.*`
+  - `redis_*` → `Config.redisConfig.*`
+  - `serve_*` → `Config.serveConfig.*`
+  - `auth_*` → `Config.authConfig.*`
+  - `account_*` → `Config.accountConfig.*`
+  - `file_*` → `Config.fileConfig.*`
+  - `app_*` → `Config.appConfig.*`
+  - `pay_*` → `Config.payConfig.*`
+
+## 使用规则（强制）
+
+- **禁止**在业务代码中直接使用 `process.env.*`（包括但不限于 `process.env.APP_AES_KEY` / `process.env.JWT_SECRET`）。
+- 业务代码读取配置必须通过：
+  - `src/config/index.ts` 导出的 `Config`（已由 `InitConfig()` 初始化），或
+  - Nest 注入的 `ConfigService`（但不要在业务层散落读取，优先由 `Config` 统一装配）。
+

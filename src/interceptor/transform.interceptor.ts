@@ -2,10 +2,11 @@
 
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { map, tap, timeout } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { Logger } from '@nestjs/common';
 import { Config } from '../config';
 import { v4 as uuidv4 } from 'uuid';
+import { maskForLog } from '../utils/log-mask.util';
 
 // 不走公共拦截器的接口
 const whiteControllerList: Array<string> = ['stream'];
@@ -42,9 +43,9 @@ export class TransformInterceptor implements NestInterceptor {
           this.reqLogger.log(
             `[${requestId}] ${method} ${pathname} ${statusCode} ${duration}ms - ${contentLength || 0}b Start`,
           );
-          this.reqLogger.debug(`Request body: ${JSON.stringify(body)}`);
-          this.reqLogger.debug(`Request params: ${JSON.stringify(params)}`);
-          this.reqLogger.debug(`Request query: ${JSON.stringify(query)}`);
+          this.reqLogger.debug(`Request body: ${JSON.stringify(maskForLog(body))}`);
+          this.reqLogger.debug(`Request params: ${JSON.stringify(maskForLog(params))}`);
+          this.reqLogger.debug(`Request query: ${JSON.stringify(maskForLog(query))}`);
         }),
         map((data) => {
           // map 重包装改变数据流
@@ -66,7 +67,7 @@ export class TransformInterceptor implements NestInterceptor {
             return;
           }
           if (!closeMsgBodyLog) {
-            this.resLogger.debug(`Response body: ${JSON.stringify(data)}`);
+            this.resLogger.debug(`Response body: ${JSON.stringify(maskForLog(data))}`);
           }
           const endTime = Date.now();
           const { statusCode } = res;

@@ -74,7 +74,7 @@ export class PermissionGuard implements CanActivate {
     // 2. 验证用户登录状态
     const uid = getUid(request.headers.authorization);
     if (!uid) {
-      throw new HttpException('用户未登录', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException('用户未登录', HttpStatus.UNAUTHORIZED);
     }
     let user: UserInfo = { id: 0, username: '', roles: [], roleIds: [] };
     // 通过 uid 查询完整用户信息
@@ -115,7 +115,7 @@ export class PermissionGuard implements CanActivate {
     const hasPermission = await this.checkUserPermission(user, apiPermission);
 
     if (!hasPermission) {
-      throw new HttpException('权限不足，无法访问该资源', HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new HttpException('权限不足，无法访问该资源', HttpStatus.FORBIDDEN);
     }
 
     return true;

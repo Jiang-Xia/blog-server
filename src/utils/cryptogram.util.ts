@@ -4,6 +4,7 @@ import * as crypto from 'crypto';
 import JSEncrypt from 'node-jsencrypt';
 import { enc, mode, AES, pad, format } from 'crypto-js';
 import { publicKey, privateKey } from '../config/ssh';
+import { Config } from '../config';
 
 // 随机盐
 export function makeSalt(): string {
@@ -29,10 +30,16 @@ export function encryptPassword(password: string, salt: string): string {
 /* 
   对称加解密 和home端对应的aes加解密
 */
-// 加密密钥（长度必须是 16 的整数倍，此处为 32 位）
-const secretKey = '54050000778e380000fe5a120000b4ce';
-// 偏移量
-const iv = 'jiangxia';
+const FALLBACK_AES_KEY = '54050000778e380000fe5a120000b4ce';
+const FALLBACK_AES_IV = 'jiangxia';
+
+function getAesKey(): string {
+  return Config?.appConfig?.aesKey || FALLBACK_AES_KEY;
+}
+
+function getAesIv(): string {
+  return Config?.appConfig?.aesIv || FALLBACK_AES_IV;
+}
 /**
  * AES加密
  * @description 使用加密秘钥，对 需要加密的参数 进行加密
@@ -41,13 +48,15 @@ const iv = 'jiangxia';
  * @param {string} offset - 偏移量
  * @return 16进制字符串 256位
  */
-export function aesEncrypt(word: any, key = secretKey, offset = iv) {
+export function aesEncrypt(word: any, key?: string, offset?: string) {
+  const secretKey = getAesKey();
+  const iv = getAesIv();
   // 未加密的参数 - 从 UTF-8编码 解析出原始字符串
   const wordUTF8 = enc.Utf8.parse(word);
   // 密钥 - 从 UTF-8编码 解析出原始字符串
-  const keyUTF8 = enc.Utf8.parse(key);
+  const keyUTF8 = enc.Utf8.parse(key || secretKey);
   // 偏移量 从 UTF-8编码 解析出原始字符串
-  const offsetUTF8 = enc.Utf8.parse(offset);
+  const offsetUTF8 = enc.Utf8.parse(offset || iv);
 
   const encrypted = AES.encrypt(wordUTF8, keyUTF8, {
     iv: offsetUTF8,
@@ -66,11 +75,13 @@ export function aesEncrypt(word: any, key = secretKey, offset = iv) {
  * @param {string} offset - 偏移量
  * @return utf8 字符串
  */
-export function aesDecrypt(encryptedWord: any, key = secretKey, offset = iv) {
+export function aesDecrypt(encryptedWord: any, key?: string, offset?: string) {
+  const secretKey = getAesKey();
+  const iv = getAesIv();
   // 密钥 - 从 UTF-8编码 解析出原始字符串
-  const keyUTF8 = enc.Utf8.parse(key);
+  const keyUTF8 = enc.Utf8.parse(key || secretKey);
   // 偏移量 从 UTF-8编码 解析出原始字符串
-  const offsetUTF8 = enc.Utf8.parse(offset);
+  const offsetUTF8 = enc.Utf8.parse(offset || iv);
   // 解析十六进制字符串
   encryptedWord = format.Hex.parse(encryptedWord);
   // console.log('encryptedWord:',encryptedWord)
@@ -112,7 +123,11 @@ export function rsaEncrypt(word = '非对称加解密', pubKey = publicKey) {
  * @param {string} offset - 偏移量
  * @return utf8 字符串 (解密不出来返回原本字符串)
  */
-export function rsaDecrypt(encryptedWord: any, priKey = privateKey, offset = iv) {
+export function rsaDecrypt(
+  encryptedWord: any,
+  priKey = privateKey,
+  offset = FALLBACK_AES_IV,
+) {
   const decrypt = new JSEncrypt();
   /* 私钥解密 */
   decrypt.setPrivateKey(priKey);

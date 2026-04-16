@@ -9,6 +9,7 @@ type ConfigInterface = {
   redisConfig: any;
   databaseConfig: any;
   serveConfig: any;
+  authConfig: any;
   accountConfig: any;
   fileConfig: any;
   appConfig: any;
@@ -18,6 +19,7 @@ export let Config: ConfigInterface = {
   redisConfig: {},
   databaseConfig: {},
   serveConfig: {},
+  authConfig: {},
   accountConfig: {},
   fileConfig: {},
   appConfig: {},
@@ -51,6 +53,11 @@ export const InitConfig = () => {
     apiPath: conf.get('serve_apiPath'),
     baseUrl: conf.get('serve_baseUrl'),
     isDev: env !== 'production',
+    corsOrigins: (conf.get('serve_corsOrigins') as string) || '',
+  };
+  /* 鉴权配置 */
+  const authConfig = {
+    jwtSecret: (conf.get('auth_jwtSecret') as string) || '',
   };
   /* 初始化账户 */
   const accountConfig = {
@@ -68,6 +75,8 @@ export const InitConfig = () => {
   const appConfig = {
     openMsgLog: conf.get('app_openMsgLog') === 'true',
     closeMsgBodyLog: conf.get('app_closeMsgBodyLog') === 'true',
+    aesKey: (conf.get('app_aesKey') as string) || '',
+    aesIv: (conf.get('app_aesIv') as string) || '',
     gaoDeMapApiKey: conf.get('app_gaoDeMapApiKey'),
     emailHost: conf.get('app_emailHost'),
     emailPort: parseInt(conf.get('app_emailPort') as string),
@@ -96,12 +105,12 @@ export const InitConfig = () => {
     redisConfig,
     databaseConfig,
     serveConfig,
+    authConfig,
     accountConfig,
     fileConfig,
     appConfig,
     payConfig,
   };
-  console.warn(Config);
   return Config;
 };
 export default () => {

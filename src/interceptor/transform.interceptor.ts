@@ -58,6 +58,7 @@ export class TransformInterceptor implements NestInterceptor {
           }
           return {
             code: 200,
+            bizCode: 200,
             data,
             message,
           };

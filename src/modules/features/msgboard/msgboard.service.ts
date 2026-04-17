@@ -10,7 +10,16 @@ import { map } from 'rxjs/operators';
 import { lastValueFrom } from 'rxjs';
 import { isIPv4 } from 'node:net';
 import { getPagination, likeQeuryParams } from 'src/utils';
+import { RedisService } from '@/modules/core/redis/redis.service';
+import { COMMON_BLOCKED_WORDS } from '@/constants/blocked-words';
 // 后端还是一个个模块分开写比较清晰，集合再一起久了，不清晰功能在哪里了！
+
+/** 留言限流窗口（秒）：按天限制 */
+const MSGBOARD_RATE_WINDOW_SEC = 24 * 60 * 60;
+/** 单 IP 每日最多留言次数 */
+const MSGBOARD_RATE_MAX_PER_WINDOW = 10;
+/** 留言敏感词词库：复用统一常量，避免多处重复维护 */
+const MSGBOARD_BLOCKED_WORDS = COMMON_BLOCKED_WORDS;
 
 @Injectable()
 export class MsgboardService {
@@ -18,7 +27,31 @@ export class MsgboardService {
     @InjectRepository(Msgboard)
     private readonly msgboardRepository: Repository<Msgboard>,
     private readonly httpService: HttpService,
+    private readonly redisService: RedisService,
   ) {}
+
+  /**
+   * 留言前风控校验：敏感词过滤 + IP 维度日限流。
+   */
+  async assertMessageAllowed(comment: string, ip: string) {
+    const normalizedContent = String(comment || '').toLowerCase();
+    const hitWord = MSGBOARD_BLOCKED_WORDS.find((word) => normalizedContent.includes(word));
+    if (hitWord) {
+      throw new HttpException('留言内容包含敏感信息，请修改后提交', HttpStatus.BAD_REQUEST);
+    }
+
+    const safeIp = String(ip || 'unknown').replace(/[^0-9a-zA-Z._-]/g, '_');
+    // 留言板主要面对游客，因此用 IP 作为主限流维度
+    const key = `msgboard:rate:${safeIp}`;
+    const count = await this.redisService.incrBy(key, 1);
+    if (count === 1) {
+      await this.redisService.expire(key, MSGBOARD_RATE_WINDOW_SEC);
+    }
+    if (count > MSGBOARD_RATE_MAX_PER_WINDOW) {
+      throw new HttpException('一天只能留言10条哦！', HttpStatus.TOO_MANY_REQUESTS);
+    }
+  }
+
   async create(msgboard: Partial<Msgboard>, req: any, ip: string): Promise<Msgboard> {
     const parser = new UAParser(req.headers['user-agent']); // you need to pass the user-agent for nodejs
     const parserResults = parser.getResult();
@@ -88,7 +121,7 @@ export class MsgboardService {
     try {
       await this.msgboardRepository.delete(ids);
       return true;
-    } catch (e) {
+    } catch {
       throw new HttpException('删除失败', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

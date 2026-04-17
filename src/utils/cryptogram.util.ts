@@ -123,11 +123,7 @@ export function rsaEncrypt(word = '非对称加解密', pubKey = publicKey) {
  * @param {string} offset - 偏移量
  * @return utf8 字符串 (解密不出来返回原本字符串)
  */
-export function rsaDecrypt(
-  encryptedWord: any,
-  priKey = privateKey,
-  offset = FALLBACK_AES_IV,
-) {
+export function rsaDecrypt(encryptedWord: any, priKey = privateKey, offset = FALLBACK_AES_IV) {
   const decrypt = new JSEncrypt();
   /* 私钥解密 */
   decrypt.setPrivateKey(priKey);

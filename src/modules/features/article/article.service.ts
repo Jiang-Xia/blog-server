@@ -104,7 +104,7 @@ export class ArticleService {
         // 内容
         if (content) {
           qb.orWhere('article.content like :content', {
-            content: `%${description}%`,
+            content: `%${content}%`,
           });
         }
         // console.log('排序方式:', sort);
@@ -470,7 +470,7 @@ export class ArticleService {
 
       viewTrendData.push({
         date: `${date.getMonth() + 1}/${date.getDate()}`,
-        views: dayViews > 0 ? dayViews : Math.floor(Math.random() * 100) + 50,
+        views: dayViews,
       });
     }
 
@@ -522,19 +522,10 @@ export class ArticleService {
     // 5. 计算趋势（对比昨天的总体数据）
     const today = new Date(now);
     today.setHours(0, 0, 0, 0);
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
-
     // 昨天之前创建的所有文章（用于计算昨天的总数据）
     const articlesBeforeToday = articles.filter((article) => {
       const createTime = new Date(article.createTime);
       return createTime < today;
-    });
-
-    // 今天新增的文章
-    const todayArticles = articles.filter((article) => {
-      const createTime = new Date(article.createTime);
-      return createTime >= today;
     });
 
     // 计算趋势百分比

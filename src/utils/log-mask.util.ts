@@ -11,11 +11,22 @@ const SENSITIVE_KEYS = new Set([
   'email',
   'idcard',
   'bankcard',
+  // 验证码/加密载荷等大字段：避免日志爆炸与泄露
+  'captchabase64',
+  'captcha',
+  'svg',
 ]);
 
 // 判断是否为普通对象，避免误处理 Date/Map 等类型。
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return Object.prototype.toString.call(value) === '[object Object]';
+}
+
+function truncateString(value: string, head = 24, tail = 12): string {
+  if (value.length <= head + tail + 20) {
+    return value;
+  }
+  return `${value.slice(0, head)}…(${value.length})…${value.slice(-tail)}`;
 }
 
 // 手机号脱敏：保留前三后四，其余打码。
@@ -41,6 +52,11 @@ function maskValueByKey(key: string, value: unknown): unknown {
     return '******';
   }
 
+  // 验证码 base64 / svg / encrypt content：只保留长度与片段
+  if (key === 'captchabase64' || key === 'svg') {
+    return truncateString(value);
+  }
+
   if (key.includes('phone')) {
     return maskPhone(value);
   }
@@ -58,6 +74,14 @@ export function maskForLog(input: unknown): unknown {
     return input.map((item) => maskForLog(item));
   }
 
+  // 对超长字符串做截断，避免日志爆炸（尤其是 encrypt content / base64）
+  if (typeof input === 'string') {
+    if (input.length > 200) {
+      return truncateString(input, 32, 16);
+    }
+    return input;
+  }
+
   if (!isPlainObject(input)) {
     return input;
   }
@@ -67,6 +91,12 @@ export function maskForLog(input: unknown): unknown {
     const normalizedKey = rawKey.toLowerCase();
     if (SENSITIVE_KEYS.has(normalizedKey)) {
       output[rawKey] = maskValueByKey(normalizedKey, rawValue);
+      continue;
+    }
+
+    // encrypt 网关返回/请求常用 { content: '...' }，内容通常很长，直接截断即可
+    if (normalizedKey === 'content' && typeof rawValue === 'string') {
+      output[rawKey] = truncateString(rawValue, 32, 16);
       continue;
     }
 

@@ -25,12 +25,19 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const message = exception.message;
     const exceptionResponse: any = exception.getResponse();
     let validatorMessage = exceptionResponse;
-    if (typeof validatorMessage === 'object') {
+    let bizCode: number | string = status;
+    if (typeof validatorMessage === 'object' && validatorMessage !== null) {
       // 多条message
       // console.log('exceptionResponse:', exceptionResponse);
       validatorMessage = exceptionResponse.message;
       if (validatorMessage instanceof Array) {
         validatorMessage = validatorMessage[0];
+      }
+      if (
+        typeof exceptionResponse.bizCode === 'number' ||
+        typeof exceptionResponse.bizCode === 'string'
+      ) {
+        bizCode = exceptionResponse.bizCode;
       }
     }
 
@@ -48,6 +55,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     response.status(status).json({
       code: status,
+      bizCode,
       message: validatorMessage || message,
     });
   }

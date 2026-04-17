@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Any, EntityManager, Repository } from 'typeorm';
 import { Comment } from './comment.entity';
@@ -6,6 +6,15 @@ import { UserService } from '../user/user.service';
 import { ReplyService } from '../reply/reply.service';
 import { getPagination, setUserInfo } from 'src/utils';
 import { ArticleService } from '../article/article.service';
+import { RedisService } from '@/modules/core/redis/redis.service';
+import { COMMON_BLOCKED_WORDS } from '@/constants/blocked-words';
+
+/** 评论限流窗口（秒） */
+const COMMENT_RATE_WINDOW_SEC = 60;
+/** 限流窗口内允许的最大评论次数 */
+const COMMENT_RATE_MAX_PER_WINDOW = 6;
+/** 评论敏感词词库：复用统一常量，避免多处重复维护 */
+const COMMENT_BLOCKED_WORDS = COMMON_BLOCKED_WORDS;
 @Injectable()
 export class CommentService {
   constructor(
@@ -15,7 +24,32 @@ export class CommentService {
     private readonly replyService: ReplyService,
     @Inject(forwardRef(() => ArticleService))
     private readonly articleService: ArticleService,
+    private readonly redisService: RedisService,
   ) {}
+
+  /**
+   * 评论前风控校验：先做敏感词过滤，再做用户/IP 双维度限流。
+   */
+  async assertCommentAllowed(content: string, uid: number, ip: string) {
+    const normalizedContent = String(content || '').toLowerCase();
+    const hitWord = COMMENT_BLOCKED_WORDS.find((word) => normalizedContent.includes(word));
+    if (hitWord) {
+      throw new HttpException('评论内容包含敏感信息，请修改后提交', HttpStatus.BAD_REQUEST);
+    }
+
+    const safeUid = String(uid || '0').replace(/[^0-9a-zA-Z._-]/g, '_');
+    const safeIp = String(ip || 'unknown').replace(/[^0-9a-zA-Z._-]/g, '_');
+    // 用户 + IP 组合键，兼顾账号刷评和单 IP 攻击场景
+    const key = `comment:rate:${safeUid}:${safeIp}`;
+    const count = await this.redisService.incrBy(key, 1);
+    if (count === 1) {
+      await this.redisService.expire(key, COMMENT_RATE_WINDOW_SEC);
+    }
+    if (count > COMMENT_RATE_MAX_PER_WINDOW) {
+      throw new HttpException('评论过于频繁，请稍后再试', HttpStatus.TOO_MANY_REQUESTS);
+    }
+  }
+
   async create(comment: any) {
     const user = await this.userService.findById(comment.uid);
     const article = await this.articleService.findOneById(comment.articleId);

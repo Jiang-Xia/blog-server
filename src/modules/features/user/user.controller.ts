@@ -22,6 +22,7 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { getUid } from 'src/utils';
+import { IpAddress } from 'src/utils/common';
 import { JwtAuthGuard } from '../../security/auth/jwt-auth.guard';
 import { LoginDTO } from './dto/login.dto';
 import { RegisterDTO, resetPassword } from './dto/register.dto';
@@ -38,8 +39,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { AdminCreateUserDTO } from './dto/admin-create-user.dto';
 import { AdminUpdateUserDTO } from './dto/admin-update-user.dto';
 import { User } from './entity/user.entity';
-
-type SessionReq = Request & { session: Record<string, any> };
+import { randomUUID } from 'crypto';
 
 @ApiTags('用户模块')
 @Controller('user')
@@ -52,23 +52,39 @@ export class UserController {
   //利用svg-captcha生成校验码图片并存储在前端session中
   @ApiOperation({ summary: '验证码生成', description: '验证码' })
   @Get('authCode')
-  async createCaptcha(@Req() req: SessionReq, @Res() res: Response) {
-    try {
-      const captcha = await this.captchaService.create();
-      // 将验证码ID设置到Cookie中，方便后续验证
-      res.cookie('captcha_id', captcha.id, {
-        httpOnly: true, // 防止 XSS 攻击
-        maxAge: 120000, // 2分钟
-        sameSite: 'strict', // 防止 CSRF 攻击
-        secure: !Config.serveConfig.isDev, // 生产环境需要设置为true
+  async createCaptcha(
+    @Res({ passthrough: true }) res: Response,
+    @IpAddress() ip: string,
+    @Req() req: Request,
+  ): Promise<{ captchaBase64: string }> {
+    // IP 获取不到时不要落到同一个 unknown（会全局限流）
+    // 兜底用 httpOnly cookie 的浏览器标识，保证同一浏览器稳定、不同浏览器互不影响。
+    let browserId = (req as any).cookies?.browser_id as string | undefined;
+    if (!browserId) {
+      browserId = randomUUID().replace(/-/g, '');
+      res.cookie('browser_id', browserId, {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24 * 365, // 1年
+        sameSite: 'lax',
+        secure: !Config.serveConfig.isDev,
         path: '/',
       });
-      res.setHeader('Content-Type', 'image/svg+xml');
-      res.setHeader('Cache-Control', 'no-cache, no-store');
-      res.send(captcha.svg);
-    } catch (error) {
-      res.status(500).send('生成验证码失败');
     }
+    const identity = ip && ip !== 'unknown' ? `ip:${ip}` : `bid:${browserId}`;
+    await this.captchaService.assertCaptchaRateLimit(identity);
+    const captcha = await this.captchaService.create();
+    // 将验证码ID设置到Cookie中，方便后续验证
+    res.cookie('captcha_id', captcha.id, {
+      httpOnly: true, // 防止 XSS 攻击
+      maxAge: 120000, // 2分钟
+      sameSite: 'strict', // 防止 CSRF 攻击
+      secure: !Config.serveConfig.isDev, // 生产环境需要设置为true
+      path: '/',
+    });
+
+    return {
+      captchaBase64: Buffer.from(captcha.svg).toString('base64'),
+    };
   }
 
   @ApiBody({ type: RegisterDTO })
@@ -87,11 +103,15 @@ export class UserController {
   @ApiOkResponse({ description: '登陆', type: TokenResponse })
   @ApiOperation({ summary: '账号登陆', description: '登陆' })
   @Post('login')
-  async login(@Req() req: Request, @Body() loginDTO: LoginDTO): Promise<any> {
+  async login(
+    @Req() req: Request,
+    @Body() loginDTO: LoginDTO,
+    @IpAddress() ip: string,
+  ): Promise<any> {
     const captchaId = req.cookies?.captcha_id; // 从Cookie中获取验证码ID
     const bool = await this.captchaService.verify(captchaId, loginDTO.authCode);
     if (bool) {
-      return this.userService.login(loginDTO);
+      return this.userService.login(loginDTO, ip);
     }
   }
 

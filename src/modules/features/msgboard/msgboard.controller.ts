@@ -1,50 +1,20 @@
-import {
-  Body,
-  Controller,
-  Request,
-  Get,
-  Post,
-  Query,
-  UseGuards,
-  Inject,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { Body, Controller, Request, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { MsgboardService } from './msgboard.service';
 import { Msgboard } from './msgboard.entity';
 import { JwtAuthGuard } from '../../security/auth/jwt-auth.guard';
 import { IpAddress } from 'src/utils/common';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import type { Cache } from 'cache-manager';
-import { DayMilliseconds } from 'src/utils/constant';
 // 文档
 @ApiTags('留言板模块')
 @Controller('msgboard')
 // 权限
 export class MsgboardController {
-  constructor(
-    private readonly msgboardService: MsgboardService,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache,
-  ) {}
+  constructor(private readonly msgboardService: MsgboardService) {}
 
   @Post()
   async create(@Body() msgboard: Msgboard, @Request() req: Request, @IpAddress() ip: string) {
-    const maxCount = 10;
-    const day = DayMilliseconds;
-    const cached = await this.cacheManager.get<number>(ip);
-    let count: number = cached ?? 0;
-    if (!count) {
-      // 一天里首次留言记录次数
-      this.cacheManager.set(ip, 1, day);
-      return this.msgboardService.create(msgboard, req, ip);
-    } else if (count < maxCount) {
-      count += 1;
-      this.cacheManager.set(ip, count, day);
-      return this.msgboardService.create(msgboard, req, ip);
-    } else {
-      throw new HttpException('一天只能留言10条哦！', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    await this.msgboardService.assertMessageAllowed(msgboard.comment, ip);
+    return this.msgboardService.create(msgboard, req, ip);
   }
 
   @Get()

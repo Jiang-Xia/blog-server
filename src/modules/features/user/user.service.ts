@@ -31,6 +31,15 @@ import { AdminCreateUserDTO } from './dto/admin-create-user.dto';
 import { AdminUpdateUserDTO } from './dto/admin-update-user.dto';
 import { Role } from '@/modules/features/admin/system/entities/role.entity';
 import { Dept } from '@/modules/features/admin/system/entities/dept.entity';
+import { RedisService } from '@/modules/core/redis/redis.service';
+import { createHash } from 'crypto';
+
+/** 登录失败计数窗口（秒） */
+const LOGIN_FAIL_WINDOW_SEC = 10 * 60;
+/** 登录失败阈值，达到后触发短时封禁 */
+const LOGIN_FAIL_MAX_COUNT = 5;
+/** 登录封禁时长（秒） */
+const LOGIN_LOCK_SEC = 15 * 60;
 
 @Injectable()
 export class UserService {
@@ -43,6 +52,7 @@ export class UserService {
     private readonly deptRepository: Repository<Dept>,
     private readonly jwtService: JwtService,
     private readonly emailService: EmailService,
+    private readonly redisService: RedisService,
   ) {
     /* class 初始化时会执行 constructor*/
     // 初始化账户
@@ -98,8 +108,10 @@ export class UserService {
     return await this.userRepository.save(newUser);
   }
   // 校验登录用户
-  async checkLoginForm(loginDTO: LoginDTO): Promise<any> {
+  async checkLoginForm(loginDTO: LoginDTO, clientIp = 'unknown'): Promise<any> {
     const { mobile } = loginDTO;
+    // 登录前先检查是否处于封禁态
+    await this.assertLoginAllowed(mobile, clientIp);
     // 解密密码
     const password = rsaDecrypt(loginDTO.password);
     const sql = this.userRepository
@@ -112,6 +124,7 @@ export class UserService {
     // console.log('用户信息:', { user });
 
     if (!user) {
+      await this.recordLoginFailure(mobile, clientIp);
       throw new NotFoundException('账号不存在');
     } else if (user.status === UserStatus.LOCKED) {
       throw new UnauthorizedException('账号已被锁定！');
@@ -120,9 +133,11 @@ export class UserService {
     const { password: dbPassword, salt } = user;
     // console.log({ currentHashPassword, dbPassword });
     if (!User.compactPass(password, dbPassword, salt)) {
+      await this.recordLoginFailure(mobile, clientIp);
       throw new NotFoundException('密码错误');
     }
 
+    await this.clearLoginFailure(mobile, clientIp);
     return user;
   }
 
@@ -147,9 +162,9 @@ export class UserService {
     };
   }
 
-  async login(loginDTO: LoginDTO): Promise<any> {
+  async login(loginDTO: LoginDTO, clientIp = 'unknown'): Promise<any> {
     // 用户信息
-    const user = await this.checkLoginForm(loginDTO);
+    const user = await this.checkLoginForm(loginDTO, clientIp);
     // 密码和加盐不返回
     delete user.password;
     delete user.salt;
@@ -167,7 +182,18 @@ export class UserService {
    */
   async refresh(token: string) {
     try {
+      // refresh token 只存其哈希，避免明文 token 出现在缓存中
+      const tokenHash = createHash('sha256').update(token).digest('hex');
+      const refreshBlacklistKey = `auth:refresh:blacklist:${tokenHash}`;
+      const used = await this.redisService.get(refreshBlacklistKey);
+      if (used) {
+        throw new UnauthorizedException('refresh token 已失效，请重新登录');
+      }
       let user = this.jwtService.verify(token);
+      const tokenExpSec = Number(user?.exp || 0);
+      // 黑名单键与 token 同步过期，减少无效残留键
+      const ttlSec = Math.max(1, tokenExpSec - Math.floor(Date.now() / 1000));
+      await this.redisService.set(refreshBlacklistKey, '1', ttlSec);
       const data = await this.certificate(user);
       user = await this.findById(user.id);
       return {
@@ -178,6 +204,49 @@ export class UserService {
     } catch (e) {
       throw new UnauthorizedException('token 失效，请重新登录');
     }
+  }
+
+  /** 将用户输入转换为可安全拼接的 Redis key 片段 */
+  private toRedisSafe(value: string) {
+    return String(value || 'unknown').replace(/[^0-9a-zA-Z._-]/g, '_');
+  }
+
+  /** 统一构造登录失败计数键与封禁键，避免多处手写不一致 */
+  private getLoginKeys(mobile: string, clientIp: string) {
+    const safeMobile = this.toRedisSafe(mobile);
+    const safeIp = this.toRedisSafe(clientIp);
+    return {
+      failKey: `auth:login:fail:${safeMobile}:${safeIp}`,
+      lockKey: `auth:login:lock:${safeMobile}:${safeIp}`,
+    };
+  }
+
+  /** 判断当前账号+IP 组合是否被封禁 */
+  private async assertLoginAllowed(mobile: string, clientIp: string) {
+    const { lockKey } = this.getLoginKeys(mobile, clientIp);
+    const locked = await this.redisService.get(lockKey);
+    if (locked) {
+      throw new UnauthorizedException('登录失败次数过多，请稍后再试');
+    }
+  }
+
+  /** 登录失败后累计计数，必要时写入封禁键 */
+  private async recordLoginFailure(mobile: string, clientIp: string) {
+    const { failKey, lockKey } = this.getLoginKeys(mobile, clientIp);
+    const failCount = await this.redisService.incrBy(failKey, 1);
+    if (failCount === 1) {
+      await this.redisService.expire(failKey, LOGIN_FAIL_WINDOW_SEC);
+    }
+    if (failCount >= LOGIN_FAIL_MAX_COUNT) {
+      await this.redisService.set(lockKey, '1', LOGIN_LOCK_SEC);
+    }
+  }
+
+  /** 登录成功后清理失败计数与封禁状态 */
+  private async clearLoginFailure(mobile: string, clientIp: string) {
+    const { failKey, lockKey } = this.getLoginKeys(mobile, clientIp);
+    await this.redisService.del(failKey);
+    await this.redisService.del(lockKey);
   }
 
   /**

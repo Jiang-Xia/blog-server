@@ -69,7 +69,7 @@ export class User {
   nickname: string;
 
   // 用户名
-  @Column('varchar', { default: '' })
+  @Column('varchar', { default: '', nullable: true })
   @ApiProperty({ description: '用户名', example: 'jiangxia' })
   username?: string;
 

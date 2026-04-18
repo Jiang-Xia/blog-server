@@ -33,7 +33,7 @@ export class Menu {
   name: string;
 
   @ApiProperty({ description: '菜单中文名' })
-  @Column({ default: '' })
+  @Column({ default: '', nullable: true })
   menuCnName: string = '';
 
   @ApiProperty({ description: '用于菜单排序' })

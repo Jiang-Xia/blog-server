@@ -85,7 +85,7 @@ CREATE TABLE `menu` (
   `requiresAuth` tinyint NOT NULL DEFAULT '1',
   `filePath` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
   `isDelete` tinyint NOT NULL DEFAULT '0',
-  `menuCnName` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `menuCnName` varchar(255) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
